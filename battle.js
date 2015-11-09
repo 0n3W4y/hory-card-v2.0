@@ -39,13 +39,34 @@ function fillNewDeck(cards){                      // функция заполн
 return deck;
 };
 
-function calculateDamage(arr){              // подсчет дамага в массиве ( общей деке карт ).
- var result = 0;
+function isNumeric(n) {                       // проверка на число :)
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function calculateDamage(arr){              // массив с суммами пар карт в деке боя. Дорабатываю.
+ var sumArr = [];
  for (var i = 0; i < arr.length; i++){
   var a = card_costs[arr[i].split("@")[0]];
-  result += a;
-  }
+  var b = card_costs[arr[i+1].split("@")[0]];
+   if ( isNumeric(b) ){
+   sumArr.push(a+b);
+   i++;
+   }else{
+   sumArr.push(a);
+   }
+ }
+ return sumArr;
+};
+
+
+function calculateDamageDiamonds(arr){    // дорабатываю.
+ var sum = 0;
+ var result = [];
+ if (arr.length <= 1){
+  for (var i = 0; i < arr.length; i++){
+   var a = card_costs[arr[i].split("@")[0]];
+   sum += a;
+   }
   
   return result;
-}; 
-
+};
