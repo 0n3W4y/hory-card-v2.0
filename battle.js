@@ -1,5 +1,6 @@
 var card_numbers = [2,3,4,5,6,7,8,9,10,11,12,13,14];
-var card_types = [ "spades", "cross", "hearts", "diamonds" ];
+var card_types = [ "spades", "cross", "hearts", "diamonds" ]; 
+//spades - Магический Урон, //cross - Добавление к защите, //hearts - Лечение, //diamonds - Физический урон
 var card_costs = {
   2: 2,
   3: 3,
@@ -16,19 +17,19 @@ var card_costs = {
   14: 11,
 }; // не уверен что это нужно, но спер у тебя. Посмотрим, может пристрою или видоизменю.
 
-function getRandomFromArr(arr) {
+function getRandomFromArr(arr) {                  // достаем произвольное индекс из массива
   return Math.floor(Math.random() * arr.length);
-}; // достаем произвольное индекс из массива
+}; 
 
-function createCard(){
+function createCard(){                          // создаем карту, на выходе имеем текстовое название карты типа 12@spades.
  var randomCardNumber = card_numbers[getRandomFromArr(card_numbers)];
  var randomCardType = card_types[getRandomFromArr(card_types)];
  return [randomCardNumber, randomCardType].join('@');
-}; // создаем карту, на выходе имеем текстовое название карты типа 12@spades.
+}; 
 
-function fillNewDeck(){
+function fillNewDeck(cards){                      // функция заполнения первоначальной колоды игрока\бота.
  var deck = [];
- for (var i = 0; i < 6; i++){
+ for (var i = 0; i < cards; i++){
   var a = createCard();
     if (a == deck.indexOf(a)){
    i--;
@@ -36,9 +37,9 @@ function fillNewDeck(){
    deck.push(a);
  }
 return deck;
-}; // функция заполнения первоначальной колоды игрока\бота.
+};
 
-function calculateDamage(arr){
+function calculateDamage(arr){              // подсчет дамага в массиве ( общей деке карт ).
  var result = 0;
  for (var i = 0; i < arr.length; i++){
   var a = card_costs[arr[i].split("@")[0]];
@@ -46,5 +47,5 @@ function calculateDamage(arr){
   }
   
   return result;
-}; // подсчет дамага в массиве ( общей деке карт ).
+}; 
 
