@@ -38,5 +38,13 @@ function fillNewDeck(){
 return deck;
 }; // функция заполнения первоначальной колоды игрока\бота.
 
-
+function calculateDamage(arr){
+ var result = 0;
+ for (var i = 0; i < arr.length; i++){
+  var a = card_costs[arr[i].split("@")[0]];
+  result += a;
+  }
+  
+  return result;
+}; // подсчет дамага в массиве ( общей деке карт ).
 
