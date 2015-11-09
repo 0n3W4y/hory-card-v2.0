@@ -15,3 +15,12 @@ var card_costs = {
   13: 4,
   14: 11,
 };
+
+function getRandomFromArr(arr) {
+  return Math.floor(Math.random() * arr.length);
+};
+
+function createCard(){
+ var randomCardNumber = card_numbers[getRandomFromArr(card_numbers)];
+ var randomCardType = card_types[getRandomFromArr(card_types)];
+ return [randomCardNumber, randomCardType].join(',');
