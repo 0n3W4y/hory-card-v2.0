@@ -14,13 +14,29 @@ var card_costs = {
   12: 20,
   13: 4,
   14: 11,
-};
+}; // не уверен что это нужно, но спер у тебя. Посмотрим, может пристрою или видоизменю.
 
 function getRandomFromArr(arr) {
   return Math.floor(Math.random() * arr.length);
-};
+}; // достаем произвольное индекс из массива
 
 function createCard(){
  var randomCardNumber = card_numbers[getRandomFromArr(card_numbers)];
  var randomCardType = card_types[getRandomFromArr(card_types)];
- return [randomCardNumber, randomCardType].join(',');
+ return [randomCardNumber, randomCardType].join('@');
+}; // создаем карту, на выходе имеем текстовое название карты типа 12@spades.
+
+function fillNewDeck(){
+ var deck = [];
+ for (var i = 0; i < 6; i++){
+  var a = createCard();
+    if (a == deck.indexOf(a)){
+   i--;
+   }
+   deck.push(a);
+ }
+return deck;
+}; // функция заполнения первоначальной колоды игрока\бота.
+
+
+
