@@ -28,11 +28,7 @@ function getRandomFromArr(arr) { // Рандомно вытаскиваем с �
   return Math.floor(Math.random() * arr.length);
 };
 
-function createCard(){ //Создаем карту из преддставленного выбора.
- var randomCardNumber = card_numbers[getRandomFromArr(card_numbers)];
- var randomCardType = card_types[getRandomFromArr(card_types)];
- return [randomCardNumber, randomCardType].join('@');
-};
+
 
 
 function isNumeric(n) {    //Проверка на число.
