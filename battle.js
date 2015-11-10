@@ -39,20 +39,20 @@ function isNumeric(n) {    //Проверка на число.
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-function calculateDamage(arr){ //Парный подсчет очков от карт. пока без мастей.
- var sumArr = [];
- for (var i = 0; i < arr.length; i++){
-  var a = card_costs[arr[i].split("@")[0]];
-  var b = card_costs[arr[i+1].split("@")[0]];
-   if ( isNumeric(b) ){
-   sumArr.push(a+b);
-   i++;
-   }else{
-   sumArr.push(a);
-   }
- }
- return sumArr;
-};
+//function calculateDamage(arr){ //Парный подсчет очков от карт. пока без мастей. Будет переделана в соотв. новым правилам.
+// var sumArr = [];
+// for (var i = 0; i < arr.length; i++){
+//  var a = card_costs[arr[i].split("@")[0]];
+//  var b = card_costs[arr[i+1].split("@")[0]];
+//   if ( isNumeric(b) ){
+//   sumArr.push(a+b);
+//   i++;
+//   }else{
+//   sumArr.push(a);
+//   }
+// }
+// return sumArr;
+//};
 
 function createCardDeck(card_numbers, card_types){ // Создание колоды, для взятия оттуда карт.
  var arr = [];
@@ -60,11 +60,21 @@ function createCardDeck(card_numbers, card_types){ // Создание коло�
   var a = card_types[i];
   for (var j = 0; j < card_numbers.length; j++){
    var b = card_numbers[j];
-   arr.push([b, a]);
+   arr.push([b, a]);          //пушим названия карт как [12, spades], что бы arr[0] стояло достоинство карты.
   }
  }
- arrShuffle(arr);
+ arrShuffle(arr); // перемещиваем колоду рандомно.
  return arr;
+};
+
+function arrShuffle(arr) {                  //перемешать все видные индексы массива.
+    for (var i = arr.length - 1; i > 0; i--) {
+        var num = Math.floor(Math.random() * (i + 1));
+        var d = arr[num];
+        arr[num] = arr[i];
+        arr[i] = d;
+    }
+    return arr;
 };
 
 function takeCardFromDeck(getRandomFromArr(playerCardDeck), playerHandDeck, playerCardDeck, cards){  
