@@ -17,10 +17,6 @@ var card_costs = {
   14: 11,
 }; // не уверен что это нужно, но спер у тебя. Посмотрим, может пристрою или видоизменю.
 
-
-var cardsDeck = 52; //количество кард в колоде
-var playerCardDeck = []; //Колода карт игрока, для взятие карт в руки
-var enemyCardDeck = []; //Колода карт противника, для взятия карт в руки
 var playerHandDeck = []; //Колода карт игрока в руках.
 var playerDeckHistory = []; //колода для истории( которая будет отображаться на "столе").
 var enemyHandDeck = []; //колода карт противника в руках.
@@ -38,19 +34,6 @@ function createCard(){ //Создаем карту из преддставлен
  return [randomCardNumber, randomCardType].join('@');
 };
 
-//..function fillNewDeck(cards){ //старая функция заполнения начальнйо колоды на руки игрока.
-// var deck = [];
-// for (var i = 0; i < cards; i++){
-//  var a = createCard();
-//  
-//  if (a == deck.indexOf(a)){
-//   i--;
-//   }
-//   deck.push(a);
-//    
-// }
-// return deck;
-//};
 
 function isNumeric(n) {    //Проверка на число.
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -71,23 +54,32 @@ function calculateDamage(arr){ //Парный подсчет очков от к�
  return sumArr;
 };
 
-function createCardDeck(func, arr, cardsDeck){ // Создание колоды карт, дял взятия оттуда карт.
- for (var i = 0; i < cardsDeck; i++){
-  var a = func;
-  if (arr.indexOf(a) < 0){
-   i--;
-  }else{
-   arr.push(a);
+function createCardDeck(card_numbers, card_types){ // Создание колоды, для взятия оттуда карт.
+ var arr = [];
+ for (var i = 0; i < card_types.length; i++){
+  var a = card_types[i];
+  for (var j = 0; j < card_numbers.length; j++){
+   var b = card_numbers[j];
+   arr.push([b, a]);
   }
  }
+ arrShuffle(arr);
  return arr;
 };
 
-function takeCardFromDeck(func, arr, arr2, cards){ //Так выглядит взятие карт(ы) в руки из ранее созданной колоды.
- for (var i = 0; i < cards; i++){
-  var a = func;
-  arr.push(arr[a]);
-  arr2.splice(1, a);
+function takeCardFromDeck(getRandomFromArr(playerCardDeck), playerHandDeck, playerCardDeck, cards){  
+ for (var i = 0; i < cards; i++){    // взятие карт(ы) в руки из ранее созданной колоды.
+  if (playerCardDeck.length == 0){  // проверка на пустую колоду в перед каждым взятием карты
+   playerCardDeck = createCardDeck(card_numbers, card_types); // попытка записать значение в глобальную переменную
+  }else{                                                      //заполнением картами колоды.
+   var a = getRandomFromArr(playerCardDeck);
+   if (playerHandDeck.indexOf(a) < 0){
+    playerHandDeck.push(playerCardDeck[a]);
+    playerCardDeck.splice(a, 1);          // обязательное удаление взятой карты из колоды. Во избежании повторных карт.
+   }else{                             
+    i--
+   }
+  }
  }
 };
 
