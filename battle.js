@@ -35,8 +35,9 @@ function isNumeric(n) { // проверка на число
 
 //---------------------------------------------
 
-var Inventory = $.trait({ // трейт инвентаря ( доделать )
-  inventory:{
+var Inventory = $.trait({ // трейт инвентаря , для заполенния нужно вызвать %name%.stats();
+ inventory: function() {
+  this.inventory = {
 		character : {},
 		firtsbag : {},
 		secondbag : {},
@@ -44,10 +45,11 @@ var Inventory = $.trait({ // трейт инвентаря ( доделать )
 		fourthbag : {},
 		fifthbag : {}
 		}
+	}
 });
 
-var Stats = $.trait({ // трейт стат ( доделать )
-  stats: function (){
+var Stats = $.trait({ // трейт стат, для заполнения нужно вызывать %name%.stats();
+  stats: function () {
   this.stats = {
 		STR : 1,
 		AGI : 1,
