@@ -1,0 +1,69 @@
+topplayer {
+	display:block;
+	float:top;
+	width:1000px;
+	height:200px;
+	background: #87CEFA;
+	margin-left:10px;
+	margin-right:10px;
+	resize:none;
+}
+.toptable {
+	border-left:4px solid black;
+	border-bottom:4px solid black;
+	border-top:4px solid black;
+	border-right:4px solid black;
+}
+topplayeravatar {
+	display:block;
+	width:140px;
+	height:180px;
+	background: #fff;
+	position:static;
+	border:4px solid black;
+ 
+}
+.playername {
+	background-color: #000;
+	color: #fff;
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: center;
+}
+.lvl {
+	background-color: #FF8C00;
+	color: #00008B;
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: left;
+}
+.matktext{
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: left;
+	color: #32CD32;
+}
+.fatktext{
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: left;
+	color: #FF0000;	
+}
+.mdeftetx{
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: left;
+	color: #C71585;	
+}
+.fdeftext{
+	font-family: Verdana;
+	font-size: 14px;
+	font-weight: bolder;
+	text-align: left;
+	color: #0000CD;
+}
