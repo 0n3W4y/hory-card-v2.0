@@ -11,22 +11,22 @@
  <script type="text/javascript" src="js/jquery.klass.private.js"></script>
  <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
  <!--<script type="text/javascript" src="battle.js" async></script>-->
- <link rel="stylesheet" href="if.css">
+ <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
- <battlescreen>
-  <table align="center" class="toptable" cellspacing="0" id="topplayer">
+ <battlescreen> <!--делаем 1 блок, в котором размещаем все относительного этого блока-->
+  <table align="center" class="toptable" cellspacing="0" id="topplayer"> //создаем таблицу для верха
    <tr>
     <td></td>
-	<td width="5%"></td>
+	<td width="5%"></td> <!--ячейка для стрелочки влево-->
 	<td width="15%">
 	 <div align="center">
-	  <playeravatar>
+	  <playeravatar>    <!--новый блок внутри таблицы для игрока\бота-->
 	   <table align="center" width="100%" height="100%">
 	    <tr height="10%">
 		 <td colspan="2"><div class="playername" id="top-playername"></div></td>
 		<tr>
-		 <td>
+		 <td> <!--статы по дефе, атаке мдеф и т.п.-->
 		  <div class="fatktext" id="top-fatk"></div><div class="matktext" id="top-matk"></div><div class="fdeftext" id="top-fdef"></div><div class="mdeftext" id="top-mdef"></div>
 		 </td>
 		 <td rowspan="2" width="100px">
@@ -40,7 +40,7 @@
 	  </playeravatar>
 	 </div>
 	</td>
-	<td width="5%"></td>
+	<td width="5%"></td> <!--ячейка для стрелочки право-->
 	<td></td>
   </table>
   
@@ -112,7 +112,7 @@
 	</td>
 	<td></td>
 	</table>
-	<table align="center" class="menutable" cellspacing="0" id="tablemenu">
+	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> <!-- менюшка внизу-->
 	 <tr>
 	  <td width="10%" align="center"><button align="center">menu</button></td>
 	  <td width="60%"></td>
