@@ -131,3 +131,25 @@ battledeck {
   -moz-box-shadow   : inset 0 -1px 1px rgba(255,255,255,0.3);
   box-shadow        : inset 0 -1px 1px rgba(255,255,255,0.3);
 }
+.avatar{
+	width:90px;
+	height:110px;
+}
+#full_deck {
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  height: 100px;
+  width: 60px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.card_suit {
+  background: url(img/suit.jpg);
+  top: 0;
+  left: 0;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
