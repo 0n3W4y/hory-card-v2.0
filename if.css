@@ -20,7 +20,7 @@ battlescreen {
 	height:200px;
 }
 .middletable {
-	background: #87CEFA;
+	background: #87CEFA url(img/battledeck-bg.jpg);
 	border-bottom:2px;
 	border-top:2px;
 	border-left:2px;
