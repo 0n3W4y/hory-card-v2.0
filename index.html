@@ -24,12 +24,16 @@
 	  <playeravatar>
 	   <table align="center" width="100%" height="100%">
 	    <tr height="10%">
-		 <td colspan="2"><div class="playername">!!LuCiFEr!!</div></td>
+		 <td colspan="2"><div class="playername" id="top-playername"></div></td>
 		<tr>
-		 <td><div class="fatktext">24</div><div class="matktext">12</div><div class="fdeftext">28</div><div class="mdeftext">14</div></td>
-		 <td rowspan="2" width="100px"><div align="center"><img src="img/b.jpg" width="90", height="110"></div></td>
+		 <td>
+		  <div class="fatktext" id="top-fatk"></div><div class="matktext" id="top-matk"></div><div class="fdeftext" id="top-fdef"></div><div class="mdeftext" id="top-mdef"></div>
+		 </td>
+		 <td rowspan="2" width="100px">
+		  <div id="topavatar" class="avatar"></div>
+		 </td>
 		<tr>
-		 <td><div class="lvl">15</div></td>
+		 <td><div class="lvl" id="top-lvl"></div></td>
 		<tr height="20%">
 		 <td colspan="2"><div class="bar"></div><div class="bar"></div></td>
 	   </table>
@@ -42,12 +46,18 @@
 <!-- middle --> 
   <table align="center" class="middletable" cellspacing="0" id="battleground">
 	<tr height="33%">
-	 <td colspan="2"></td>
+	 <td></td>
+	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
+	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
+	  <center><h5 id="time_left">&nbsp;</h5></center>
+      <center><input id="turn" type="button" value="End turn" style="width:80px" ></center>
+	 </td>
 	<tr>
 	 <td></td>
-	 <td width="10%"></td>
 	<tr height="33%">
-	 <td colspan="2"></td>
+	 <td></td>
+	<center><div id="enemy_turn" style="display:none;" >Ход противника</div></center>
+	<center><div id="player_turn" style="display:none;">Ваш ход</div></center>
   </table>
 <!-- bottom -->  
   <table align="center" class="bottomtable" cellspacing="0" border="1" id="bottomplayer">
@@ -57,12 +67,14 @@
 	  <playeravatar>
 	   <table align="center" width="100%" height="100%">
 	    <tr height="10%">
-		 <td colspan="2"><div class="playername">KillMeMaster</div></td>
+		 <td colspan="2"><div class="playername" id="bottom-playername"></div></td>
 		<tr>
-		 <td><div class="fatktext">24</div><div class="matktext">12</div><div class="fdeftext">28</div><div class="mdeftext">14</div></td>
-		 <td rowspan="2" width="100px"><div align="center"><img src="img/a.jpg" width="90", height="110"></div></td>
+		 <td>
+		  <div class="fatktext" id="bottom-fatk"></div><div class="matktext" id="bottom-matk"></div><div class="fdeftext" id="bottom-fdef"></div><div class="mdeftext" id="bottom-mdef"></div>
+		 </td>
+		 <td rowspan="2" width="100px"><div id="bottomavatar" class="avatar"></div></td>
 		<tr>
-		 <td><div class="lvl">15</div></td>
+		 <td><div class="lvl" id="bottom-lvl"></div></td>
 		<tr height="20%">
 		 <td colspan="2"><div class="bar"></div><div class="bar"></div></td>
 	   </table>
