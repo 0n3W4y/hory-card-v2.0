@@ -141,3 +141,25 @@ var Player = $.klass({
  _traits: [Inventory, Stats],
  
 });
+/*
+$(document).ready(fucntion (){
+	
+ $player1 = $("#botplayer .player_deck ul");
+ $desk = $("#play_desk .player_deck ul");
+ $full_deck = $("#full_deck");
+ 
+ $("#player1 div.bar span.red").width(player1.stats.HP/10+"%");
+ $("#player1 div.bar span.green").width(player1.stats.SP+"%");
+ $("#player2 div.bar span.red").width(player2.stats.HP/10+"%");
+ $("#palyer2 div.bar span.green").width(player2.stats.SP+"%");
+ 
+  var info1 = $("<div></br>Уровень 1</br>Воин</br>Жизнь 5</br>Cила 3</br>Броня 2</br></div>");
+  var pinfo1 = $("#player_1 .avatar");
+  appendTooltip(pinfo1, info1);
+
+  var info2 = $("<div>Horaghorn</br>Уровень 3</br>Воин</br>Жизнь 8</br>Cила 9</br>Броня 3</br></div>");
+  var pinfo2 = $("#player_2 .avatar");
+  appendTooltip(pinfo2, info2);
+})
+
+*/
