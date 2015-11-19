@@ -174,7 +174,7 @@ function startBattle(){
 			var race = document.forms.preStart.elements.race[i].value;
 		}
 	}
-	$("div#bottom-playername").html('${name}');
+	$("div#bottom-playername").html(name);
 /*	var botEnable = document.forms.preStart.elements.botEnable;
 		if( botEnable == ){
 			var botplayer = new Player(generateName(), renerateRace())
@@ -189,6 +189,8 @@ function startBattle(){
 	player1.stats.HP = 100;
 	
 	var cards = +document.forms.preStart.elements.cards.value;
+	
+	$('#overlay').css('display', 'none')
 	
 	return alert(player1.stats.HP + "; " + player1.name + "; " + player1.race);
 }
