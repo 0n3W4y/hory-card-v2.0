@@ -7,15 +7,15 @@
  <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
  <script type="text/javascript" src="js/jquery.klass.js"></script>
  <script type="text/javascript" src="js/jquery.klass.traits.js"></script>
- <script type="text/javascript" src="js/jquery.klass.namespace.js"></script>
+ <script type="text/javascript" src="js/jquery.klass.namespaces.js"></script>
  <script type="text/javascript" src="js/jquery.klass.private.js"></script>
  <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
- <!--<script type="text/javascript" src="battle.js" async></script>-->
+ <script type="text/javascript" src="battle.js" async></script>
  <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
  <battlescreen> <!--делаем 1 блок, в котором размещаем все относительного этого блока-->
-  <table align="center" class="toptable" cellspacing="0" id="topplayer"> //создаем таблицу для верха
+  <table align="center" class="toptable" cellspacing="0" id="topplayer"> <!--создаем таблицу для верха-->
    <tr>
     <td></td>
 	<td width="5%"></td> <!--ячейка для стрелочки влево-->
@@ -52,7 +52,7 @@
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
 	  <center><h5 id="time_left">&nbsp;</h5></center>
-      <center><input id="turn" type="button" value="End turn" style="width:80px" ></center>
+      <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endturn()"></center>
 	 </td>
 	<tr>
 	 <td></td>
@@ -122,6 +122,41 @@
 
 </battlescreen>
 
+<!-- Модальное Окно  -->
+<div id="overlay">
+ <div class="popup">
+  <h2><center>Опции игры</center></h2>
+   <div id="#StartForm">
+    <form name="preStart">
+	  <center>Ваше никнэйм<input name="nickname" type="text" onfocus="title='Введите ваш никнэйм'" value="NAGIBATOR777"></input></center><br>
+	  <center>Выберите расу
+	   <select name="race">
+        <option>Человек</option>
+        <option>Гоблин</option>
+        <option>Орк</option>
+       </select>
+	  </center><br>
+      <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
+	  <center>Время на ход<input name="turntime" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
+ 	</form>
+   </div align="center">
+    <input type="button" class="close" title="Закрыть" value="Закрыть" onclick="closeModalWindow()"></input>
+    <input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="startsbattle()"></input>
+ </div>
+</div>
+
+<script>
+	function closeModalWindow(){
+	 $('#overlay').css('display', 'none')
+	 if (confirm( "Что бы запустить игру, выберите все пункты меню, и нажмите начать игру. \n Обновите окно" )){
+	  location.reload();
+	 }
+	};
+
+	setTimeout(function(){
+	 $('#overlay').css('display', 'block')
+	}, 1000);
+</script>
 
 
 </body>
