@@ -10,7 +10,7 @@
  <script type="text/javascript" src="js/jquery.klass.namespaces.js"></script>
  <script type="text/javascript" src="js/jquery.klass.private.js"></script>
  <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
- <script type="text/javascript" src="battle.js" async></script>
+ <script type="text/javascript" src="battle.js"></script>
  <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
@@ -128,20 +128,22 @@
   <h2><center>Опции игры</center></h2>
    <div id="#StartForm">
     <form name="preStart">
-	  <center>Ваше никнэйм<input name="nickname" type="text" onfocus="title='Введите ваш никнэйм'" value="NAGIBATOR777"></input></center><br>
+	  <center>Ваше никнэйм<input name="nickname" type="text" onfocus="title='Введите ваш никнэйм'" value="NickName"></input></center><br>
 	  <center>Выберите расу
 	   <select name="race">
-        <option>Человек</option>
-        <option>Гоблин</option>
-        <option>Орк</option>
+        <option value="human">Человек</option>
+        <option value="goblin">Гоблин</option>
+        <option value="orc">Орк</option>
        </select>
 	  </center><br>
       <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
 	  <center>Время на ход<input name="turntime" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
- 	</form>
-   </div align="center">
+   </div>
+   <div align="center" id="#buttonsifstartform">
     <input type="button" class="close" title="Закрыть" value="Закрыть" onclick="closeModalWindow()"></input>
-    <input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="startsbattle()"></input>
+	<input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="checkStartForm()"></input>
+	</div>
+	</form>
  </div>
 </div>
 

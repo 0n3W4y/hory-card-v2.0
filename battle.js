@@ -142,16 +142,55 @@ var Player = $.klass({
  
 });
 
-function startBattle(){
-	var name = document.form.preStart.elements.nickname;
-	var race = document.form.preStart.elements.race;
-	var botEnable = document.form.preStart.elements.botEnable;
+function checkStartForm(){
+	var name = document.forms.preStart.elements.nickname.value;
+	var cards = Math.round(+document.forms.preStart.elements.cards.value);
+	var timer = Math.round(+document.forms.preStart.elements.turntime.value);
+	if (name.length > 15){
+		alert( '${name} +  слишком длинное имя, сделайте его короче!' );
+		return false;
+	}else if(name.length < 1){
+		alert( 'Слишком короткое имя ');
+		return false;
+	}
 	
+	if ( !isNumeric(cards) || cards <= 3 || cards >= 52){
+		alert( cards + '- не верно, 3< число карт < 52 ');
+		return false;
+	}
+	
+	if ( (!isNumeric(timer)) || timer <= 15 || timer >= 60){
+		alert( timer + '- не верно, 15< вермя на ход <= 60');
+		return false;
+	}
+	
+	return startBattle();
+};
+
+function startBattle(){
+	var name = document.forms.preStart.elements.nickname.value;
+	for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
+		if (document.forms.preStart.elements.race[i].selected == true){
+			var race = document.forms.preStart.elements.race[i].value;
+		}
+	}
+	$("div#bottom-playername").html('${name}');
+/*	var botEnable = document.forms.preStart.elements.botEnable;
+		if( botEnable == ){
+			var botplayer = new Player(generateName(), renerateRace())
+			botplayer.stats();
+			botplayer.stats.HP = generateHP();
+			botplayer.stats.SP = generateSP();
+			...
+		}
+*/	
 	var player1 = new Player(name, race);
 	player1.stats();
 	player1.stats.HP = 100;
 	
-	var cards = +document.form.preStart.elements.cards;
+	var cards = +document.forms.preStart.elements.cards.value;
+	
+	return alert(player1.stats.HP + "; " + player1.name + "; " + player1.race);
 }
 /*
 $(document).ready(fucntion (){
