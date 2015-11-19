@@ -105,20 +105,35 @@ var Inventory = $.trait({ // трейт инвентаря , для заполе
 
 var Stats = $.trait({ // трейт стат, для заполнения нужно вызывать %name%.stats();
   stats: function () {
-  this.stats = {
+    this.stats = {
 		STR : 1,
 		AGI : 1,
 		END : 1,
 		INT : 1,
 		ATK : 1,
+		MATK : 1,
 		DEF : 1,
 		MDF : 1,
 		BR : 1,
 		DDG : 1,
 		HP : 1,
 		SP : 1
-		}
+	},
+	this.currentStats = {
+		STR : 1,
+		AGI : 1,
+		END : 1,
+		INT : 1,
+		ATK : 1,
+		MATK : 1,
+		DEF : 1,
+		MDF : 1,
+		BR : 1,
+		DDG : 1,
+		HP : 1,
+		SP : 1
 	}
+  }
 });
 
 var Player = $.klass({
@@ -167,6 +182,18 @@ function checkStartForm(){
 	return startBattle();
 };
 
+var timerId = setInterval(pasteTimeInTimer(), 1000);
+
+function turnTimer(){
+	clearInterval(timerId);
+}
+function pasteTimeInTimer(time){
+	var j = 1;
+	var i = time - j;
+	$("#time-left").html(i);
+	j--;
+}
+
 function startBattle(){
 	var name = document.forms.preStart.elements.nickname.value;
 	for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
@@ -174,6 +201,16 @@ function startBattle(){
 			var race = document.forms.preStart.elements.race[i].value;
 		}
 	}
+	
+	var avatar1 = null;
+	if (race == "human"){
+		avatar1 = "img/c.jpg";
+	}else if (race == "orc"){
+		avatar1 = "img/a.jpg";
+	}else{
+		avatar1 = "img/b.jpg";
+	}
+	
 	$("div#bottom-playername").html(name);
 /*	var botEnable = document.forms.preStart.elements.botEnable;
 		if( botEnable == ){
@@ -187,26 +224,44 @@ function startBattle(){
 	var player1 = new Player(name, race);
 	player1.stats();
 	player1.stats.HP = 100;
+	player1.currentStats.HP = 100;
 	
 	var cards = +document.forms.preStart.elements.cards.value;
+		
+	// сгенерирую постоянного бота
 	
-	$('#overlay').css('display', 'none')
+	var player2 = new Player("Robot", "human");
+	player2.stats();
+	player2.stats.HP = 150;
+	player2.stats.SP = 50;
+	player2.currentStats.HP = 150;
+	player2.currentStats.SP = 50;
+	$("div#top-playername").html(player2.name);
 	
-	return alert(player1.stats.HP + "; " + player1.name + "; " + player1.race);
+	//добавлю красные и зеленые бары
+	
+	$("#bpb-hp span").css("width", "100%");
+	$("#tpb-hp span").css("width", "100%");
+	$("#bpb-sp span").css("width", "100%");
+	$("#tpb-sp span").css("width", "100%");
+	
+	//добавлю аватарку
+	
+	$("#bottomavatar img").attr("src", avatar1);
+	$("#topavatar img").attr("src", "img/c.jpg");
+	
+	//закрою окно, выведу что все готово.
+	$('#overlay').css('display', 'none');
+	return alert("vipolneno");
 }
 /*
 $(document).ready(fucntion (){
 	
-	<input id="startbattle" type="button" value="Нажми меня" onclick="chekAllFields()"/>
 	
 	$player1 = $("#botplayer .player_deck ul");
 	$desk = $("#play_desk .player_deck ul");
 	$full_deck = $("#full_deck");
  
-	$("#player1 div.bar span.red").width(player1.stats.HP/10 + "%");
-	$("#player1 div.bar span.green").width(player1.stats.SP + "%");
-	$("#player2 div.bar span.red").width(player2.stats.HP/10 + "%");
-	$("#palyer2 div.bar span.green").width(player2.stats.SP + "%");
  
 	var info1 = $("<div></br>Уровень 1</br>Воин</br>Жизнь 5</br>Cила 3</br>Броня 2</br></div>");
 	var pinfo1 = $("#player_1 .avatar");
@@ -218,8 +273,6 @@ $(document).ready(fucntion (){
 })
 
 */
-
-
 
 
 
