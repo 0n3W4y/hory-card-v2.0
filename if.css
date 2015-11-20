@@ -139,7 +139,6 @@ battledeck {
 	width:90px;
 	height:100px;
 	position:relative;
-
 }
 .avatar{
 	width:40px;
@@ -153,6 +152,19 @@ battledeck {
   height: 100px;
   width: 60px;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.card {
+  width: 60px;
+  height: 90px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px solid #AAA;
+  padding: 1px;
+  cursor: move;
+  margin: 5px;
+  padding: 5px;
+  list-style-type: none;
 }
 .card_suit {
   background: url(img/suit.jpg);

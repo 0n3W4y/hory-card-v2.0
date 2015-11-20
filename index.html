@@ -54,11 +54,14 @@
 	 <td></td>
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
-	  <center><h5 id="time_left" value="10">&nbsp;</h5></center>
+	  <center><h5 id="time-left">&nbsp;</h5></center>
       <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endturn()"></center>
 	 </td>
 	<tr>
-	 <td></td>
+	 <td class="battle_deck"> <!-- центральная дека, выкладка карт -->
+	  <ul class="bd-connected">
+	  </ul>
+	 </td>
 	<tr height="33%">
 	 <td></td>
 	<center><div id="enemy_turn" style="display:none;" >Ход противника</div></center>
@@ -146,7 +149,8 @@
        </select>
 	  </center><br>
       <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
-	  <center>Время на ход<input name="turntime" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
+	  <center>Время на ход<input name="timeturn" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
+	  <center>Количество карт за ход<input name="cardeveryturn" type="text" onfocus="title='от 0 до 6'" value="1"></input></center><br>
    </div>
    <div align="center" id="#buttonsifstartform">
     <input type="button" class="close" title="Закрыть" value="Закрыть" onclick="closeModalWindow()"></input>

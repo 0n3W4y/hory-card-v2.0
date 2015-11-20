@@ -6,11 +6,15 @@ var cardsDeck ={
 };
 
 var Battleground = $.klass({ // класс для полебоя
- init: function (name){
+ init: function (name, timer, cards, cardsEveryTurn){
   this.name = name;
   this.deck = null;
   this.historyDeck = null;
-  
+  this.timer = timer;
+  this.cards = cards;
+  this.player = null;
+  this.enemy = null;
+  this.cardsEveryTurn = cardsEveryTurn;
  },
  
  calculateDamage: function (player){ // функция подсчета дамага, пока без мастей и комбо
@@ -34,43 +38,85 @@ var Battleground = $.klass({ // класс для полебоя
   player.stats.HP = player.stats.HP - sum; // сразу же наносим урон игроку.
  },
  
- battleStart: function (player1, player2){ // начало Игры.
-  player1.battleDeck = [];
-  player1.deck = [];
-  player2.battleDeck = [];
-  player2.deck = [];
+ battleStart: function (firstPlayer){	 // начало Игры.
+  this.player.battleDeck = [];
+  this.player.deck = [];
+  this.enemy.battleDeck = [];
+  this.enemy.deck = [];
   this.deck = [];
   this.historyDeck = [];
+  if (Math.round(Math.random)){
+	var firstPlayer = this.player;
+  }else{
+	var firstPlayer = this.enemy;
+  };
+  this.turnStart(firstPlayer);
  },
  
- battleEnd: function(){ // конец игры ( вывод сообщений подсчет очков, статистика )
- 
+ battleEnd: function(player){ // конец игры ( вывод сообщений подсчет очков, статистика )
+	if (this.player == player){
+		alert ( " ВЫ проиграли сражение " );
+	}else{
+		alert ( " ВЫ выйграли сражение " );
+	}
   },
  
- turnStart: function (player, cards){ //начало хода для игрока
+ turnStart: function (player){ //начало хода для игрока
   player.battleDeck.length = 0; // обнуляем боевую деку игрока, от предыдущих значений.
   this.calculateDamage(player); // собираем урон, оставленный предыдущим хода другого игрока.
   this.deck.length = 0; // после сбора урона обнуляем деку полебоя куда копируются карты из баттлдеки игрока.
-  // тут должно быть условие на предмет - умер ли персонаж после дамага или нет. 
-  this.giveCard(player, cards); // раздаем карты игроку.
+  if (player.currentStats.HP <= 0){
+	  this.battleEnd(player);
+  }else{
+	this.giveCard(player);
+	var timer = this.timer;
+	this.runTimer(timer ,player);
+  }
  },
  
  turnEnd: function (player){ // заканчиваем ходигрока
   this.deck = player.battleDeck; // коопируем набросанные карты из его деки в деку полебоя
   var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
   this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя
-  
-  },
+  if (this.player.player == player){
+	  var nextPlayer = this.enemy;
+  }else{
+	  var nextPlayer = this.player;
+  }
+  alert( " doshlo do turnEnd(); " + nextPlayer.name );
+  //this.turnStart(nextPlayer);
+ },
  
- giveCard: function (player, cards){ //оаздача карт игроку.
+ giveCard: function (player){ //раздача карт игроку.
+  if (player.deck.length == 0){
+	  var cards = this.cards;
+  }else{
+	  var cards = this.cardEveryTurn;
+  }
   for (var i = 0; i < cards; i++){
    var a = Math.floor(Math.random() * cardsDeck.numbers.length);
    var b = Math.floor(Math.random() * cardsDeck.types.length);
    var num = [cardsDeck.numbers[a], cardsDeck.types[b]];
+   if (player.playerType == "player"){
+	   var a = "<li class='card'>" + num + "</li>";
+	   $( a ).appendTo("#connectedSortable");
+   }else{
    player.deck.push(num);
    }
-  },
-  
+  }
+ },
+ runTimer: function(timer, player){
+	var i = timer;
+	var timerId = setInterval(function(){
+		if (i >= 0){
+		$("#time-left").text(i--);
+		}else{
+		clearInterval(timerId);
+		this.turnEnd(player)
+		}
+	}, 1000);
+ }
+
   
 });
 
@@ -145,6 +191,7 @@ var Player = $.klass({
   this.deck = null;
   this.deckHistory = null; // пока не задействована.( возможно не нужна будет )
   this.battleDeck = null;
+  this.playerType = null;
   },
   
   givecardtobattle: function(selectedCard){ // передача выбранной карты в бой
@@ -160,7 +207,7 @@ var Player = $.klass({
 function checkStartForm(){
 	var name = document.forms.preStart.elements.nickname.value;
 	var cards = Math.round(+document.forms.preStart.elements.cards.value);
-	var timer = Math.round(+document.forms.preStart.elements.turntime.value);
+	var timer = Math.round(+document.forms.preStart.elements.timeturn.value);
 	if (name.length > 15){
 		alert( '${name} +  слишком длинное имя, сделайте его короче!' );
 		return false;
@@ -182,25 +229,20 @@ function checkStartForm(){
 	return startBattle();
 };
 
-var timerId = setInterval(pasteTimeInTimer(), 1000);
 
-function turnTimer(){
-	clearInterval(timerId);
-}
-function pasteTimeInTimer(time){
-	var j = 1;
-	var i = time - j;
-	$("#time-left").html(i);
-	j--;
-}
+
 
 function startBattle(){
+	
 	var name = document.forms.preStart.elements.nickname.value;
 	for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
 		if (document.forms.preStart.elements.race[i].selected == true){
 			var race = document.forms.preStart.elements.race[i].value;
 		}
 	}
+	var cards = +document.forms.preStart.elements.cards.value;
+	var timer = +document.forms.preStart.elements.timeturn.value;
+	var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
 	
 	var avatar1 = null;
 	if (race == "human"){
@@ -211,7 +253,7 @@ function startBattle(){
 		avatar1 = "img/b.jpg";
 	}
 	
-	$("div#bottom-playername").html(name);
+
 /*	var botEnable = document.forms.preStart.elements.botEnable;
 		if( botEnable == ){
 			var botplayer = new Player(generateName(), renerateRace())
@@ -221,22 +263,24 @@ function startBattle(){
 			...
 		}
 */	
-	var player1 = new Player(name, race);
-	player1.stats();
-	player1.stats.HP = 100;
-	player1.currentStats.HP = 100;
+	var p1 = new Player(name, race);
+	p1.stats();
+	p1.playerType = "player"
+	p1.stats.HP = 100;
+	p1.currentStats.HP = 100;
+	$("div#bottom-playername").html(name);
 	
-	var cards = +document.forms.preStart.elements.cards.value;
 		
 	// сгенерирую постоянного бота
 	
-	var player2 = new Player("Robot", "human");
-	player2.stats();
-	player2.stats.HP = 150;
-	player2.stats.SP = 50;
-	player2.currentStats.HP = 150;
-	player2.currentStats.SP = 50;
-	$("div#top-playername").html(player2.name);
+	var p2 = new Player("Robot", "human");
+	p2.stats();
+	p2.playerType = "enemy"
+	p2.stats.HP = 150;
+	p2.stats.SP = 50;
+	p2.currentStats.HP = 150;
+	p2.currentStats.SP = 50;
+	$("div#top-playername").html(p2.name);
 	
 	//добавлю красные и зеленые бары
 	
@@ -252,7 +296,14 @@ function startBattle(){
 	
 	//закрою окно, выведу что все готово.
 	$('#overlay').css('display', 'none');
-	return alert("vipolneno");
+	
+	var battleground = new Battleground("abyssal crypt", timer, cards, cardsEveryTurn);
+	battleground.player = p1;
+	battleground.enemy = p2;
+	
+
+	
+	battleground.battleStart();
 }
 /*
 $(document).ready(fucntion (){
@@ -266,13 +317,8 @@ $(document).ready(fucntion (){
 	var info1 = $("<div></br>Уровень 1</br>Воин</br>Жизнь 5</br>Cила 3</br>Броня 2</br></div>");
 	var pinfo1 = $("#player_1 .avatar");
 	appendTooltip(pinfo1, info1);
-
 	var info2 = $("<div>Horaghorn</br>Уровень 3</br>Воин</br>Жизнь 8</br>Cила 9</br>Броня 3</br></div>");
 	var pinfo2 = $("#player_2 .avatar");
 	appendTooltip(pinfo2, info2);
 })
-
 */
-
-
-
