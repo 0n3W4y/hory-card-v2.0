@@ -36,8 +36,8 @@
 		 <td><div class="lvl" id="top-lvl"></div></td>
 		<tr height="20%">
 		 <td colspan="2">
-		  <div id="bpb-hp" class="bar"><span style="width: 25%" class="red"></span></div>
-		  <div id="bpb-sp" class="bar"><span style="width: 25%" class="green"></span></div>
+		  <div id="bpb-hp" class="bar"><span class="red"></span></div>
+		  <div id="bpb-sp" class="bar"><span class="green"></span></div>
 		 </td>
 	   </table>
 	  </playeravatar>
@@ -54,7 +54,7 @@
 	 <td></td>
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
-	  <center><h5 id="time-left">&nbsp;</h5></center>
+	  <center><h1 id="time-left">&nbsp;</h1></center>
       <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endturn()"></center>
 	 </td>
 	<tr>
@@ -109,21 +109,41 @@
 	  <tr>
 	   <td></td>
 	   </table>
-	 </td>
-	<td width="50%">
-	 <table align="center" width="100%" height="100%" cellspacing="0" border="1" id="bottomdeck">
+	</td>
+	<td width="50%" bgcolor="black">
+	 <table align="center" cellspacing="0" id="bottomdeck">
 	  <tr>
-	   <td height="35%"></td>
-	  <tr>
-	   <td class="player_deck">
-	    <ul class="connectedSortable">
-        </ul>
+	   <td height="20%" bgcolor="#000">
+	    <table align="center" id="belt" cellspacing="0">
+		 <tr>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		 </tr>
+		</table>
 	   </td>
+	  </tr>
+	  <tr>
+		<td class="player_deck">
+	     <ul class="connectedSortable">
+         </ul>
+	   </td>
+	  </tr>
 	 </table>
 	</td>
 	<td></td>
+	</tr>
 	</table>
-	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> <!-- менюшка внизу-->
+	
+	<!-- менюшка внизу-->
+	
+	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> 
 	 <tr>
 	  <td width="10%" align="center"><button align="center">menu</button></td>
 	  <td width="10%" align="center"><input type="button" class="startBattle" title="Начать игру заново" value="Play again" onclick="location.reload()"></td>

@@ -53,7 +53,23 @@ battlescreen {
 	height:20px;
 	color:#fff;
 }
-
+#bottomdeck{
+	width:100%;
+	height:100%;
+	border:2px solid black;
+	padding:0px;
+	margin:0px;
+}
+#belt{
+	background: #1E90FF;
+	width:70%;
+	height:100%;
+	border:1px solid black;
+	margin-bottom: 8px;
+}
+#belt td{
+	border:1px solid black;
+}
 playeravatar {
 	display:block;
 	width:140px;
@@ -154,17 +170,20 @@ battledeck {
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 .card {
-  width: 60px;
-  height: 90px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  border: 1px solid #AAA;
-  padding: 1px;
-  cursor: move;
-  margin: 5px;
-  padding: 5px;
-  list-style-type: none;
+	width: 60px;
+	height: 100px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #AAA;
+	padding: 1px;
+	cursor: move;
+	margin: 5px;
+	padding: 5px;
+	list-style-type: none;
+	font-size:16px;
+	background: #fff;
+	overflow:hidden;
 }
 .card_suit {
   background: url(img/suit.jpg);
@@ -175,17 +194,22 @@ battledeck {
   width: 100%;
   height: 100%;
 }
+.player_deck{
+	width:100%;
+	background: #DAA520;
+
+}
 .player_deck li {
   float: left;
 }
 .player_deck ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 10px;
-  display:block;
-  overflow:auto;
-  height:200px;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	margin-bottom: 10px;
+	display:block;
+	overflow:auto;
+	height:100%;
 }
 .bar > span.green {
   display: block;

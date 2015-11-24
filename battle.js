@@ -38,17 +38,18 @@ var Battleground = $.klass({ // класс для полебоя
   player.stats.HP = player.stats.HP - sum; // сразу же наносим урон игроку.
  },
  
- battleStart: function (firstPlayer){	 // начало Игры.
+ battleStart: function (){	 // начало Игры.
   this.player.battleDeck = [];
   this.player.deck = [];
   this.enemy.battleDeck = [];
   this.enemy.deck = [];
   this.deck = [];
   this.historyDeck = [];
-  if (Math.round(Math.random)){
-	var firstPlayer = this.player;
+  var firstPlayer;
+  if (Math.round(Math.random()*10)){
+	firstPlayer = this.player;
   }else{
-	var firstPlayer = this.enemy;
+	firstPlayer = this.enemy;
   };
   this.turnStart(firstPlayer);
  },
@@ -70,7 +71,7 @@ var Battleground = $.klass({ // класс для полебоя
   }else{
 	this.giveCard(player);
 	var timer = this.timer;
-	this.runTimer(timer ,player);
+	this.runTimer(timer , player);
   }
  },
  
@@ -78,7 +79,7 @@ var Battleground = $.klass({ // класс для полебоя
   this.deck = player.battleDeck; // коопируем набросанные карты из его деки в деку полебоя
   var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
   this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя
-  if (this.player.player == player){
+  if (this.player.playerType == "player"){
 	  var nextPlayer = this.enemy;
   }else{
 	  var nextPlayer = this.player;
@@ -98,21 +99,25 @@ var Battleground = $.klass({ // класс для полебоя
    var b = Math.floor(Math.random() * cardsDeck.types.length);
    var num = [cardsDeck.numbers[a], cardsDeck.types[b]];
    if (player.playerType == "player"){
-	   var a = "<li class='card'>" + num + "</li>";
-	   $( a ).appendTo("#connectedSortable");
+		var a = "<li class='card'>" + num + "</li>";
+		$( '.connectedSortable' ).append( a );
+		//добавить анимацию.
    }else{
-   player.deck.push(num);
+		//анимация перемещения карты ко врагу
+		
    }
+   player.deck.push(num);
   }
  },
  runTimer: function(timer, player){
+	var x = this;
 	var i = timer;
 	var timerId = setInterval(function(){
 		if (i >= 0){
 		$("#time-left").text(i--);
 		}else{
 		clearInterval(timerId);
-		this.turnEnd(player)
+		x.turnEnd(player);
 		}
 	}, 1000);
  }
@@ -301,10 +306,14 @@ function startBattle(){
 	battleground.player = p1;
 	battleground.enemy = p2;
 	
-
 	
 	battleground.battleStart();
-}
+};
+
+function endturn(){
+	
+	return battleground.turnEnd(battleground.player);
+};
 /*
 $(document).ready(fucntion (){
 	
