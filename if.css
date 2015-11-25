@@ -92,6 +92,19 @@ battledeck {
 	margin-right:10px;
 	resize:none;
 }
+.invisible ul {
+	display:block;
+	position:absolute;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	margin-bottom: 10px;
+	display:block;
+	overflow:hide;
+	width: 0px;
+	height: 0px;
+}
+
 .playername {
 	background-color: #000;
 	color: #fff;

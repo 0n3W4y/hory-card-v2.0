@@ -31,6 +31,10 @@
 		 </td>
 		 <td rowspan="2" width="100px">
 		  <div id="topavatar"><img class="playerpic" src=""></div>
+		  <!-- пробую добавить невидимый ul объект -->
+		   <ul class="invisible">
+		   
+		   </ul>
 		 </td>
 		<tr>
 		 <td><div class="lvl" id="top-lvl"></div></td>
@@ -55,11 +59,11 @@
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
 	  <center><h1 id="time-left">&nbsp;</h1></center>
-      <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endturn()"></center>
+      <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endTurn()"></center>
 	 </td>
 	<tr>
 	 <td class="battle_deck"> <!-- центральная дека, выкладка карт -->
-	  <ul class="bd-connected">
+	  <ul class="bd_connected">
 	  </ul>
 	 </td>
 	<tr height="33%">
