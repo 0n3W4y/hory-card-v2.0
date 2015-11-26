@@ -5,18 +5,6 @@ var cardsDeck ={
  costs : {2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 2, 12: 20, 13: 4, 14: 11}
 };
 
-function moveCardToBattle(thisCard, player, card, bd) {
-		if (bd.checkCard(card)){
-			thisCard.appendTo( $("ul.bd_connected")).unbind("click");
-			bd.deck.push(card);
-			var cardToDelete = player.deck.indexOf(card);
-			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока.
-			
-		}else{
-			thisCard.effect( 'highlight', { color:'red' }, 800); // подсветить, если карта не подходит.
-		}
-	};
-
 function getRandomCard(){ // генератор карт
  var a = getRandomFromArr(cardsDeck.numbers);
  var b = getRandomFromArr(cardsDeck.types);
@@ -29,7 +17,7 @@ function getRandomFromArr(arr) { //генератор индексов масс�
 
 function isNumeric(n) { // проверка на число
   return !isNaN(parseFloat(n)) && isFinite(n);
-}
+};
 
 function checkStartForm(){
 	var name = document.forms.preStart.elements.nickname.value;
@@ -55,9 +43,6 @@ function checkStartForm(){
 	
 	return startBattle();
 };
-
-
-
 
 //---------------------------------------------
 
@@ -153,6 +138,7 @@ var Battleground = $.klass({ // класс для полебоя
 	this.player = null;
 	this.enemy = null;
 	this.cardsEveryTurn = cardsEveryTurn;
+	this.timerId = null;
 	},
  
 	calculateDamage: function (){ // функция подсчета дамага, пока без мастей и комбо
@@ -204,6 +190,7 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	turnStart: function (player, damage){ //начало хода для игрока
+		$("#end_turn").click(function (){ var bgSelf = this; return bgSelf.turnEnd(player)} ); // ---------------------------------------------------------------------
 		player.current.HP = player.current.HP - damage;
 		if (player.current.HP <= 0){
 			this.battleEnd(player);
@@ -217,6 +204,7 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	turnEnd: function (player){ // заканчиваем ходигрока
+		clearInterval(this.timerId);
 		if (this.historyDeck.length == 0){ // проверка на 1 ход после начала игры.
 			var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
 			this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя.
@@ -259,7 +247,6 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	giveCard: function (player) { //раздача карт игроку.
-		var bd = this;
 		if (player.deck.length == 0){
 			var cards = this.cards;
 		
@@ -273,9 +260,9 @@ var Battleground = $.klass({ // класс для полебоя
 			
 			if (player.playerType == "player"){
 				var uiCard = "<li class='card' id='" + card.join("_") + "'>" + card + "</li>"; 
-				$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(bd){
+				$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(){
 					var thisCard = $(this);
-					bd.moveCardToBattle(thisCard, player, card);
+					this.moveCardToBattle(thisCard, player, card);
 				});
 				
 			}else{
@@ -312,15 +299,15 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	runTimer: function(timer, player){
-		var x = this;
+		var bgSelf = this;
 		var i = timer;
-		var timerId = setInterval(function(){
+		this.timerId = setInterval(function(){
 			if (i >= 0){
 			$("#time-left").text(i--);
 			
 			}else{
-			clearInterval(timerId);
-			x.turnEnd(player);
+			clearInterval(bgSelf.timerId);
+			bgSelf.turnEnd(player);
 			}
 		}, 1000);
 	}
@@ -397,6 +384,8 @@ function startBattle(){
 	var battleground = new Battleground("abyssal crypt", timer, cards, cardsEveryTurn);
 	battleground.player = p1;
 	battleground.enemy = p2;
+	
+	
 	
 	var endTurn = function() { // не работает!!! :(
 		return battleground.turnEnd(battleground.player);

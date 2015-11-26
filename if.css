@@ -103,6 +103,7 @@ battledeck {
 	overflow:hide;
 	width: 0px;
 	height: 0px;
+	visibility: hidden;
 }
 
 .playername {
