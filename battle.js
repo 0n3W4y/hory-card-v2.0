@@ -19,30 +19,6 @@ function isNumeric(n) { // проверка на число
   return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-function checkStartForm(){
-	var name = document.forms.preStart.elements.nickname.value;
-	var cards = Math.round(+document.forms.preStart.elements.cards.value);
-	var timer = Math.round(+document.forms.preStart.elements.timeturn.value);
-	if (name.length > 15){
-		alert( '${name} +  слишком длинное имя, сделайте его короче!' );
-		return false;
-	}else if(name.length < 1){
-		alert( 'Слишком короткое имя ');
-		return false;
-	}
-	
-	if ( !isNumeric(cards) || cards <= 3 || cards >= 52){
-		alert( cards + '- не верно, 3< число карт < 52 ');
-		return false;
-	}
-	
-	if ( (!isNumeric(timer)) || timer <= 15 || timer >= 60){
-		alert( timer + '- не верно, 15< вермя на ход <= 60');
-		return false;
-	}
-	
-	return startBattle();
-};
 
 //---------------------------------------------
 
@@ -129,14 +105,14 @@ var Player = $.klass({
 });
 
 var Battleground = $.klass({ // класс для полебоя
-	init: function (name, timer, cards, cardsEveryTurn){
+	init: function (name, timer, cards, cardsEveryTurn, enemy, player){
 	this.name = name;
 	this.deck = null;
 	this.historyDeck = null;
 	this.timer = timer;
 	this.cards = cards;
-	this.player = null;
-	this.enemy = null;
+	this.player = player;
+	this.enemy = enemy;
 	this.cardsEveryTurn = cardsEveryTurn;
 	this.timerId = null;
 	},
@@ -190,7 +166,6 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	turnStart: function (player, damage){ //начало хода для игрока
-		$("#end_turn").click(function (){ var bgSelf = this; return bgSelf.turnEnd(player)} ); // ---------------------------------------------------------------------
 		player.current.HP = player.current.HP - damage;
 		if (player.current.HP <= 0){
 			this.battleEnd(player);
@@ -205,6 +180,7 @@ var Battleground = $.klass({ // класс для полебоя
  
 	turnEnd: function (player){ // заканчиваем ходигрока
 		clearInterval(this.timerId);
+		$("#time-left").text(i--);
 		if (this.historyDeck.length == 0){ // проверка на 1 ход после начала игры.
 			var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
 			this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя.
@@ -253,48 +229,56 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{
 			var cards = this.cardEveryTurn;
 		}
-	
+		
+		
 		for (var i = 0; i < cards; i++){
-			var card = this.generateCard();
-			player.deck.push(card);
-			
-			if (player.playerType == "player"){
-				var uiCard = "<li class='card' id='" + card.join("_") + "'>" + card + "</li>"; 
-				$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(){
-					var thisCard = $(this);
-					this.moveCardToBattle(thisCard, player, card);
-				});
-				
-			}else{
-				// делаем карту рубашкой вверх, и кладем ее к нему в невидимую деку
-			}
+			this.addCard(player);
 		}
 	},
- 
-	moveCardToBattle: function(thisCard, player, card) {
-		if (this.checkCard(card)){
-			thisCard.appendTo( $("ul.bd_connected")).undind("click");
+	
+	addCard: function(player) {
+		var card = this.generateCard();
+		player.deck.push(card);
+		
+		if (player.playerType == "player"){
+			var uiCard = "<li class='card' id='" + card.join("_") + "'>" + card + "</li>"; 
+			$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(){
+				function test(player, card){
+					this.moveCardToBattle(player, card);
+				}
+				return test.apply(World.battleground, [player, card]);
+				});
+				
+		}else{
+				// делаем карту рубашкой вверх, и кладем ее к нему в невидимую деку
+			}
+	},
+	
+	moveCardToBattle: function(player, card) {
+		var bgSelf = this;
+		var cardId = "#" + card.join("_");
+		if (checkCard(card)){
+			$(cardId).appendTo( $("ul.bd_connected")).unbind("click");
 			this.deck.push(card);
 			var cardToDelete = player.deck.indexOf(card);
 			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока.
 			
 		}else{
-			thisCard.effect( 'highlight', { color:'red' }, 800); // подсветить, если карта не подходит.
+			$(cardId).effect( 'highlight', { color:'red' }, 800); // подсветить, если карта не подходит.
 		}
-	},
- 
-	checkCard: function(card){
-		if (this.deck.length == 0){
-			return true;
-		}else{
-			if (card[0] == this.deck[this.deck.length - 1][0] || card[1] == this.deck[this.deck.length - 1][1]){
+		function checkCard(card){
+			if (bgSelf.deck.length == 0){
 				return true;
-			
 			}else{
-				return false;
+				if (card[0] == bgSelf.deck[bgSelf.deck.length - 1][0] || card[1] == bgSelf.deck[bgSelf.deck.length - 1][1]){
+					return true;
+			
+				}else{
+					return false;
+				}
+			alert( "4to-to poshlo ne tak" );
+			return false;
 			}
-		alert( "4to-to poshlo ne tak" );
-		return false;
 		}
 	},
  
@@ -316,82 +300,122 @@ var Battleground = $.klass({ // класс для полебоя
 });
 
 
-function startBattle(){
+var World = {
+	name : "world",
+	battleground: null,
+	player: null,
+	enemy: null,
 	
-	var name = document.forms.preStart.elements.nickname.value;
-	for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
-		if (document.forms.preStart.elements.race[i].selected == true){
-			var race = document.forms.preStart.elements.race[i].value;
+	closeModalWindow: function(){
+		$('#overlay').css('display', 'none')
+		if (confirm( "Что бы запустить игру, выберите все пункты меню, и нажмите начать игру. \n Обновите окно" )){
+			window.location.reload("true");
 		}
-	}
-	var cards = +document.forms.preStart.elements.cards.value;
-	var timer = +document.forms.preStart.elements.timeturn.value;
-	var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
+	},
 	
-	var avatar1 = null;
-	if (race == "human"){
-		avatar1 = "img/c.jpg";
-	}else if (race == "orc"){
-		avatar1 = "img/a.jpg";
-	}else{
-		avatar1 = "img/b.jpg";
-	}
-	
-
-/*	var botEnable = document.forms.preStart.elements.botEnable;
-		if( botEnable == ){
-			var botplayer = new Player(generateName(), renerateRace())
-			botplayer.stats();
-			botplayer.stats.HP = generateHP();
-			botplayer.stats.SP = generateSP();
-			...
-		}
-*/	
-	var p1 = new Player(name, race);
-	p1.stats();
-	p1.playerType = "player"
-	p1.stats.HP = 100;
-	p1.current.HP = 100;
-	$("div#bottom-playername").html(name);
-	
+	checkStartForm: function(){
+		var name = document.forms.preStart.elements.nickname.value;
+		var cards = Math.round(+document.forms.preStart.elements.cards.value);
+		var timer = Math.round(+document.forms.preStart.elements.timeturn.value);
+		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
 		
-	// сгенерирую постоянного бота
+		if (name.length > 15){
+			alert( '${name} +  слишком длинное имя, сделайте его короче!' );
+			return false;
+			
+		}else if(name.length < 1){
+			alert( 'Слишком короткое имя ');
+			return false;
+		}
 	
-	var p2 = new Player("Robot", "human");
-	p2.stats();
-	p2.playerType = "enemy"
-	p2.stats.HP = 150;
-	p2.stats.SP = 50;
-	p2.current.HP = 150;
-	p2.current.SP = 50;
-	$("div#top-playername").html(p2.name);
+		if ( !isNumeric(cards) || cards <= 3 || cards >= 52){
+			alert( cards + '- не верно, 3< число карт < 52 ');
+			return false;
+		}
 	
-	//добавлю красные и зеленые бары
+		if ( (!isNumeric(timer)) || timer <= 15 || timer >= 60){
+			alert( timer + '- не верно, 15< вермя на ход <= 60');
+			return false;
+		}
+		
+		if ( cardsEveryTurn > 4 || cardsEveryTurn <= 0 || (!(isNumeric(cardsEveryTurn))) ){
+			alert( cardsEveryTurn + " - не верно, 1 <= число карт за ход < 5" );
+			return false;
+		}
 	
-	$("#bpb-hp span").css("width", "100%");
-	$("#tpb-hp span").css("width", "100%");
-	$("#bpb-sp span").css("width", "100%");
-	$("#tpb-sp span").css("width", "100%");
+		return this.startBattle();
+	},
 	
-	//добавлю аватарку
+	startBattle: function(){
+		var name = document.forms.preStart.elements.nickname.value;
+		for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
+			if (document.forms.preStart.elements.race[i].selected == true){
+				var race = document.forms.preStart.elements.race[i].value;
+			}
+		}
+		var cards = +document.forms.preStart.elements.cards.value;
+		var timer = +document.forms.preStart.elements.timeturn.value;
+		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
 	
-	$("#bottomavatar img").attr("src", avatar1);
-	$("#topavatar img").attr("src", "img/c.jpg");
+		var avatar1 = null;
+		if (race == "human"){
+			avatar1 = "img/c.jpg";
+		}else if (race == "orc"){
+			avatar1 = "img/a.jpg";
+		}else{
+			avatar1 = "img/b.jpg";
+		}
 	
-	//закрою окно, выведу что все готово.
-	$('#overlay').css('display', 'none');
+		this.player = new Player(name, race);
+		this.player.stats();
+		this.player.playerType = "player"
+		this.player.stats.HP = 100;
+		this.player.current.HP = 100;
+		$("div#bottom-playername").html(name);
+		$("#bpb-hp span").css("width", "100%");
+		$("#bpb-sp span").css("width", "100%");	
+		$("#bottomavatar img").attr("src", avatar1);	
 	
-	var battleground = new Battleground("abyssal crypt", timer, cards, cardsEveryTurn);
-	battleground.player = p1;
-	battleground.enemy = p2;
+		// сгенерирую постоянного бота
 	
-	
-	
-	var endTurn = function() { // не работает!!! :(
-		return battleground.turnEnd(battleground.player);
-	}
-	
-	battleground.battleStart();
-	
-};
+		this.enemy = new Player("Robot", "human");
+		this.enemy.stats();
+		this.enemy.playerType = "enemy"
+		this.enemy.stats.HP = 150;
+		this.enemy.stats.SP = 50;
+		this.enemy.current.HP = 150;
+		this.enemy.current.SP = 50;
+		$("div#top-playername").html(this.enemy.name);
+		$("#tpb-hp span").css("width", "100%");
+		$("#tpb-sp span").css("width", "100%");
+		$("#topavatar img").attr("src", "img/c.jpg");	
 
+		
+		//закрою окно, выведу что все готово.
+		$('#overlay').css('display', 'none');
+	
+		this.battleground = new Battleground("abyssal crypt", timer, cards, cardsEveryTurn, this.enemy, this.player);
+	
+	
+		this.battleground.battleStart();
+	
+	},
+	
+	endBattle: function(){
+		
+	},
+	
+	moveCard: function() {
+		return this.battleground.moveCardToBattle();
+	}
+}
+$(document).ready(function() {
+	
+	setTimeout(function(){
+		$('#overlay').css('display', 'block');
+		$("input.close").attr("onclick", "World.closeModalWindow()");
+		$("input.startBattle").attr("onclick", "World.checkStartForm()");
+		$("input#turn").attr("onclick", "World.battleground.turnEnd(World.player)");
+	}, 1000);
+	
+});

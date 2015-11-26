@@ -11,6 +11,7 @@
  <script type="text/javascript" src="js/jquery.klass.private.js"></script>
  <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
  <script type="text/javascript" src="battle.js"></script>
+ <!--<script type="text/javascript" src="battle-2.js"></script>-->
  <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
@@ -59,7 +60,7 @@
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card ui-state-default"><div class="card_suit"></div></div>
 	  <center><h1 id="time-left">&nbsp;</h1></center>
-      <center><input id="turn" type="button" value="End turn" style="width:80px" onclick="endTurn()"></center>
+      <center><input id="turn" type="button" value="End turn" style="width:80px"></center>
 	 </td>
 	<tr>
 	 <td class="battle_deck"> <!-- центральная дека, выкладка карт -->
@@ -177,7 +178,7 @@
 	  <center>Количество карт за ход<input name="cardeveryturn" type="text" onfocus="title='от 0 до 6'" value="1"></input></center><br>
    </div>
    <div align="center" id="#buttonsifstartform">
-    <input type="button" class="close" title="Закрыть" value="Закрыть" onclick="closeModalWindow()"></input>
+    <input type="button" class="close" title="Закрыть" value="Закрыть"></input>
 	<input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="checkStartForm()"></input>
 	</div>
 	</form>
@@ -185,16 +186,7 @@
 </div>
 
 <script>
-	function closeModalWindow(){
-	 $('#overlay').css('display', 'none')
-	 if (confirm( "Что бы запустить игру, выберите все пункты меню, и нажмите начать игру. \n Обновите окно" )){
-	  location.reload();
-	 }
-	};
 
-	setTimeout(function(){
-	 $('#overlay').css('display', 'block')
-	}, 1000);
 </script>
 
 
