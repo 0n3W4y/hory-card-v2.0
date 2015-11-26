@@ -180,7 +180,7 @@ var Battleground = $.klass({ // класс для полебоя
  
 	turnEnd: function (player){ // заканчиваем ходигрока
 		clearInterval(this.timerId);
-		$("#time-left").text(i--);
+		$("#time-left").text(0);
 		if (this.historyDeck.length == 0){ // проверка на 1 ход после начала игры.
 			var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
 			this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя.
@@ -237,16 +237,14 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	addCard: function(player) {
+		var bgSelf = this;
 		var card = this.generateCard();
 		player.deck.push(card);
 		
 		if (player.playerType == "player"){
 			var uiCard = "<li class='card' id='" + card.join("_") + "'>" + card + "</li>"; 
 			$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(){
-				function test(player, card){
-					this.moveCardToBattle(player, card);
-				}
-				return test.apply(World.battleground, [player, card]);
+					bgSelf.moveCardToBattle(player, card);
 				});
 				
 		}else{
