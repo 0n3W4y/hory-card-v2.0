@@ -5,11 +5,6 @@ var cardsDeck ={
  costs : {2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 2, 12: 20, 13: 4, 14: 11}
 };
 
-function getRandomCard(){ // генератор карт
- var a = getRandomFromArr(cardsDeck.numbers);
- var b = getRandomFromArr(cardsDeck.types);
- return [cardsDeck.numbers[a], cardsDeck.types[b]];
-};
 
 function getRandomFromArr(arr) { //генератор индексов массива
   return Math.floor(Math.random() * arr.length);
@@ -75,31 +70,9 @@ var Player = $.klass({
   this.experience = 1;
   this.level = 1;
   this.deck = null;
-  this.deckHistory = null; // пока не задействована.( возможно не нужна будет )
   this.playerType = null;
   },
-  
-  givecardtobattle: function(){ // передача выбранной карты в бой
-
-   if (checkCard(this.battleDeck[this.battleDeck.length - 1], selectedCard)){
-   this.battleDeck.push(selectedCard);
-   var a = this.deck.indexOf(selectedCard);
-   this.deck.splice(a, 1); //обязательное удаление карты из руки игрока.
-   }else{
-	   alert( "karta ne podhodit" );
-	   // подсвечиваем карту красненьким.
-	   // выдаем быстрое сообщение игроку - что не подходит карта.
-   }
-  },
-  
-  checkCard: function(lastcard, newcard){
-	  if (lastcard[0] == necard[0] || lastcard[1] == newcard[1]){
-		  return true;
-	  }else{
-		  return false;
-	  }
-  },
-  
+ 
  _traits: [Inventory, Stats],
  
 });
@@ -120,12 +93,12 @@ var Battleground = $.klass({ // класс для полебоя
 	calculateDamage: function (){ // функция подсчета дамага, пока без мастей и комбо
 		var sumArr = [];
 		var sum = 0;
-		for (var i = 1; i < this.deck.length; i++){ // ставим i=1, что бы он не считал последнюю карту от предыдущего игрока.
+		for (var i = 0; i < this.deck.length; i++){ // 
 			if (this.deck[i+1]){ //проверка на существования последнего индекса в массиве, после каждой операции сложения.
-			var a = cardsDeck.costs[this.deck[i][0]];
-			var b = cardsDeck.costs[this.deck[i+1][0]];
-			sumArr.push(a+b);
-			i++   
+				var a = cardsDeck.costs[this.deck[i][0]];
+				var b = cardsDeck.costs[this.deck[i+1][0]];
+				sumArr.push(a+b);
+				i++   
 				
 			}else{
 				var a = cardsDeck.costs[this.deck[i][0]]
@@ -141,19 +114,29 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	battleStart: function (){	 // начало Игры.
-		this.player.deck = [];
-		this.enemy.deck = [];
-		this.deck = [];
-		this.historyDeck = [];
-		var firstPlayer;
-		if (Math.round(Math.random()*10)){ // выбор первого, кто ходит. // сейчас стоит что Игрок ходит первым, а не бот.
-			firstPlayer = this.player;
-			
-		}else{
-			firstPlayer = this.enemy;
+		this.player.deck = []; // определяем массив карт для игрока
+		this.enemy.deck = []; // определяем массив карт дял противника ( бота )
+		this.deck = []; // определяем боевую деку.
+		this.historyDeck = []; // определяем деку истории боя.
+		
+		var tempCards = this.cardsEveryTurn; // сохраняем значение карт каждый ход.
+		this.cardsEveryTurn = this.cards; // присваиваем значение количество карт в начале игры.
+		this.giveCard(this.player); // раздаем карты игроку
+		this.giveCard(this.enemy); // раздаем карты противнику ( боту )
+		this.cardsEveryTurn = tempCards; // возвращаяем значение карт каждый ход.
+		
+		var bgSelf = this;
+		function rndBoolean(){ // функция определения первого хода.
+			var num = Math.random();
+			if (Math.round(num)){
+				return bgSelf.player;
+			}else{
+				return bgSelf.enemy;
+			}
 		};
 		
-		this.turnStart(firstPlayer, 0);
+		var firstPlayer = rndBoolean(); // даем игроку первому ходить.
+		this.turnStart(firstPlayer, 0); // стартуем матч, с 0-вым дамагом.
 	},
  
 	battleEnd: function(player){ // конец игры ( вывод сообщений подсчет очков, статистика )
@@ -166,157 +149,200 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	turnStart: function (player, damage){ //начало хода для игрока
-		player.current.HP = player.current.HP - damage;
-		if (player.current.HP <= 0){
-			this.battleEnd(player);
-			
+		if (player == this.player){ // выбираем кому менять бар с ХП
+			$("#turn_player").show().delay(5000).fadeOut(); // не работает! :(
+			var playerBar = "#" + "bpb-hp span"; 
 		}else{
-			this.giveCard(player);
-			var timer = this.timer;
-			this.runTimer(timer , player);
+			$("#turn_enemy").show().delay(5000).fadeOut();
+			var playerBar = "#" + "tpb-hp span";
 		}
+		player.current.HP = player.current.HP - damage; // вычитаем дамага.
+		if (player.current.HP <= 0){ // проверяем помер ли текущий плеер.
+			this.battleEnd(player); // если да - заканчиваем,
+			
+		}else{ // если нет - продолжаем играть.
+			var curHp = ((player.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
+			$(playerBar).css("width", curHp);
+			this.giveCard(player); // раздаем карты, помеченные как за каждый новый ход.
+			var timer = this.timer; // биндим количество секунд на ход.
+			this.runTimer(timer , player); // запускаем таймера хода.
+			
+			if (player == this.enemy){ // проверяем, является ли текущий игрок ботом
+				this.runAi(); // если да - запускаем логику ИИ.
+			}
 
+		}
+		
+		
 	},
  
 	turnEnd: function (player){ // заканчиваем ходигрока
-		clearInterval(this.timerId);
-		$("#time-left").text(0);
+		clearInterval(this.timerId); // чистим таймер, если вдруг конец хода был вызван вручную.
+		$("#time-left").text(0); // показываем, что текущее время хода 0.
+		if (player.playerType == "player"){ // маунтим следующего игрока.
+			var nextPlayer = this.enemy; // если да, то выбираем следущего игрока как противник ( бот )
+			
+		}else{
+			var nextPlayer = this.player; // если нет - то выбираем игрока.
+		}
+		
+		var tempArr; 
+		var ptp; // previousTurnPlayer
+		
 		if (this.historyDeck.length == 0){ // проверка на 1 ход после начала игры.
-			var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
-			this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в итосрии полебоя.
+			tempArr = [player.playerType, player.name, [this.deck]]; // создаем массив из предыдущего хода игрока, накопленный в боевой деке
+			this.historyDeck.push(tempArr); // совмещаем массивы в итосрии полебоя.
+			var damage = this.calculateDamage(); // считаем дамаг.
+			this.deck.splice(0, this.deck.length - 1); // убираем все, кроме последнего элемента.
+			// функция удаления карты из боевой деки для ui (!)
+			this.turnStart(nextPlayer, damage); // предаем управление функции старта нового хода, с передачей нового игрока и дамага прилетевшего ему.
 			
-		}else{ // проверяем, положил ли игрок какую нибудь карту, перед тем, как окончить свой ход.
-			var arrPreviousTurn = [];
-			arrPreviousTurn = this.historyDeck[this.historydeck.length -1][1]; // писваиваем во временный массив, массив карт из предыдущего хода.
-			
-			if (this.deck[this.deck.length - 1] != arrPreviousTurn[arrPreviousTurn.length - 1]){ // проверка, положил ли игрок какую-нибудь карту в свой ход.
-				var tempArr = [player.name, [this.deck]]; // создаем массив из хода игрока.
-				this.historyDeck = $.merge( this.historyDeck, tempArr ); // совмещаем массивы в иcтории полебоя.
+		}else{
+			ptp = this.historyDeck[this.historyDeck.length -1][2]; // писваиваем во временный массив, ход предыдущего игрока.
+			if( [this.deck[this.deck.length - 1]][0] == ptp[ptp.length - 1][0] && [this.deck[this.deck.length - 1]][1] == ptp[ptp.length - 1][1]){
+				this.turnStart(nextPlayer, 0);
 			}else{
-				
+				this.deck.splice(0, 1); // убираем карту от предыдущего игрока.
+				tempArr = [player.playerType, player.name, [this.deck]]; // создаем массив из предыдущего хода игрока, накопленный в боевой деке
+				this.historyDeck.push(tempArr); // совмещаем массивы в итосрии полебоя.
+				var damage = this.calculateDamage(); // считаем дамаг.
+				this.deck.splice(0, this.deck.length - 1); // убираем все, кроме последнего элемента.
+				// функция удаления карты из боевой деки для ui (!)
+				this.turnStart(nextPlayer, damage); // предаем управление функции старта нового хода, с передачей нового игрока и дамага прилетевшего ему.
 			}
-		}
-		
-		if (this.deck.length > 1){ // проверяем сколько карт положил игрок.
-			this.deck.splice(0, this.deck.length - 1); // если больше 1-ой карты, убираем все, кроме последнего элемента.
-			
-		}else{
-			
-		}
-		
-		var damage = this.calculateDamage();
-		if (this.player.playerType == "player"){
-			var nextPlayer = this.enemy;
-			
-		}else{
-			var nextPlayer = this.player;
-		}
-		
-		alert( " doshlo do turnEnd(); " + nextPlayer.name );
-		//this.turnStart(nextPlayer, damage);
+		}		
 	},
  
-	generateCard: function(){
+	generateCard: function(){ // генерация значений карты.
 		var a = Math.floor(Math.random() * cardsDeck.numbers.length);
 		var b = Math.floor(Math.random() * cardsDeck.types.length);
 		return [cardsDeck.numbers[a], cardsDeck.types[b]];
 	},
  
 	giveCard: function (player) { //раздача карт игроку.
-		if (player.deck.length == 0){
-			var cards = this.cards;
+		var cards = this.cardsEveryTurn; // говорим, что количество карт - это количество карт за каждый ход.
 		
-		}else{
-			var cards = this.cardEveryTurn;
-		}
-		
-		
-		for (var i = 0; i < cards; i++){
+		for (var i = 0; i < cards; i++){ // генерируем, раздаем.
 			this.addCard(player);
 		}
 	},
 	
-	addCard: function(player) {
-		var bgSelf = this;
-		var card = this.generateCard();
-		player.deck.push(card);
+	addCard: function(player) { //даем карту игроку.
+		var bgSelf = this; // маунт себя для функции движения карты в игровую деку.
+		var card = this.generateCard(); // генерируем карту.
 		
-		if (player.playerType == "player"){
+		for (var i = 0; i < 1;){ // делаем проверку, на то, есть ли такая карта у игрока на руках или нет. во избежании повторов и не правильной работы дальнейших функций (!!!)
+			if (player.deck.indexOf(card) == -1){
+				player.deck.push(card);
+				i = 1;
+			}else{
+				card = this.generateCard();
+			}
+		}
+		
+		if (player.playerType == "player"){ // если плеер - делаем *анимацию* и движение карт в его руки.
 			var uiCard = "<li class='card' id='" + card.join("_") + "'>" + card + "</li>"; 
 			$( uiCard ).appendTo( $("ul.connectedSortable") ).click( function(){
 					bgSelf.moveCardToBattle(player, card);
 				});
 				
 		}else{
-				// делаем карту рубашкой вверх, и кладем ее к нему в невидимую деку
+				// делаем карту рубашкой вверх, и кладем ее ко врагу ( боту ) в невидимую деку.
 			}
 	},
 	
-	moveCardToBattle: function(player, card) {
-		var bgSelf = this;
+	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
 		var cardId = "#" + card.join("_");
-		if (checkCard(card)){
-			$(cardId).appendTo( $("ul.bd_connected")).unbind("click");
-			this.deck.push(card);
+		if (this.checkCard(card)){
+			$(cardId).appendTo( $("ul.bd_connected")).unbind("click"); // добавляем ui карту в боевую деку
+			this.deck.push(card); // пушим боевую деку картой.
 			var cardToDelete = player.deck.indexOf(card);
-			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока.
+			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
 			
 		}else{
 			$(cardId).effect( 'highlight', { color:'red' }, 800); // подсветить, если карта не подходит.
 		}
-		function checkCard(card){
-			if (bgSelf.deck.length == 0){
+	},
+	
+	checkCard: function(card){ // проверка можно ли положить эту карту.
+		if (this.deck.length == 0){ // если боевая дека пустая ( самый первый ход )
+			return true;
+		}else{
+			if (card[0] == this.deck[this.deck.length - 1][0] || card[1] == this.deck[this.deck.length - 1][1]){ // проверка содержимого карты и боевой деки.
 				return true;
-			}else{
-				if (card[0] == bgSelf.deck[bgSelf.deck.length - 1][0] || card[1] == bgSelf.deck[bgSelf.deck.length - 1][1]){
-					return true;
 			
-				}else{
-					return false;
-				}
-			alert( "4to-to poshlo ne tak" );
-			return false;
+			}else{
+				return false;
 			}
 		}
 	},
  
-	runTimer: function(timer, player){
+	runTimer: function(timer, player){ // сам таймер хода.
 		var bgSelf = this;
 		var i = timer;
-		this.timerId = setInterval(function(){
+		this.timerId = setInterval(function(){ // маунтим его в родительский объект, что бы можно было вызвать его остановку в ручную.
 			if (i >= 0){
-			$("#time-left").text(i--);
+			$("#time-left").text(i--); // показываем количество оставшися секунд, на самом деле на 1 больше дает :)
 			
 			}else{
-			clearInterval(bgSelf.timerId);
-			bgSelf.turnEnd(player);
+			clearInterval(bgSelf.timerId); // чистим таймер, как только секунды закончатся.
+			bgSelf.turnEnd(player); // заканчиваем ход игрока ( плеера берет из стака функций ).
 			}
 		}, 1000);
-	}
+	},
 
-  
+	runAi: function(){ // простенький бот.
+		var properCard = [];
+		var bgSelf = this; // мантим себя, для функции внутренней проверки подходящих карт бота.
+		function aiCheckCard(){ // функция првоерки карт
+			properCard.length = 0;
+			for (var i = 0; i < bgSelf.enemy.deck.length; i++){ 
+				var nextCard = bgSelf.enemy.deck[i];
+				if (bgSelf.checkCard(nextCard)){ // проверка возможности положить карту в боевую деку
+					properCard.push(nextCard); // добавляем карту во временный массив подходящих карт.
+				}
+			}
+		};
+		
+		for (var j = 0; j < 1;){ // делаем по кругу, что бы бот мог класть не по 1 карте, а столько, сколько может :D 
+			aiCheckCard();
+			if (properCard.length > 0){
+				var randomIndex = getRandomFromArr(properCard);
+				var chosenCard = properCard[randomIndex];
+				var uiCard = "<li class='card' id='" + chosenCard.join("_") + "'>" + chosenCard + "</li>"; 
+				$( uiCard ).appendTo( $("ul.bd_connected") );
+				this.deck.push(chosenCard);
+				this.enemy.deck.splice(this.enemy.deck.indexOf(chosenCard), 1);
+			}else{
+				j++ // останавливаем проверку. когда нет подходящих карт.
+			}
+		}
+		
+		this.turnEnd(this.enemy); // передеаем управление функции заканчивающей ход, с параметром того, что бот закончил ход.
+	}
+	
 });
 
 
-var World = {
+var World = { // то, что знает про все и про всех :)
 	name : "world",
 	battleground: null,
 	player: null,
 	enemy: null,
 	
-	closeModalWindow: function(){
+	closeModalWindow: function(){ // модальное окно с начальными опциями игры.
 		$('#overlay').css('display', 'none')
 		if (confirm( "Что бы запустить игру, выберите все пункты меню, и нажмите начать игру. \n Обновите окно" )){
 			window.location.reload("true");
 		}
 	},
 	
-	checkStartForm: function(){
-		var name = document.forms.preStart.elements.nickname.value;
-		var cards = Math.round(+document.forms.preStart.elements.cards.value);
-		var timer = Math.round(+document.forms.preStart.elements.timeturn.value);
-		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
-		
+	checkStartForm: function(){ // проверка формы, которую нам отправил игрок ( сингл ).
+		var name = document.forms.preStart.elements.nickname.value; // имя игрока
+		var cards = Math.round(+document.forms.preStart.elements.cards.value); // количество карт в начале игры
+		var timer = Math.round(+document.forms.preStart.elements.timeturn.value); // сколько секунд на ход.
+		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value; // количество карт каждый последующий ход.
+			// обычные проверки с алертом.
 		if (name.length > 15){
 			alert( '${name} +  слишком длинное имя, сделайте его короче!' );
 			return false;
@@ -341,10 +367,10 @@ var World = {
 			return false;
 		}
 	
-		return this.startBattle();
+		return this.startBattle(); // передаем управление функции начинающий бой
 	},
 	
-	startBattle: function(){
+	startBattle: function(){ // главная функция, которая генерирует боевую деку, и игроков в ней, пока это игрок и бот.
 		var name = document.forms.preStart.elements.nickname.value;
 		for (var i = 0;i < document.forms.preStart.elements.race.length; i++){
 			if (document.forms.preStart.elements.race[i].selected == true){
@@ -391,28 +417,28 @@ var World = {
 		
 		//закрою окно, выведу что все готово.
 		$('#overlay').css('display', 'none');
-	
+		
+		// сгенерировал боевую деку
 		this.battleground = new Battleground("abyssal crypt", timer, cards, cardsEveryTurn, this.enemy, this.player);
 	
-	
+		// передал управление боевой деке начать ходы.
 		this.battleground.battleStart();
 	
 	},
 	
 	endBattle: function(){
-		
-	},
-	
-	moveCard: function() {
-		return this.battleground.moveCardToBattle();
+		// по идее должна будет запускаться, как только игроку выйдет сообщение о том, что он победил или проиграл.
+		// дальше, экспа, лут, и т.п.
 	}
-}
-$(document).ready(function() {
 	
+};
+
+$(document).ready(function() {
+	// запуск самого модального окошка, и маунт кнопок всех.
 	setTimeout(function(){
 		$('#overlay').css('display', 'block');
 		$("input.close").attr("onclick", "World.closeModalWindow()");
-		$("input.startBattle").attr("onclick", "World.checkStartForm()");
+		$("input.startBattle").attr("onclick", "World.checkStartForm()"); // работает не правлиьно. подправь пожалуйста, что бы обновляла всю страницу.
 		$("input#turn").attr("onclick", "World.battleground.turnEnd(World.player)");
 	}, 1000);
 	
