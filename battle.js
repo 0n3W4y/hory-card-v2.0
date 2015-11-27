@@ -163,7 +163,12 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{ // если нет - продолжаем играть.
 			var curHp = ((player.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
 			$(playerBar).css("width", curHp);
-			this.giveCard(player); // раздаем карты, помеченные как за каждый новый ход.
+			if (this.deck.length != 0){
+				this.giveCard(player); // раздаем карты, помеченные как за каждый новый ход.
+				
+			}else{
+			}
+			
 			var timer = this.timer; // биндим количество секунд на ход.
 			this.runTimer(timer , player); // запускаем таймера хода.
 			
@@ -185,7 +190,7 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{
 			var nextPlayer = this.player; // если нет - то выбираем игрока.
 		}
-		
+		var arrUiCardsToDelete = this.deck;
 		var tempArr; 
 		var ptp; // previousTurnPlayer
 		
@@ -193,8 +198,11 @@ var Battleground = $.klass({ // класс для полебоя
 			tempArr = [player.playerType, player.name, [this.deck]]; // создаем массив из предыдущего хода игрока, накопленный в боевой деке
 			this.historyDeck.push(tempArr); // совмещаем массивы в итосрии полебоя.
 			var damage = this.calculateDamage(); // считаем дамаг.
+			for (var i = 0; i < this.deck.length - 1; i++){ // убираем лишние карты из боевой деки.
+				var cardId = "#" + this.deck[i].join("_");
+				$("ul.bd_connected li").remove(cardId);
+			}
 			this.deck.splice(0, this.deck.length - 1); // убираем все, кроме последнего элемента.
-			// функция удаления карты из боевой деки для ui (!)
 			this.turnStart(nextPlayer, damage); // предаем управление функции старта нового хода, с передачей нового игрока и дамага прилетевшего ему.
 			
 		}else{
@@ -202,6 +210,10 @@ var Battleground = $.klass({ // класс для полебоя
 			if( [this.deck[this.deck.length - 1]][0] == ptp[ptp.length - 1][0] && [this.deck[this.deck.length - 1]][1] == ptp[ptp.length - 1][1]){
 				this.turnStart(nextPlayer, 0);
 			}else{
+				for (var i = 0; i < this.deck.length - 1; i++){ // убираем лишние карты из боевой деки.
+					var cardId = "#" + this.deck[i].join("_");
+					$("ul.bd_connected li").remove(cardId);
+				}
 				this.deck.splice(0, 1); // убираем карту от предыдущего игрока.
 				tempArr = [player.playerType, player.name, [this.deck]]; // создаем массив из предыдущего хода игрока, накопленный в боевой деке
 				this.historyDeck.push(tempArr); // совмещаем массивы в итосрии полебоя.
@@ -232,7 +244,7 @@ var Battleground = $.klass({ // класс для полебоя
 		var card = this.generateCard(); // генерируем карту.
 		
 		for (var i = 0; i < 1;){ // делаем проверку, на то, есть ли такая карта у игрока на руках или нет. во избежании повторов и не правильной работы дальнейших функций (!!!)
-			if (player.deck.indexOf(card) == -1){
+			if (player.deck.join(",").indexOf(card.join(",")) == -1){
 				player.deck.push(card);
 				i = 1;
 			}else{
