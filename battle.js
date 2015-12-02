@@ -200,7 +200,8 @@ var Battleground = $.klass({ // класс для полебоя
 			var damage = this.calculateDamage(); // считаем дамаг.
 			for (var i = 0; i < this.deck.length - 1; i++){ // убираем лишние карты из боевой деки.
 				var cardId = "#" + this.deck[i].join("_");
-				$("ul.bd_connected li").remove(cardId);
+				//$("ul.bd_connected li").remove(cardId);
+				$(cardId).fadeIn(5000, function(){ $(this).remove() }); //------------------------------------------------------------------------------------------!!!!
 			}
 			this.deck.splice(0, this.deck.length - 1); // убираем все, кроме последнего элемента.
 			this.turnStart(nextPlayer, damage); // предаем управление функции старта нового хода, с передачей нового игрока и дамага прилетевшего ему.
@@ -264,9 +265,14 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
+		var deck = $("ul.bd_connected");
 		var cardId = "#" + card.join("_");
 		if (this.checkCard(card)){
-			$(cardId).appendTo( $("ul.bd_connected")).unbind("click"); // добавляем ui карту в боевую деку
+			//$(cardId).appendTo( $("ul.bd_connected")).unbind("click"); // добавляем ui карту в боевую деку
+			$(cardId).clone().appendTo( $("ul.bd_connected") ).hide();
+			var p = $("ul. bd_connected:last");
+			$(cardId).animate({top: p.offset().top + "px", left: (deck.offset().left + 5) + "px"}, 1000, function() { $(cardId).appendTo( $("ul.bd_connected") ) });
+			
 			this.deck.push(card); // пушим боевую деку картой.
 			var cardToDelete = player.deck.indexOf(card);
 			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)

@@ -198,6 +198,7 @@ battledeck {
 	font-size:16px;
 	background: #fff;
 	overflow:hidden;
+	position: absolute;
 }
 .card_suit {
   background: url(img/suit.jpg);
