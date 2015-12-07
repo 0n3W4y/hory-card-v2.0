@@ -33,10 +33,6 @@
 		 </td>
 		 <td rowspan="2" width="100px">
 		  <div id="topavatar"><img class="playerpic" src=""></div>
-		  <!-- пробую добавить невидимый ul объект -->
-		   <ul class="invisible">
-		   
-		   </ul>
 		 </td>
 		<tr>
 		 <td><div class="lvl" id="top-lvl"></div></td>
@@ -46,6 +42,9 @@
 		  <div id="tpb-sp" class="bar"><span class="green"></span></div>
 		 </td>
 	   </table>
+	   <ul class="invisible">
+		   
+		</ul>
 	  </playeravatar>
 	 </div>
 	</td>
@@ -55,7 +54,7 @@
   
 <!-- middle --> 
 
-  <table align="center" class="middletable" cellspacing="0" id="battleground">
+  <table align="center" class="middletable" cellspacing="0" id="battleground" border="1">
 	<tr height="33%">
 	 <td></td>
 	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
@@ -64,14 +63,12 @@
       <center><input id="turn" type="button" value="End turn" style="width:80px"></center>
 	 </td>
 	<tr>
-	 <td class="battle_deck"> <!-- центральная дека, выкладка карт -->
+	 <td> <!-- центральная дека, выкладка карт -->
 	  <ul class="bd_connected">
 	  </ul>
 	 </td>
 	<tr height="33%">
 	 <td></td>
-	<center><div id="enemy_turn" style="display:none;" >Ход противника</div></center>
-	<center><div id="player_turn" style="display:none;">Ваш ход</div></center>
   </table>
   
 <!-- bottom -->  
@@ -152,7 +149,7 @@
 	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> 
 	 <tr>
 	  <td width="10%" align="center"><button align="center">menu</button></td>
-	  <td width="10%" align="center"><input type="button" class="startBattle" title="Начать игру заново" value="Play again" onclick="location.reload()"></td>
+	  <td width="10%" align="center"><input type="button" class="playAgain" title="Начать игру заново" value="Play again"></td>
 	  <td></td>
 	  <td width="15%" align="right">nickname</td>
 	  <td align="right"><button>exit</button></td>
@@ -186,6 +183,10 @@
  </div>
 </div>
 
+<!-- окошко с выводом про ход -->
+<div id="overlay2">
+	<center id="player_turn"></center>
+</div>
 <script>
 
 </script>
