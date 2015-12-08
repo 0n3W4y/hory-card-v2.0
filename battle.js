@@ -1,8 +1,8 @@
 //spades - Магический Урон, //cross - Добавление к защите, //hearts - Лечение, //diamonds - Физический урон
 var cardsDeck ={
- numbers : [2,3,4,5,6,7,8,9,10,11,12,13,14],
+ numbers : ["a","b","c","d","e","f","g","h","i","j","k","l","m"],
  types : [ "spades", "cross", "hearts", "diamonds" ],
- costs : {2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 2, 12: 20, 13: 4, 14: 11}
+ costs : {"a": 2, "b": 3, "c": 4, "d": 5, "e": 6, "f": 7, "g": 8, "h": 9, "i": 10, "j": 2, "k": 20, "l": 4, "m": 11}
 };
 
 
@@ -164,13 +164,14 @@ var Battleground = $.klass({ // класс для полебоя
 			var playerSp = "#" + "tpb-hp span";
 		}
 		player.current.HP = player.current.HP - damage; // вычитаем дамага.
+		var curHp = ((player.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
+		$(playerHp).css("width", curHp);
+		$(playerHp).text(player.current.HP);
+		
 		if (player.current.HP <= 0){ // проверяем помер ли текущий плеер.
 			this.battleEnd(player); // если да - заканчиваем,
 			
 		}else{ // если нет - продолжаем играть.
-			var curHp = ((player.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
-			$(playerHp).css("width", curHp);
-			$(playerHp).text(player.current.HP);
 			if (this.deck.length != 0){
 				this.giveCard(player); // раздаем карты, помеченные как за каждый новый ход.
 				
@@ -420,18 +421,10 @@ var World = { // то, что знает про все и про всех :)
       var d = $('<div id="overlay3">');
       d.append(elem);
       d.appendTo('body').fadeIn('fast');
-      d.click(function(){
-        $('div#overlay3').fadeOut('fast', function(){
-          $(this).remove();
+      $('div#overlay3').css({
+		'top': $(par).offset().top,
+		'left': ($(par).offset().left + 100)
         });
-      });
-
-      $(par).bind('mousemove', function(e){
-        $('div#overlay3').css({
-          'top': e.pageY - ($('div#overlay3').height())-10,
-          'left': e.pageX + 25
-        });
-      });
     },
     function () {
       $('div#overlay3').fadeOut('fast', function(){
@@ -512,10 +505,10 @@ var World = { // то, что знает про все и про всех :)
 		$("#bpb-hp span").text(this.player.current.HP);
 		$("#bpb-sp span").css("width", "100%");
 		$("#bpb-sp span").text(this.player.current.SP);		
-		$("#bot-fatk").text(this.player.current.ATK);
-		$("#bot-matk").text(this.player.current.MATK);
-		$("#bot-fdef").text(this.player.current.DEF);
-		$("#bot-mdef").text(this.player.current.MDEF);
+		$("#bottom-fatk").text(this.player.current.ATK);
+		$("#bottom-matk").text(this.player.current.MATK);
+		$("#bottom-fdef").text(this.player.current.DEF);
+		$("#bottom-mdef").text(this.player.current.MDEF);
 		$("#bottomavatar img").attr("src", avatar1);	
 	
 		// сгенерирую постоянного бота
@@ -538,16 +531,16 @@ var World = { // то, что знает про все и про всех :)
 		$("#top-mdef").text(this.enemy.current.MDEF);
 		$("#topavatar img").attr("src", "img/c.jpg");	
 
-		// подсказка по навезедию на аватарку игрока.
-		var pinfo = "<div>" + this.player.name + "</br>Уровень 1</br>" + this.player.race +"</br>" + this.player.HP + "</br>" + this.player.STR + "</br></div>";
+		// подсказка по наведению на аватарку игрока.
+		var pinfo = "<div> Имя: " + this.player.name + "</br>Уровень: 1</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.STR + "</br></div>";
 		var info2 = $(pinfo);
-		var einfo = "<div>" + this.enemy.name + "</br>Уровень 1</br>" + this.enemy.race +"</br>" + this.enemy.HP + "</br>" + this.enemy.STR + "</br></div>";
+		var einfo = "<div>Имя: " + this.enemy.name + "</br>Уровень: 1</br>Раса: " + this.enemy.race +"</br>Жизни: " + this.enemy.stats.HP + "</br>Дух: " + this.enemy.stats.STR + "</br></div>";
 		var info1 = $(einfo);
 	
 		var etool = $("#topavatar");
 		var ptool = $("#bottomavatar");
-		this.appendTooltip(info1, etool);
-		this.appendTooltip(info2, ptool);
+		this.appendTooltip(etool, info1);
+		this.appendTooltip(ptool, info2);
 		
 		//закрою окно, выведу что все готово.
 		$('#overlay').css('display', 'none');
@@ -571,7 +564,7 @@ var World = { // то, что знает про все и про всех :)
 
 $(document).ready(function() {
 	
-	$("button.playAgain").attr("onclick", "window.reload(true)");
+	$("button.playAgain").attr("onclick", "window.location.reload('true')");
 	
 	$( "#bpb-hp" ).hover(
 		function() {
