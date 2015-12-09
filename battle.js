@@ -1,8 +1,8 @@
 //spades - Магический Урон, //cross - Добавление к защите, //hearts - Лечение, //diamonds - Физический урон
 var cardsDeck ={
- numbers : ["a","b","c","d","e","f","g","h","i","j","k","l","m"],
+ numbers : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
  types : [ "spades", "cross", "hearts", "diamonds" ],
- costs : {"a": 2, "b": 3, "c": 4, "d": 5, "e": 6, "f": 7, "g": 8, "h": 9, "i": 10, "j": 2, "k": 20, "l": 4, "m": 11}
+ costs : {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 2, 11: 20, 12: 4, 13: 11}
 };
 
 
@@ -46,7 +46,7 @@ var Stats = $.trait({ // трейт стат, для заполнения нуж
 		HP : 1,
 		SP : 1
 	},
-	this.current = {
+	this.currentStats = {
 		STR : 1,
 		AGI : 1,
 		END : 1,
@@ -95,13 +95,13 @@ var Battleground = $.klass({ // класс для полебоя
 		var sum = 0;
 		for (var i = 0; i < this.deck.length; i++){ // 
 			if (this.deck[i+1]){ //проверка на существования последнего индекса в массиве, после каждой операции сложения.
-				var a = cardsDeck.costs[this.deck[i][0]];
-				var b = cardsDeck.costs[this.deck[i+1][0]];
+				var a = cardsDeck.costs[this.deck[i][1]];
+				var b = cardsDeck.costs[this.deck[i+1][1]];
 				sumArr.push(a+b);
 				i++   
 				
 			}else{
-				var a = cardsDeck.costs[this.deck[i][0]]
+				var a = cardsDeck.costs[this.deck[i][1]]
 				sumArr.push(a);
 			}
 		}
@@ -114,18 +114,14 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	battleStart: function (){	 // начало Игры.
+		var bgSelf = this;
 		this.player.deck = []; // определяем массив карт для игрока
 		this.enemy.deck = []; // определяем массив карт дял противника ( бота )
 		this.deck = []; // определяем боевую деку.
 		this.historyDeck = []; // определяем деку истории боя.
+		this.giveCard(this.player, this.cards); // раздаем карты игроку
+		setTimeout(function() {bgSelf.giveCard(bgSelf.enemy, bgSelf.cards)}, 2500); // раздаем карты противнику ( боту )
 		
-		var tempCards = this.cardsEveryTurn; // сохраняем значение карт каждый ход.
-		this.cardsEveryTurn = this.cards; // присваиваем значение количество карт в начале игры.
-		this.giveCard(this.player); // раздаем карты игроку
-		this.giveCard(this.enemy); // раздаем карты противнику ( боту )
-		this.cardsEveryTurn = tempCards; // возвращаяем значение карт каждый ход.
-		
-		var bgSelf = this;
 		function rndBoolean(){ // функция определения первого хода.
 			var num = Math.random();
 			if (Math.round(num)){
@@ -135,10 +131,8 @@ var Battleground = $.klass({ // класс для полебоя
 			}
 		};
 		
-		var firstPlayer = rndBoolean(); // даем игроку первому ходить.
-		var bgSelf = this;
-		setTimeout(function() {bgSelf.turnStart(firstPlayer, 0)}, 1500); // стартуем матч, с 0-вым дамагом.
-
+		var firstPlayer = rndBoolean(); // выбираем кто ходит первый.
+		setTimeout(function() {bgSelf.turnStart(firstPlayer, 0)}, 5000); // стартуем матч, с 0-вым дамагом.
 	},
  
 	battleEnd: function(player){ // конец игры ( вывод сообщений подсчет очков, статистика )
@@ -163,17 +157,17 @@ var Battleground = $.klass({ // класс для полебоя
 			var playerHp = "#" + "tpb-hp span";
 			var playerSp = "#" + "tpb-hp span";
 		}
-		player.current.HP = player.current.HP - damage; // вычитаем дамага.
-		var curHp = ((player.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
+		player.currentStats.HP = player.currentStats.HP - damage; // вычитаем дамага.
+		var curHp = ((player.currentStats.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
 		$(playerHp).css("width", curHp);
-		$(playerHp).text(player.current.HP);
+		$(playerHp).text(player.currentStats.HP);
 		
-		if (player.current.HP <= 0){ // проверяем помер ли текущий плеер.
+		if (player.currentStats.HP <= 0){ // проверяем помер ли текущий плеер.
 			this.battleEnd(player); // если да - заканчиваем,
 			
 		}else{ // если нет - продолжаем играть.
 			if (this.deck.length != 0){
-				this.giveCard(player); // раздаем карты, помеченные как за каждый новый ход.
+				this.giveCard(player, this.cardsEveryTurn); // раздаем карты, помеченные как за каждый новый ход.
 				
 			}else{
 			}
@@ -210,8 +204,8 @@ var Battleground = $.klass({ // класс для полебоя
 			var damage = this.calculateDamage(); // считаем дамаг.
 			
 			for (var i = 0; i < this.deck.length - 1; i++){ // убираем лишние карты из боевой деки.
-				var cardId = "ul.bd_connected li[id*=" + this.deck[i].join("_") + "]";
-				$(cardId).css("position", "relative").animate({left: "-150px", opacity: "0"}, 1500, function(){
+				var cardId = "ul.bd_connected li." + this.deck[i].join("");
+				$(cardId).css("position", "relative").animate({left: "-350px", opacity: "0"}, 1500, function(){
 				$(this).remove();
 				});
 			};
@@ -221,12 +215,13 @@ var Battleground = $.klass({ // класс для полебоя
 			
 		}else{
 			ptp = this.historyDeck[this.historyDeck.length -1][2]; // писваиваем во временный массив, ход предыдущего игрока.
+			//и проверяем, ходил ли игрок, или пропустил ход.
 			if( [this.deck[this.deck.length - 1]][0] == ptp[ptp.length - 1][0] && [this.deck[this.deck.length - 1]][1] == ptp[ptp.length - 1][1]){
 				this.turnStart(nextPlayer, 0);
 				
 			}else{
 				for (var i = 0; i < this.deck.length - 1; i++){ // функция для ui !
-					var cardId = "ul.bd_connected li[id*=" + this.deck[i].join("_") + "]";
+					var cardId = "ul.bd_connected li." + this.deck[i].join("");
 					$(cardId).css("position", "relative").animate({left: "-150px", opacity: "0"}, 1500, function(){
 					$(this).remove();
 					});
@@ -245,18 +240,17 @@ var Battleground = $.klass({ // класс для полебоя
 	generateCard: function(){ // генерация значений карты.
 		var a = Math.floor(Math.random() * cardsDeck.numbers.length);
 		var b = Math.floor(Math.random() * cardsDeck.types.length);
-		return [cardsDeck.numbers[a], cardsDeck.types[b]];
+		return [cardsDeck.types[b], cardsDeck.numbers[a]];
 	},
  
-	giveCard: function (player) { //раздача карт игроку.
-		var cards = this.cardsEveryTurn; // говорим, что количество карт - это количество карт за каждый ход.
-		
+	giveCard: function (player, cards) { //раздача карт игроку.
+		var bgSelf = this;
 		for (var i = 0; i < cards; i++){ // генерируем, раздаем.
-			this.addCard(player);
+			setTimeout(function() {bgSelf.addCard(player)}, 900);
 		}
 	},
 	
-	addCard: function(player) { //даем карту игроку.
+	addCard: function(player) { //даем карту игроку. // переделать функцию добавления карт, что бы можно было запускать с таймером.
 		var bgSelf = this; // маунт себя для функции движения карты в игровую деку.
 		var card = this.generateCard(); // генерируем карту.
 		
@@ -268,7 +262,7 @@ var Battleground = $.klass({ // класс для полебоя
 				card = this.generateCard();
 			}
 		}
-		var uiCard = "<li class='card' id='" + player.type + "_" + card.join("_") + "'>" + card + "</li>";
+		var uiCard = "<li class='card " + card.join("") + "' id='" + player.type + "'></li>";
 		var fromCardOffset = $("div#full_deck").offset();
 		var cloneSuit = $("div#full_deck").clone();
 		
@@ -289,7 +283,7 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
-		var cardId = "#" + player.type + "_" + card.join("_"); // 
+		var cardId = "." + card.join("") + "#" + player.type;
 		if (this.checkCard(card)){
 			if (player.type == "enemy"){
 				var cardOffset = $(".invisible").offset();
@@ -499,16 +493,16 @@ var World = { // то, что знает про все и про всех :)
 		this.player.stats();
 		this.player.type = "player"
 		this.player.stats.HP = 100;
-		this.player.current.HP = 100;
+		this.player.currentStats.HP = 100;
 		$("div#bottom-playername").html(name);
 		$("#bpb-hp span").css("width", "100%");
-		$("#bpb-hp span").text(this.player.current.HP);
+		$("#bpb-hp span").text(this.player.currentStats.HP);
 		$("#bpb-sp span").css("width", "100%");
-		$("#bpb-sp span").text(this.player.current.SP);		
-		$("#bottom-fatk").text(this.player.current.ATK);
-		$("#bottom-matk").text(this.player.current.MATK);
-		$("#bottom-fdef").text(this.player.current.DEF);
-		$("#bottom-mdef").text(this.player.current.MDEF);
+		$("#bpb-sp span").text(this.player.currentStats.SP);		
+		$("#bottom-fatk").text(this.player.currentStats.ATK);
+		$("#bottom-matk").text(this.player.currentStats.MATK);
+		$("#bottom-fdef").text(this.player.currentStats.DEF);
+		$("#bottom-mdef").text(this.player.currentStats.MDEF);
 		$("#bottomavatar img").attr("src", avatar1);	
 	
 		// сгенерирую постоянного бота
@@ -518,17 +512,17 @@ var World = { // то, что знает про все и про всех :)
 		this.enemy.type = "enemy"
 		this.enemy.stats.HP = 100;
 		this.enemy.stats.SP = 50;
-		this.enemy.current.HP = 100;
-		this.enemy.current.SP = 50;
+		this.enemy.currentStats.HP = 100;
+		this.enemy.currentStats.SP = 50;
 		$("div#top-playername").html(this.enemy.name);
 		$("#tpb-hp span").css("width", "100%");
-		$("#tpb-hp span").text(this.enemy.current.HP);
+		$("#tpb-hp span").text(this.enemy.currentStats.HP);
 		$("#tpb-sp span").css("width", "100%");
-		$("#tpb-sp span").text(this.enemy.current.SP);
-		$("#top-fatk").text(this.enemy.current.ATK);
-		$("#top-matk").text(this.enemy.current.MATK);
-		$("#top-fdef").text(this.enemy.current.DEF);
-		$("#top-mdef").text(this.enemy.current.MDEF);
+		$("#tpb-sp span").text(this.enemy.currentStats.SP);
+		$("#top-fatk").text(this.enemy.currentStats.ATK);
+		$("#top-matk").text(this.enemy.currentStats.MATK);
+		$("#top-fdef").text(this.enemy.currentStats.DEF);
+		$("#top-mdef").text(this.enemy.currentStats.MDEF);
 		$("#topavatar img").attr("src", "img/c.jpg");	
 
 		// подсказка по наведению на аватарку игрока.
@@ -564,7 +558,7 @@ var World = { // то, что знает про все и про всех :)
 
 $(document).ready(function() {
 	
-	$("button.playAgain").attr("onclick", "window.location.reload('true')");
+	$("button.playAgain").attr("onclick", "location.reload()");
 	
 	$( "#bpb-hp" ).hover(
 		function() {

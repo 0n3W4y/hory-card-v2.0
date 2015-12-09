@@ -156,31 +156,7 @@ battledeck {
   width: 60px;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
-.card {
-	width: 60px;
-	height: 100px;
-	-moz-border-radius: 10px;
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
-	cursor: pointer;
-	margin: 5px;
-	padding: 0px;
-	list-style-type: none;
-	font-size:16px;
-	background-image: url('img/cards_atlas.jpg');
-	background-repeat: no-repeat;
-	border:2px solid black;
-	margin:-10px -20px;
-}
-.card_suit {
-  background: url(img/suit.jpg);
-  top: 0;
-  left: 0;
-  margin: 0 auto;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
+
 .player_deck{
 	width:100%;
 	background: #DAA520;
@@ -206,7 +182,6 @@ battledeck {
 	margin: 0;
 	padding: 0;
 	display:block;
-	position: absolute;
 	overflow: hidden;
 	height: 100%;
 	border:1px solid black;
@@ -235,7 +210,8 @@ battledeck {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-  padding: 0px;
+  padding:0px;
+  margin:0px;
   background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(43,194,83)), color-stop(1, rgb(84,240,84)));
   background-image: -webkit-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69%);
   background-image: -moz-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69%);
@@ -247,7 +223,6 @@ battledeck {
   text-align:right;
   overflow: none;
   width:0%;
-  margin:0px;
   font-family: Georgia, fantasy;
   font-weight:bolder;
 }
@@ -269,9 +244,9 @@ battledeck {
   text-align:right;
   overflow: none;
   width:0%;
-  margin:0px;
   font-family: Georgia, fantasy;
   font-weight:bolder;
+  box-sizing: content-box;
 }
 
 #player_turn {
@@ -385,314 +360,339 @@ button .close{
 	visibility: hidden;
 }
 /* card binding */
-
-.ahearts {  
+.card {
+	width: 60px;
+	height: 100px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	cursor: pointer;
+	margin: 5px;
+	padding: 0px;
+	list-style-type: none;
+	font-size:16px;
+	background-image: url('img/cards_atlas.jpg');
+	background-repeat: no-repeat;
+	border:2px solid black;
+	margin:-10px -20px;
+}
+.card_suit {
+  background: url(img/suit.jpg);
+  top: 0;
+  left: 0;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+/* card atlas */
+.hearts13 {  
   background-position: -65px -65px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.adiamonds {
+.diamonds13 {
   height:150px;
   width:110px;
   background-position: -245px -65px;
   transform: scale(0.6);
 }
-.aspades {
+.spades13 {
   height:150px;
   width:110px;
   background-position: -425px -65px;
   transform: scale(0.6);
 }
-.across {
+.cross13 {
   height:150px;
   width:110px;
   background-position: -605px -65px;
   transform: scale(0.6);
 }
-.bhearts {  
+.hearts1 {  
   background-position: -65px -265px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.bdiamonds {
+.diamonds1 {
   height:150px;
   width:110px;
   background-position: -245px -265px;
   transform: scale(0.6);
 }
-.bspades {
+.spades1 {
   height:150px;
   width:110px;
   background-position: -425px -265px;
   transform: scale(0.6);
 }
-.bcross {
+.cross1 {
   height:150px;
   width:110px;
   background-position: -605px -265px;
   transform: scale(0.6);
 }
-.chearts {  
+.hearts2 {  
   background-position: -65px -465px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.cdiamonds {
+.diamonds2 {
   height:150px;
   width:110px;
   background-position: -245px -465px;
   transform: scale(0.6);
 }
-.cspades {
+.spades2 {
   height:150px;
   width:110px;
   background-position: -425px -465px;
   transform: scale(0.6);
 }
-.ccross {
+.cross2 {
   height:150px;
   width:110px;
   background-position: -605px -465px;
   transform: scale(0.6);
 }
-.dhearts {  
+.hearts3 {  
   background-position: -65px -680px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.ddiamonds {
+.diamonds3 {
   height:150px;
   width:110px;
   background-position: -245px -680px;
   transform: scale(0.6);
 }
-.dspades {
+.spades3 {
   height:150px;
   width:110px;
   background-position: -425px -680px;
   transform: scale(0.6);
 }
-.dcross {
+.cross3 {
   height:150px;
   width:110px;
   background-position: -605px -680px;
   transform: scale(0.6);
 }
-.ehearts {  
+.hearts4 {  
   background-position: -65px -885px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.ediamonds {
+.diamonds4 {
   height:150px;
   width:110px;
   background-position: -245px -885px;
   transform: scale(0.6);
 }
-.espades {
+.spades4 {
   height:150px;
   width:110px;
   background-position: -425px -885px;
   transform: scale(0.6);
 }
-.ecross {
+.cross4 {
   height:150px;
   width:110px;
   background-position: -605px -885px;
   transform: scale(0.6);
 }
-.fhearts {  
+.hearts5 {  
   background-position: -765px -65px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.fdiamonds {
+.diamonds5 {
   height:150px;
   width:110px;
   background-position: -948px -65px;
   transform: scale(0.6);
 }
-.fspades {
+.spades5 {
   height:150px;
   width:110px;
   background-position: -1128px -65px;
   transform: scale(0.6);
 }
-.fcross {
+.cross5 {
   height:150px;
   width:110px;
   background-position: -1310px -65px;
   transform: scale(0.6);
 }
-.ghearts {  
+.hearts6 {  
   background-position: -765px -265px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.gdiamonds {
+.diamonds6 {
   height:150px;
   width:110px;
   background-position: -948px -265px;
   transform: scale(0.6);
 }
-.gspades {
+.spades6 {
   height:150px;
   width:110px;
   background-position: -1128px -265px;
   transform: scale(0.6);
 }
-.gcross {
+.cross6 {
   height:150px;
   width:110px;
   background-position: -1310px -265px;
   transform: scale(0.6);
 }
-.hhearts {  
+.hearts7 {  
   background-position: -765px -465px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.hdiamonds {
+.diamonds7 {
   height:150px;
   width:110px;
   background-position: -948px -465px;
   transform: scale(0.6);
 }
-.hspades {
+.spades7 {
   height:150px;
   width:110px;
   background-position: -1128px -465px;
   transform: scale(0.6);
 }
-.hcross {
+.cross7 {
   height:150px;
   width:110px;
   background-position: -1310px -465px;
   transform: scale(0.6);
 }
-.ihearts {  
+.hearts8 {  
   background-position: -765px -675px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.idiamonds {
+.diamonds8 {
   height:150px;
   width:110px;
   background-position: -948px -675px;
   transform: scale(0.6);
 }
-.ispades {
+.spades8 {
   height:150px;
   width:110px;
   background-position: -1128px -675px;
   transform: scale(0.6);
 }
-.icross {
+.cross8 {
   height:150px;
   width:110px;
   background-position: -1310px -675px;
   transform: scale(0.6);
 }
-.jhearts {  
+.hearts9 {  
   background-position: -765px -880px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.jdiamonds {
+.diamonds9 {
   height:150px;
   width:110px;
   background-position: -948px -880px;
   transform: scale(0.6);
 }
-.jspades {
+.spades9 {
   height:150px;
   width:110px;
   background-position: -1128px -880px;
   transform: scale(0.6);
 }
-.jcross {
+.cross9 {
   height:150px;
   width:110px;
   background-position: -1310px -880px;
   transform: scale(0.6);
 }
-.khearts {  
+.hearts10 {  
   background-position: -65px -1090px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.kdiamonds {
+.diamonds10 {
   height:150px;
   width:110px;
   background-position: -245px -1090px;
   transform: scale(0.6);
 }
-.kspades {
+.spades10 {
   height:150px;
   width:110px;
   background-position: -425px -1090px;
   transform: scale(0.6);
 }
-.kcross {
+.cross10 {
   height:150px;
   width:110px;
   background-position: -605px -1090px;
   transform: scale(0.6);
 }
-.lhearts {  
+.hearts11 {  
   background-position: -775px -1090px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.ldiamonds {
+.diamonds11 {
   height:150px;
   width:110px;
   background-position: -955px -1090px;
   transform: scale(0.6);
 }
-.lspades {
+.spades11 {
   height:150px;
   width:110px;
   background-position: -1135px -1090px;
   transform: scale(0.6);
 }
-.lcross {
+.cross11 {
   height:150px;
   width:110px;
   background-position: -1320px -1090px;
   transform: scale(0.6);
 }
-.mhearts {  
+.hearts12 {  
   background-position: -65px -1285px;
   height:150px;
   width:110px;
   transform: scale(0.6);
 }
-.mdiamonds {
+.diamonds12 {
   height:150px;
   width:110px;
   background-position: -245px -1285px;
   transform: scale(0.6);
 }
-.mspades {
+.spades12 {
   height:150px;
   width:110px;
   background-position: -425px -1285px;
   transform: scale(0.6);
 }
-.mcross {
+.cross12 {
   height:150px;
   width:110px;
   background-position: -605px -1285px;
