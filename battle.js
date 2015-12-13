@@ -2,7 +2,7 @@
 var cardsDeck ={
  numbers : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
  types : [ "spades", "cross", "hearts", "diamonds" ],
- costs : {1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 2, 11: 20, 12: 4, 13: 11}
+ costs : {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13}
 };
 
 
@@ -20,7 +20,13 @@ function isNumeric(n) { // проверка на число
 var Inventory = $.trait({ // трейт инвентаря , для заполенния нужно вызвать %name%.stats();
  inventory: function() {
   this.inventory = {
-		character : {},
+		character : {
+			head: null,
+			arms: null,
+			torso: null,
+			legs: null,
+			boots: null
+		},
 		firtsbag : {},
 		secondbag : {},
 		thirdbag : {},
@@ -38,29 +44,25 @@ var Stats = $.trait({ // трейт стат, для заполнения нуж
 		END : 1,
 		INT : 1,
 		ATK : 1,
-		MATK : 1,
 		DEF : 1,
-		MDEF : 1,
 		BR : 1,
 		DDG : 1,
 		HP : 1,
-		SP : 1
-	},
-	this.currentStats = {
-		STR : 1,
-		AGI : 1,
-		END : 1,
-		INT : 1,
-		ATK : 1,
-		MATK : 1,
-		DEF : 1,
-		MDEF : 1,
-		BR : 1,
-		DDG : 1,
-		HP : 1,
-		SP : 1
+		MP : 1,
+		current: {
+			STR : 1,
+			AGI : 1,
+			END : 1,
+			INT : 1,
+			ATK : 1,
+			DEF : 1,
+			BR : 1,
+			DDG : 1,
+			HP : 1,
+			MP : 1
+		}
 	}
-  }
+
 });
 
 var Player = $.klass({
@@ -157,12 +159,12 @@ var Battleground = $.klass({ // класс для полебоя
 			var playerHp = "#" + "tpb-hp span";
 			var playerSp = "#" + "tpb-hp span";
 		}
-		player.currentStats.HP = player.currentStats.HP - damage; // вычитаем дамага.
-		var curHp = ((player.currentStats.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
+		player.stats.current.HP = player.stats.current.HP - damage; // вычитаем дамага.
+		var curHp = ((player.stats.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
 		$(playerHp).css("width", curHp);
-		$(playerHp).text(player.currentStats.HP);
+		$(playerHp).text(player.stats.current.HP);
 		
-		if (player.currentStats.HP <= 0){ // проверяем помер ли текущий плеер.
+		if (player.stats.current.HP <= 0){ // проверяем помер ли текущий плеер.
 			this.battleEnd(player); // если да - заканчиваем,
 			
 		}else{ // если нет - продолжаем играть.
@@ -493,16 +495,16 @@ var World = { // то, что знает про все и про всех :)
 		this.player.stats();
 		this.player.type = "player"
 		this.player.stats.HP = 100;
-		this.player.currentStats.HP = 100;
+		this.player.stats.current.HP = 100;
 		$("div#bottom-playername").html(name);
 		$("#bpb-hp span").css("width", "100%");
-		$("#bpb-hp span").text(this.player.currentStats.HP);
+		$("#bpb-hp span").text(this.player.stats.current.HP);
 		$("#bpb-sp span").css("width", "100%");
-		$("#bpb-sp span").text(this.player.currentStats.SP);		
-		$("#bottom-fatk").text(this.player.currentStats.ATK);
-		$("#bottom-matk").text(this.player.currentStats.MATK);
-		$("#bottom-fdef").text(this.player.currentStats.DEF);
-		$("#bottom-mdef").text(this.player.currentStats.MDEF);
+		$("#bpb-sp span").text(this.player.stats.current.SP);		
+		$("#bottom-fatk").text(this.player.stats.current.ATK);
+		$("#bottom-matk").text(this.player.stats.current.MATK);
+		$("#bottom-fdef").text(this.player.stats.current.DEF);
+		$("#bottom-mdef").text(this.player.stats.current.MDEF);
 		$("#bottomavatar img").attr("src", avatar1);	
 	
 		// сгенерирую постоянного бота
@@ -512,17 +514,17 @@ var World = { // то, что знает про все и про всех :)
 		this.enemy.type = "enemy"
 		this.enemy.stats.HP = 100;
 		this.enemy.stats.SP = 50;
-		this.enemy.currentStats.HP = 100;
-		this.enemy.currentStats.SP = 50;
+		this.enemy.stats.current.HP = 100;
+		this.enemy.stats.current.SP = 50;
 		$("div#top-playername").html(this.enemy.name);
 		$("#tpb-hp span").css("width", "100%");
-		$("#tpb-hp span").text(this.enemy.currentStats.HP);
+		$("#tpb-hp span").text(this.enemy.stats.current.HP);
 		$("#tpb-sp span").css("width", "100%");
-		$("#tpb-sp span").text(this.enemy.currentStats.SP);
-		$("#top-fatk").text(this.enemy.currentStats.ATK);
-		$("#top-matk").text(this.enemy.currentStats.MATK);
-		$("#top-fdef").text(this.enemy.currentStats.DEF);
-		$("#top-mdef").text(this.enemy.currentStats.MDEF);
+		$("#tpb-sp span").text(this.enemy.stats.current.SP);
+		$("#top-fatk").text(this.enemy.stats.current.ATK);
+		$("#top-matk").text(this.enemy.stats.current.MATK);
+		$("#top-fdef").text(this.enemy.stats.current.DEF);
+		$("#top-mdef").text(this.enemy.stats.current.MDEF);
 		$("#topavatar img").attr("src", "img/c.jpg");	
 
 		// подсказка по наведению на аватарку игрока.
