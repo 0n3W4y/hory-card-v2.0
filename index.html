@@ -5,14 +5,13 @@
  <title>hory-card-v.2.0</title>
 <head>
  <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
-     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" ></script>
+ <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" ></script>
  <script type="text/javascript" src="js/jquery.klass.js"></script>
  <script type="text/javascript" src="js/jquery.klass.traits.js"></script>
  <script type="text/javascript" src="js/jquery.klass.namespaces.js"></script>
  <script type="text/javascript" src="js/jquery.klass.private.js"></script>
  <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
  <script type="text/javascript" src="battle.js"></script>
- <!--<script type="text/javascript" src="battle-2.js"></script>-->
  <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
@@ -29,7 +28,7 @@
 		 <td colspan="2"><div class="playername" id="top-playername"></div></td>
 		<tr>
 		 <td> <!--статы по дефе, атаке мдеф и т.п.-->
-		  <div class="fatktext" id="top-fatk"></div><div class="matktext" id="top-matk"></div><div class="fdeftext" id="top-fdef"></div><div class="mdeftext" id="top-mdef"></div>
+		  <div class="atktext" id="top-atk"></div><div class="deftext" id="top-def"></div>
 		 </td>
 		 <td rowspan="2" width="100px">
 		  <div id="topavatar"><img class="playerpic" src=""></div>
@@ -39,7 +38,7 @@
 		<tr height="20%">
 		 <td colspan="2">
 		  <div id="tpb-hp" class="bar"><span class="red"></span></div>
-		  <div id="tpb-sp" class="bar"><span class="green"></span></div>
+		  <div id="tpb-mp" class="bar"><span class="blue"></span></div>
 		 </td>
 	   </table>
 	   <ul class="invisible">
@@ -55,20 +54,21 @@
 <!-- middle --> 
 
   <table align="center" class="middletable" cellspacing="0" id="battleground" border="1">
-	<tr height="33%">
-	 <td></td>
-	 <td rowspan="3" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
+	<tr height="50%">
+	 <td class="bd_connected">
+		<ul id="top-battledeck">
+		</ul>
+	 </td>
+	 <td rowspan="2" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
 	  <div id="full_deck" class="card card_suit"></div>
 	  <center><h1 id="time-left">&nbsp;</h1></center>
       <center><input id="turn" type="button" value="End turn" style="width:80px"></center>
 	 </td>
 	<tr>
-	 <td> <!-- центральная дека, выкладка карт -->
-	  <ul class="bd_connected">
-	  </ul>
+	 <td class="bd_connected">
+		<ul id="bot-battledeck">
+		</ul>
 	 </td>
-	<tr height="33%">
-	 <td></td>
   </table>
   
 <!-- bottom -->  
@@ -85,7 +85,7 @@
 		 </td>
 		<tr>
 		 <td>
-		  <div class="fatktext" id="bottom-fatk"></div><div class="matktext" id="bottom-matk"></div><div class="fdeftext" id="bottom-fdef"></div><div class="mdeftext" id="bottom-mdef"></div>
+		  <div class="atktext" id="bottom-atk"></div><div class="deftext" id="bottom-def"></div>
 		 </td>
 		 <td rowspan="2" width="100px"><div id="bottomavatar"><img class="playerpic" src=""></div></td>
 		<tr>
@@ -93,7 +93,7 @@
 		<tr height="20%">
 		 <td colspan="2">
 		  <div id="bpb-hp" class="bar"><span class="red"></span></div>
-		  <div id="bpb-sp" class="bar"><span class="green"></span></div>
+		  <div id="bpb-mp" class="bar"><span class="blue"></span></div>
 		 </td>
 	   </table>
 	  </playeravatar>
@@ -167,8 +167,8 @@
 	  <center>Выберите расу
 	   <select name="race">
         <option value="human">Человек</option>
-        <option value="goblin">Гоблин</option>
-        <option value="orc">Орк</option>
+        <!--<option value="goblin">Гоблин</option>-->
+        <!--<option value="orc">Орк</option>-->
        </select>
 	  </center><br>
       <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
