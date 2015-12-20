@@ -2,10 +2,18 @@
 var cardsDeck ={
  numbers : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
  types : [ "spades", "cross", "hearts", "diamonds" ],
- costs : {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13}
+ costs : {1: 14, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13}
 };
 var races = {
-	human: {STR:5, END:5, AGI:5, INT:5, ATK:5, DEF:5, BR:0, DDG:2, HP:50, MP:50, AP:0, LL:0, HR:0, MR:0, lvlup: {STR:1, END:1, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2, MP:2, AP:0, LL:0, HR:0, MR:0} },
+	human: {STR:5, END:5, AGI:5, INT:5, ATK:0, DEF:5, BR:0, DDG:2, HP:50, MP:50, AP:0, LL:0, HR:0, MR:0, lvlup: {STR:1, END:1, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2, MP:2, AP:0, LL:0, HR:0, MR:0} },
+	elf: {STR:4, END:4, AGI:6, INT:6, ATK:0, DEF:4, BR:0, DDG:2, HP:40, MP:60, AP:0, LL:0, HR:0, MR:0, lvlup: {STR:0.75, END:1.25, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0.25, HP:1.75, MP:2.25, AP:0, LL:0, HR:0, MR:0} },
+	troll: {},
+	orc: {},
+	werewolf: {},
+	dwarf: {},
+	goblin: {},
+	gnome: {},
+	vampire: {}
 }
 
 function getRandomFromArr(arr) { //генератор индексов массива
@@ -70,35 +78,19 @@ var Player = $.klass({
   this.type = null;
   this.damage = null;
   this.getStats = function(x){
-	  var curRace = races.human;
-	  if( x == "STR" ){
-		  return Math.round( curRace.STR + curRace.lvlup.STR*this.level );
-	  }else if( x == "END" ){
-		  return Math.round( curRace.END + curRace.lvlup.END*this.level );
-	  }else if( x == "AGI" ){
-		  return Math.round( curRace.AGI + curRace.lvlup.AGI*this.level );
-	  }else if( x == "INT" ){
-		  return Math.round( curRace.INT + curRace.lvlup.INT*this.level );
+		var curRace = races[this.race];
+	  if( x == "STR" || x == "END" || x == "AGI" || x == "INT" ){
+		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
 	  }else if( x == "ATK" ){
-		  return Math.round( curRace.ATK + curRace.lvlup.ATK*this.level + curRace.STR*this.level/5 );
+		  return Math.round( curRace.ATK + curRace.lvlup.ATK*this.level + curRace.STR*this.level/2 );
 	  }else if( x == "DEF" ){
 		  return Math.round( curRace.DEF + curRace.lvlup.DEF*this.level + curRace.END*this.level/10 );
 	  }else if( x == "DDG" ){
 		  return Math.round( curRace.DDG + curRace.lvlup.DDG*this.level + curRace.AGI*this.level/10 );
-	  }else if( x == "HP" ){
-		  return Math.round( curRace.HP + curRace.lvlup.HP*this.level + curRace.END*this.level/5 );
-	  }else if( x == "MP" ){
-		  return Math.round( curRace.MP + curRace.lvlup.MP*this.level + curRace.INT*this.level/5 );
-	  }else if( x == "BR" ){
-		  return Math.round( curRace.BR + curRace.lvlup.BR*this.level );
-	  }else if( x == "AP" ){
-		  return Math.round( curRace.AP + curRace.lvlup.AP*this.level );
-	  }else if( x == "LL" ){
-		  return Math.round( curRace.LL + curRace.lvlup.LL*this.level );
-	  }else if( x == "HR" ){
-		  return Math.round( curRace.HR + curRace.lvlup.HR*this.level );
-	  }else if( x == "MR" ){
-		  return Math.round( curRace.MR + curRace.lvlup.MR*this.level );
+	  }else if( x == "HP" || x == "MP"){
+		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level + curRace.END*this.level/5 );
+	  }else if( x == "BR" || x == "AP" || x == "LL" || x == "HR" || x == "MR"){
+		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
 	  }else{
 		  return null;
 	  }
@@ -129,17 +121,20 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	doCombo: function(comboArr, costsArr, player){
-		var castCombo = {value:0, stat:0, to:0, effect:"none", value2:"none"}; // effect: AP(armorPiercing), RE(recovery), ADD(add(++)), SU(substract)
+		//обратить внимание сюда - castCombo  - то, что мы возвращаем в переменую player.damage, для дальнейшего использования.
+		var castCombo = {value:0, stat:null, to:null, value2:0, effect:null, value3:0, effect2:null}; // effect: AP(armorPiercing), RE(restore), ADD(add(++)), SU(substract)
 		if ( comboArr[0] == "spades" ){
 			if ( comboArr[1] == "spades" ){
 				if ( comboArr[2] == "spades" ){ // критический урон (х3)
 					castCombo.value = Math.round( player.stats.ATK + ((costsArr[1] + costsArr[2])*3)*costsArr[0]/100 );
 					castCombo.stat = "HP";
 					castCombo.to = "enemy";
+					
 				}else if ( comboArr[2] == "diamonds" ){ // критический урон (х2) с использованием маны 
 					castCombo.value = Math.round( player.stats.ATK + ((costsArr[1])*2)*costsArr[0]/100 + player.stats.MP + costsArr[2]*costsArr[0]/100 );
 					castCombo.stat = "HP";
 					castCombo.to = "enemy";
+					
 				}else if ( comboArr[2] == "cross" ){ // критический урон (х2) пробивающий броню 
 					castCombo.value = Math.round( player.stats.ATK + ((costsArr[1])*2)*costsArr[0]/100 );
 					castCombo.stat = "HP";
@@ -152,206 +147,545 @@ var Battleground = $.klass({ // класс для полебоя
 					castCombo.stat = "HP";
 					castCombo.to = "enemy";
 					castCombo.value2 = Math.round( costsArr[2]*costsArr[0]/100);
-					castCombo.effect = "RE"
+					castCombo.effect = "Restore";
 				};
 				
 			}else if( comboArr[1] == "diamonds" ){
-				if ( comboArr[2] == "spades" ){ //критический урон (х2) по мане  
-					Math.round( (player.stats.ATK + (costsArr[1]*2)) * (costsArr[2]*costsArr[0]/100)/100 );
-				
+				if ( comboArr[2] == "spades" ){ // урон  по мане  
+					castCombo.value = Math.round( (player.stats.ATK + costsArr[2]) * (costsArr[1]*costsArr[0]/100)/100 );
+					castCombo.stat = "MP";
+					castCombo.to = "enemy";
+					
 				}else if ( comboArr[2] == "diamonds" ){ // Урон по мане с использованием маны 
-					Math.round( (player.stats.ATK + costsArr[1]*costsArr[0]/100 + player.stats.MP + (costsArr[2]*costsArr[0]/100))*costsArr[0]/100 );
-				
+					castCombo.value = Math.round( (player.stats.ATK + costsArr[1]*costsArr[0]/100 + player.stats.MP + (costsArr[2]*costsArr[0]/100))*costsArr[0]/100 );
+					castCombo.stat = "MP";
+					castCombo.to = "enemy";
+					
 				}else if ( comboArr[2] == "cross" ){ // урон по мане с пробиванием брони 
-					Math.round( (player.stats.ATK + costsArr[1]*costsArr[0]/100)*costsArr[0]/100 );
-					Math.round( costsArr[2]*costsArr[0]/100 ); //-DEF
+					castCombo.value = Math.round( (player.stats.ATK + costsArr[1]*costsArr[0]/100)*costsArr[0]/100 );
+					castCombo.stat = "MP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( costsArr[2]*costsArr[0]/100 ); //-DEF
+					castCombo.effect = "AP";
 				
 				}else{ //урон по мане с вампиризмом overmana не может быть!
-					Math.round( (player.stats.ATK + costsArr[1]*costsArr[0]/100)*costsArr[0]/100 );
-					Math.round( costsArr[2]*costsArr[0]/100 ); //+MP
+					castCombo.value = Math.round( (player.stats.ATK + costsArr[1])*costsArr[0]/100 );
+					castCombo.stat = "MP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( costsArr[2]*costsArr[0]/100 ); //+MP
+					castCombo.effect = "Restore";
 				};
 				
 			}else if( comboArr[1] == "cross" ){
-				if ( comboArr[2] == "spades" ){ // уменьшение урона
-					 Math.round( player.stats.AGI*((costsArr[1]+costsArr[2])*costsArr[0]/100) );
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // бронебойный (х2) урон
+					castCombo.value = Math.round( player.stats.ATK + costsArr[2]*costsArr[0]/100 ); 
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( (costsArr[1]*2)*costsArr[0]/100 );
+					castCombo.effect = "AP";
+					
+				}else if ( comboArr[2] == "diamonds" ){ // бронебойный (х2) урон с использованием маны
+					castCombo.value = Math.round( player.stats.ATK + player.stats.MP + costsArr[2]*costsArr[0]/100 ); 
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( (costsArr[1]*2)*costsArr[0]/100 );
+					castCombo.effect = "AP";
+					
+				}else if ( comboArr[2] == "cross" ){ // бронебойный (х3) урон.
+					castCombo.value = Math.round( player.stats.ATK );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( (costsArr[1]*3)*costsArr[0]/100 );
+					castCombo.effect = "AP";
+					
+				}else{ //бронебойный (х2) урон с вампиризмом
+					castCombo.value = Math.round( player.stats.ATK );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( (costsArr[1]*2)*costsArr[0]/100 );
+					castCombo.effect = "AP";
+					castCombo.value3 = Math.round( costsArr[2]*costsArr[0]/100 );
+					castCombo.effect2 = "RE";
 				};
+				
 			}else{
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ //урон с вампиризмом
+					castCombo.value = Math.round( player.stats.ATK + costsArr[1]*costsArr[0]/100 );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( costsArr[2]*costsArr[0]/100 );
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "diamonds" ){ //урон с маной
+					castCombo.value = Math.round( player.stats.ATK + costsArr[1]*costsArr[0]/100 + player.stats.MP + costsArr[2]*costsArr[0]/100 );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					
+				}else if ( comboArr[2] == "cross" ){ // урон с пробиванием
+					castCombo.value = Math.round(  player.stats.ATK + costsArr[1]*costsArr[0]/100 );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
+					castCombo.value2 = Math.round( costsArr[2]*costsArr[0]/100 );
+					castCombo.effect = "AP";
+					
+				}else{ // урон 
+					castCombo.value = Math.round(  player.stats.ATK + (costsArr[1] + costsArr[2])*costsArr[0]/100 );
+					castCombo.stat = "HP";
+					castCombo.to = "enemy";
 				};
 			};
 		}else if ( comboArr[0] == "diamonds" ){
 			if ( comboArr[1] == "spades" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // уменьшение урона
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "ATK";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "diamonds" ){ //уменьшение базового значения маны
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "MP";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "cross" ){ //уменьшение пробивания
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "AP";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else{ //уменьшение вампиризма
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "LL";
+					castCOmbo.to = "enemy";
+					castCombo.effect = "SU";				
 				};
+				
 			}else if( comboArr[1] == "diamonds" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ //уменьщение силы
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "STR";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "diamonds" ){ //уменьшение интеллекта
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "INT";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "cross" ){ //уменьшение ловкости
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "AGI";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else{ // уменьшение выносливости
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "END";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
 				};
+				
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
+				}else if ( comboArr[2] == "diamonds" ){ // уменьшение восстановление маны
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "MR";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "cross" ){ // уменьшение брони
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "DEF";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else{ // уменьшение силы лечения
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "HR";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
 				};
+				
 			}else{
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
+				if ( comboArr[2] == "spades" ){ // уменьшение уворота
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "DDG";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
+				}else if ( comboArr[2] == "diamonds" ){ //уменьшение блок рейта
+					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
+					castCombo.stat = "BR";
+					castCombo.to = "enemy";
+					castCombo.effect = "SU";
+					
 				}else if ( comboArr[2] == "cross" ){
-					return 
+					 // НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
-					return
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};
 		}else if ( comboArr[0] == "cross" ){
 			if ( comboArr[1] == "spades" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // восстановление урона
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "ATK";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "diamonds" ){ // Восстановление маны
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "MP";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "cross" ){ // восстановление пробивания 
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "AP";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else{ // восстановление вампиризма
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "LL";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
 				};
 			}else if( comboArr[1] == "diamonds" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // восстанвление силы
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "STR";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "diamonds" ){ //восстановление интеллекта
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "INT";
+					castCombo.to = "self"; 
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "cross" ){ //восстановление ловкости
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "AGI";
+					castCombo.to = "self"; 
+					castCombo.effect = "RE";
+					
+				}else{ // восстановление выносливости
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "END";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
 				};
+				
 			}else if( comboArr[1] == "cross" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ 
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
+				}else if ( comboArr[2] == "diamonds" ){ // восстановление силы лечения
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "HR";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "cross" ){// восстановление брони 
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "DEF";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else{ //восстановление хп
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "HP";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
 				};
+				
 			}else{
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
+				if ( comboArr[2] == "spades" ){ // восстановление уворота
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "DDG";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
+				}else if ( comboArr[2] == "diamonds" ){ // восстановление блок рейта
+					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "BR";
+					castCombo.to = "self";
+					castCombo.effect = "RE";
+					
 				}else if ( comboArr[2] == "cross" ){
-					return 
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
-					return
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
 		}else{
 			if ( comboArr[1] == "spades" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // увеличение урона
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "ATK";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
+				}else if ( comboArr[2] == "diamonds" ){// увеличение маны
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "MP";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					 
+				}else if ( comboArr[2] == "cross" ){ //увеличение пробивания
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "AP";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					 
+				}else{ // увеличение вампиризма
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "LL";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
 				};
 			}else if( comboArr[1] == "diamonds" ){
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+				if ( comboArr[2] == "spades" ){ // увеличение силы
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "STR";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					 
+				}else if ( comboArr[2] == "diamonds" ){ // увеличение интеллекта
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "INT";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					 
+				}else if ( comboArr[2] == "cross" ){ // увеличение ловкости
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "AGI";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					 
+				}else{ // увеличение выносливости
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "END";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
 				};
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
-				}else if ( comboArr[2] == "cross" ){
-					return 
-				}else{
-					return
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
+				}else if ( comboArr[2] == "diamonds" ){ // увеличение силы лечения
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "HR";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
+				}else if ( comboArr[2] == "cross" ){ // увеличение брони
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "DEF";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
+				}else{ // увеличение хп
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "HP";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
 				};
+				
 			}else{
-				if ( comboArr[2] == "spades" ){
-					return 
-				}else if ( comboArr[2] == "diamonds" ){
-					return 
+				if ( comboArr[2] == "spades" ){ // увеличение уворота
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "DDG";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
+				}else if ( comboArr[2] == "diamonds" ){// увеличение блок рейта
+					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
+					castCombo.stat = "BR";
+					castCombo.to = "self";
+					castCombo.effect = "ADD"; 
+					
 				}else if ( comboArr[2] == "cross" ){
-					return 
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
-					return
+					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
 		}
+		
+		return castCombo;
+		
 	},
 	
 	calculateDamage: function (player){ // функция подсчета дамага, пока без мастей и комбо
-		var cardN1 = player.battleDeck[0]; //1 карта от плеера на полебоя
-		var cardN2 = player.battleDeck[1]; //2 карта от плеера на полебоя
-		var cardN3 = player.battleDeck[2]; //3 карта от плеера на полебоя
-		var costsArr = [cardN1[1], cardN2[1], cardN3[1]]; // делаем массив из достоинств, для последующего сложения
-		var comboArr = [cardN1[0], cardN2[0], cardN3[0]]; // делаем массив из мастей, для последующей проверки комбинации
-		// складываем достоинства по мастям.
-		for (var i = 3; i < player.battleDeck.length; i++){  
-			if ( cardN1[0] == player.battleDeck[i][0] ){
-				costsArr[0] += player.battleDeck[i][1];
-				i++
-			}else if( cardN2[0] == player.battleDeck[i][0] ){
-				costsArr[1] += player.battleDeck[i][1];
-				i++
-			}else if( cardN3[0] == player.battleDeck[i][0] ){
-				costsArr[2] += player.battleDeck[i][1];
-				i++
-			}else{
+		if ( player.battleDeck.length >= 3){
+			var cardN1 = player.battleDeck[0]; //1 карта от плеера на полебоя
+			var cardN2 = player.battleDeck[1]; //2 карта от плеера на полебоя
+			var cardN3 = player.battleDeck[2]; //3 карта от плеера на полебоя
+			var costsArr = [cardN1[1], cardN2[1], cardN3[1]]; // делаем массив из достоинств, для последующего сложения
+			var comboArr = [cardN1[0], cardN2[0], cardN3[0]]; // делаем массив из мастей, для последующей проверки комбинации
+			// складываем достоинства по мастям.
+			for (var i = 3; i < player.battleDeck.length; i++){  
+				if ( cardN1[0] == player.battleDeck[i][0] ){
+					costsArr[0] += player.battleDeck[i][1];
+					i++;
+				}else if( cardN2[0] == player.battleDeck[i][0] ){
+					costsArr[1] += player.battleDeck[i][1];
+					i++;
+				}else if( cardN3[0] == player.battleDeck[i][0] ){
+					costsArr[2] += player.battleDeck[i][1];
+					i++;
+				}else{
+						i++;
+				};
 			};
-		};
-		this.doCombo(comboArr, costsArr, player); // присваиваем значение, в виде объекта {х:у}
+		player.damage = this.doCombo(comboArr, costsArr, player); // передаем управление функции подсчета.
 		
+		}else{
+			return;
+		}
 	},
- 
+	
+	doDamage: function(){
+		if ( this.player.damage.to == "self" ){
+			if (this.player.damage.effect == "RE"){
+				this.player.stats[this.player.damage.stat] += this.player.damage.value;
+				if ( this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat) ){
+					this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+				}else{
+				}
+			}else{
+				this.player.stats[this.player.damage.stat] += this.player.damage.value;
+			};
+			
+		}else{
+		}
+		
+		if (this.enemy.damage.to == "self"){
+			if ( this.enemy.damage.effect == "RE" ){
+				this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value;
+				if ( this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat) ){
+					this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
+				}else{
+				}
+			}else{
+			this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value;
+			}
+		}else{
+		};
+
+		if( this.player.damage.to == "enemy"){
+			if (this.player.damage.effect = "SU"){
+				this.enemy.stats[this.player.damage.stat] -= this.player.damage.value;
+				if (this.enemy.stats[this.player.damage.stat] < 0) {
+					this.enemy.stats[this.enemy.damage.stat] = 0;
+				}else{
+				}
+			}else{
+			}
+		}else{
+		}
+		
+		if( this.enemy.damage.to == "enemy"){
+			if (this.enemy.damage.effect = "SU"){
+				this.player.stats[this.enemy.damage.stat] -= this.enemy.damage.value;
+				if (this.player.stats[this.enemy.damage.stat] < 0) {
+					this.player.stats[this.enemy.damage.stat] = 0;
+				}else{
+				}
+			}else{
+			}
+		}else{
+		}
+		
+		if( this.player.damage.to == "enemy" ){
+			if (this.player.damage.effect == "AP"){
+				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
+					if( dmg > this.enemy.stats.DEF ){
+						this.enemy.stats[this.player.damage.stat] -= dmg;
+				}else{
+				}			
+			}else{
+				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
+					if( dmg > this.enemy.stats.DEF ){
+						this.enemy.stats[this.player.damage.stat] -= dmg;
+						this.player.stats[this.player.damage.stat] += this.player.damage.value2;
+						if (this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat)){
+							this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+					}else{
+					}
+				}else{
+				}			
+			}
+		}
+		
+		if( this.enemy.damage.to == "enemy" ){
+			if (this.enemy.damage.effect == "AP"){
+				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
+					if( dmg > this.player.stats.DEF ){
+						this.player.stats[this.enemy.damage.stat] -= dmg;
+				}else{
+				}			
+			}else{
+				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
+					if( dmg > this.player.stats.DEF ){
+						this.player.stats[this.enemy.damage.stat] -= dmg;
+						this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value2;
+						if (this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat)){
+							this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
+					}else{
+					}
+				}else{
+				}			
+			}
+		}
+		
+		if( this.player.damage.to == "enemy" ){
+			if (this.player.damage.effect == "AP" && this.player.damage.effect2 == "RE"){
+				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
+					if( dmg > this.enemy.stats.DEF ){
+						this.enemy.stats[this.player.damage.stat] -= dmg;
+						this.player.stats[this.player.damage.stat] += this.player.damage.value2;
+						if (this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat)){
+							this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+					}else{
+					}
+				}else{
+				}			
+			}else{			
+			}
+		}else{	
+		}
+		
+		if( this.enemy.damage.to == "enemy" ){
+			if (this.enemy.damage.effect == "AP" && this.enemy.damage.effect2 == "RE"){
+				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
+					if( dmg > this.player.stats.DEF ){
+						this.player.stats[this.enemy.damage.stat] -= dmg;
+						this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value2;
+						if (this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat)){
+							this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
+					}else{
+					}
+				}else{
+				}			
+			}else{			
+			}
+		}else{	
+		}
+	},
+	
 	battleStart: function (){	 // начало Игры.
 		var bgSelf = this;
 		this.round = 0;
 
 		this.historyDeck = []; // определяем деку истории боя.
 		this.giveCard(this.player, this.cards); // раздаем карты игроку
-		setTimeout(function() {bgSelf.giveCard(bgSelf.enemy, bgSelf.cards)}, 800); // раздаем карты противнику ( боту )
+		setTimeout(function() {bgSelf.giveCard(bgSelf.enemy, bgSelf.cards)}, 600); // раздаем карты противнику ( боту )
 		
 		function rndBoolean(){ // функция определения первого хода.
 			var num = Math.random();
@@ -363,7 +697,7 @@ var Battleground = $.klass({ // класс для полебоя
 		};
 		
 		var firstPlayer = rndBoolean(); // выбираем кто ходит первый.
-		setTimeout(function() {bgSelf.roundStart(firstPlayer)}, 1200); // передаем управлениераундами.
+		setTimeout(function(){ bgSelf.roundStart(firstPlayer)}, 1200); // передаем управлениераундами.
 	},
  
 	battleEnd: function(player){ // конец игры ( вывод сообщений подсчет очков, статистика )
@@ -381,7 +715,7 @@ var Battleground = $.klass({ // класс для полебоя
 		$('#overlay2').css('display', 'block');
 		$('#overlay2 #player_turn').text(currentRound).animate({opacity: 1}, 1000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
 		var bgSelf = this;
-		setTimeout(function(){bgSelf.turnStart(player)},1100);
+		setTimeout( function(){ bgSelf.turnStart(player) } ,1000);
 	},
 	
 	roundEnd: function(player, nextPlayer){
@@ -392,10 +726,11 @@ var Battleground = $.klass({ // класс для полебоя
 			this.calculateDamage(player);
 			this.calculateDamage(nextPlayer);
 		}
-		$("ul#top-battledeck li").appendTo("body").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
+		this.doDamage();
+		$("ul#top-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
-		$("ul#bot-battledeck li").appendTo("body").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
+		$("ul#bot-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
 		player.battleDeck.length = 0; // чистим боевую деку от прошлых значений.
@@ -480,8 +815,8 @@ var Battleground = $.klass({ // класс для полебоя
 		if (this.turnCounter == 1){
 			this.roundEnd(player, nextPlayer);
 		}else{
-			this.turnStart(nextPlayer); 
 			this.turnCounter++;
+			this.turnStart(nextPlayer); 	
 		}
 		
 	},
@@ -515,13 +850,13 @@ var Battleground = $.klass({ // класс для полебоя
 		var cloneSuit = $("div#full_deck").clone();
 		
 		if (player.type == "player"){ // если плеер - делаем *анимацию* и движение карт в его руки.
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 800, function(){ $(this).remove()});
+			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 500, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.connectedSortable")).click( function(){
 				bgSelf.moveCardToBattle(player, card);
 			});
 
 		}else{
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 800, function(){ $(this).remove()});
+			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 500, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.invisible"));
 			// делаем карту рубашкой вверх, и кладем ее ко врагу ( боту ) в невидимую деку.
 			}
@@ -545,7 +880,7 @@ var Battleground = $.klass({ // класс для полебоя
 		$(cardId)
 			.appendTo("body")
 			.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-			.animate({top: cloneOffset.top, left: cloneOffset.left}, 800, function(){
+			.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
 				$(cardId).remove();
 				clone.appendTo($(cardToBattle));
 				clone.css("cursor", "default");
@@ -581,7 +916,7 @@ var Battleground = $.klass({ // класс для полебоя
 			attackArr.push(firstCard[0]);
 			attackArr.push(firstCard[1]);
 			attackArr.push(firstCard[2]);
-		}else if (firstCard.length = 2){
+		}else if (firstCard.length == 2){
 			attackArr.push(firstCard[0]);
 			attackArr.push(firstCard[1]);
 				if ( secondCard.length > 1){
@@ -616,30 +951,31 @@ var Battleground = $.klass({ // класс для полебоя
 	function aiDestroy(){}; // пытается сделать каст на врага, что бы уменьшить его сильные стороны.
 	
 	function aiPlay(arr){
-			var num = 0;
-		if ( num < 3){
-			bgSelf.moveCardToBattle(bgSelf.enemy, arr[i]);
-			num++;
+		if ( arr.length > 0){
+			bgSelf.moveCardToBattle(bgSelf.enemy, arr[0]);
+			arr.splice(0, 1);
+			
 		}else{
 			clearInterval(botTimer);
 			bgSelf.turnEnd(bgSelf.enemy);
 		}
 	}
-	if (this.enemy.deck.indexOf("spades") == -1){
+	if (this.enemy.deck.join(",").indexOf("spades") == -1){
 		return this.turnEnd(this.enemy);
 	}else{
 		var attack = aiAttack();
-		var botTimer = setInterval(aiPlay, 1000, attack);
+		var botTimer = setInterval(function(){ var num = 0; aiPlay(attack)}, 2000);
 	};
 	
 	function searchLear(lear){ // функиця поиска карты по масти
 		var tempArr = [];
 		for (var i = 0; i < bgSelf.enemy.deck.length; i++){
-			var index = bgSelf.enemy.deck.indexOf(lear, i);
-			i = index;
-			tempArr.push(bgSelf.enemy.deck[index]);
+			if( bgSelf.enemy.deck[i][0] == lear ){
+				tempArr.push(bgSelf.enemy.deck[i]);
+			}else{
+			}
 		};
-		tempArr.sort(function (a, b){ return b - a; });
+		tempArr.sort(function (a, b){ return b[1] - a[1]; });
 		return tempArr;
 	};
 
@@ -809,7 +1145,7 @@ var World = { // то, что знает про все и про всех :)
 		// передал управление боевой деке начать ходы.
 
 		var bgSelf = this;
-		setTimeout(function(){bgSelf.battleground.battleStart();}, 1000);
+		bgSelf.battleground.battleStart();
 	
 	},
 	
