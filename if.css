@@ -104,6 +104,7 @@ battledeck {
 	text-overflow:clip;
 }
 .lvl {
+	vertical-align: bottom;
 	background-color: #FF8C00;
 	color: #00008B;
 	font-family: Verdana;
@@ -165,7 +166,7 @@ battledeck {
 }
 .bd_connected ul{
 	list-style-type: none;
-	margin: 0;
+	margin: 0 0 0 100px;
 	padding: 0;
 	display:block;
 	overflow: hidden;
@@ -174,7 +175,7 @@ battledeck {
 	cursor:default;
 }
 .bd_connected li {
-	float:right;
+	float:left;
 }
 .bar {
   width:128px;
@@ -282,12 +283,13 @@ battledeck {
 	position:fixed;
 	min-width:150px;
 	min-height:200px;
+	margin:10px;
 	display:block;
 	padding:auto;
 	overflow:hidden;
 	font-size:18px;
 	text-align:left;
-	border:2px solid black;
+	border:4px solid black;
 	border-radius:10px;
 	background-color: #dfdfdf;
 }
