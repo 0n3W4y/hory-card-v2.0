@@ -5,15 +5,32 @@ var cardsDeck ={
  costs : {1: 14, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13}
 };
 var races = {
-	human: {STR:5, END:5, AGI:5, INT:5, ATK:0, DEF:5, BR:0, DDG:2, HP:50, MP:50, AP:0, LL:0, HR:0, MR:0, lvlup: {STR:1, END:1, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2, MP:2, AP:0, LL:0, HR:0, MR:0} },
-	elf: {STR:4, END:4, AGI:6, INT:6, ATK:0, DEF:4, BR:0, DDG:2, HP:40, MP:60, AP:0, LL:0, HR:0, MR:0, lvlup: {STR:0.75, END:1.25, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0.25, HP:1.75, MP:2.25, AP:0, LL:0, HR:0, MR:0} },
-	troll: {},
-	orc: {},
-	werewolf: {},
-	dwarf: {},
-	goblin: {},
-	gnome: {},
-	vampire: {}
+	human: {STR:5, END:5, AGI:5, INT:5, ATK:5, DEF:5, BR:0, DDG:2, HP:50, MP:50, AP:0, LL:0, HR:0, MR:0, lvlup:
+		{STR:1, END:1, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2, MP:2, AP:0, LL:0, HR:0, MR:0} },
+		
+	elf: {STR:4, END:4, AGI:6, INT:6, ATK:4, DEF:4, BR:0, DDG:2, HP:40, MP:60, AP:0, LL:0, HR:0, MR:0, lvlup:
+		{STR:0.75, END:1.25, AGI:1, INT:1, ATK:0, DEF:0.25, BR:0, DDG:0.25, HP:1.75, MP:2.25, AP:0, LL:0, HR:0, MR:0} },
+		
+	troll: {STR:10, END:10, AGI:1, INT:1, ATK:5, DEF:1, BR:0, DDG:0, HP:90, MP:20, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:2, END:2, AGI:0.25, INT:0.25, ATK:0, DEF:0, BR:0, DDG:0, HP:3, MP:0.5, AP:0, LL:0, HR:0, MR:0} },
+		
+	orc: {STR:9, END:7, AGI:2, INT:2, ATK:6, DEF:3, BR:0, DDG:3, HP:80, MP:20, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:1.75, END:1.75, AGI:0.25, INT:0.25, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2.5, MP:0.5, AP:0, LL:0, HR:0, MR:0} },
+		
+	werewolf: {STR:7, END:7, AGI:4, INT:2, ATK:6, DEF:2, BR:0, DDG:4, HP:70, MP:30, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:1.75, END:1.5, AGI:0.5, INT:0.5, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2.5, MP:0.5, AP:0, LL:0, HR:0, MR:0} },
+		
+	dwarf: {STR:9, END:7, AGI:3, INT:1, ATK:6, DEF:6, BR:0, DDG:0, HP:80, MP:20, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:1.5, END:1.5, AGI:0.75, INT:0.25, ATK:0, DEF:0.25, BR:0, DDG:0, HP:2.75, MP:0.75, AP:0, LL:0, HR:0, MR:0} },
+		
+	goblin: {STR:6, END:4, AGI:6, INT:4, ATK:4, DEF:2, BR:0, DDG:0, HP:60, MP:40, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:1, END:0.75, AGI:1.25, INT:0.75, ATK:0, DEF:0.25, BR:0, DDG:0, HP:1.75, MP:2, AP:0, LL:0, HR:0, MR:0} },
+		
+	gnome: {STR:3, END:3, AGI:7, INT:8, ATK:4, DEF:2, BR:0, DDG:0, HP:30, MP:70, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:0.75, END:0.75, AGI:1.25, INT:1.5, ATK:0, DEF:0.25, BR:0, DDG:0, HP:1.5, MP:2.5, AP:0, LL:0, HR:0, MR:0} },
+		
+	vampire: {STR:6, END:6, AGI:4, INT:4, ATK:5, DEF:3, BR:0, DDG:0, HP:50, MP:50, AP:0, LL:0, HR:0, MR:0, lvlup: 
+		{STR:0.75, END:1, AGI:1, INT:1.25, ATK:0, DEF:0.25, BR:0, DDG:0, HP:1.5, MP:1.75, AP:0, LL:0, HR:0, MR:0} }
 }
 
 function getRandomFromArr(arr) { //генератор индексов массива
@@ -543,46 +560,35 @@ var Battleground = $.klass({ // класс для полебоя
 						i++;
 				};
 			};
-		player.damage = this.doCombo(comboArr, costsArr, player); // передаем управление функции подсчета.
-		
-		}else{
+			player.damage = this.doCombo(comboArr, costsArr, player); // передаем управление функции подсчета.
 			return;
+			
+		}else{
+			return; 
 		}
 	},
 	
-	doDamage: function(){
-		if ( this.player.damage.to == "self" ){
-			if (this.player.damage.effect == "RE"){
-				this.player.stats[this.player.damage.stat] += this.player.damage.value;
-				if ( this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat) ){
-					this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+	doDamage: function(player1, player2){
+		
+		if ( player1.damage.to == "self" ){
+			if (player1.damage.effect == "RE"){
+				player1.stats[player1.damage.stat] += player1.damage.value;
+				if ( player1.stats[player1.damage.stat] > player1.getStats(player1.damage.stat) ){
+					player1.stats[player1.damage.stat] = player1.getStats(player1.damage.stat);
 				}else{
 				}
 			}else{
-				this.player.stats[this.player.damage.stat] += this.player.damage.value;
+				player1.stats[player1.damage.stat] += player1.damage.value;
 			};
 			
 		}else{
 		}
-		
-		if (this.enemy.damage.to == "self"){
-			if ( this.enemy.damage.effect == "RE" ){
-				this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value;
-				if ( this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat) ){
-					this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
-				}else{
-				}
-			}else{
-			this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value;
-			}
-		}else{
-		};
 
-		if( this.player.damage.to == "enemy"){
-			if (this.player.damage.effect = "SU"){
-				this.enemy.stats[this.player.damage.stat] -= this.player.damage.value;
-				if (this.enemy.stats[this.player.damage.stat] < 0) {
-					this.enemy.stats[this.enemy.damage.stat] = 0;
+		if( player1.damage.to == "enemy"){
+			if (player1.damage.effect = "SU"){
+				player2.stats[player1.damage.stat] -= player1.damage.value;
+				if (player2.stats[player1.damage.stat] < 0) {
+					player2.stats[player2.damage.stat] = 0;
 				}else{
 				}
 			}else{
@@ -590,32 +596,20 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{
 		}
 		
-		if( this.enemy.damage.to == "enemy"){
-			if (this.enemy.damage.effect = "SU"){
-				this.player.stats[this.enemy.damage.stat] -= this.enemy.damage.value;
-				if (this.player.stats[this.enemy.damage.stat] < 0) {
-					this.player.stats[this.enemy.damage.stat] = 0;
-				}else{
-				}
-			}else{
-			}
-		}else{
-		}
-		
-		if( this.player.damage.to == "enemy" ){
-			if (this.player.damage.effect == "AP"){
-				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
-					if( dmg > this.enemy.stats.DEF ){
-						this.enemy.stats[this.player.damage.stat] -= dmg;
+		if( player1.damage.to == "enemy" ){
+			if (player1.damage.effect == "AP"){
+				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
+					if( dmg > player2.stats.DEF ){
+						player2.stats[player1.damage.stat] -= dmg;
 				}else{
 				}			
 			}else{
-				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
-					if( dmg > this.enemy.stats.DEF ){
-						this.enemy.stats[this.player.damage.stat] -= dmg;
-						this.player.stats[this.player.damage.stat] += this.player.damage.value2;
-						if (this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat)){
-							this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
+				if( dmg > player2.stats.DEF ){
+					player2.stats[player1.damage.stat] -= dmg;
+					player1.stats[player1.damage.stat] += player1.damage.value2;
+					if (player1.stats[player1.damage.stat] > player1.getStats(player1.damage.stat)){
+						player1.stats[player1.damage.stat] = player1.getStats(player1.damage.stat);
 					}else{
 					}
 				}else{
@@ -623,35 +617,14 @@ var Battleground = $.klass({ // класс для полебоя
 			}
 		}
 		
-		if( this.enemy.damage.to == "enemy" ){
-			if (this.enemy.damage.effect == "AP"){
-				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
-					if( dmg > this.player.stats.DEF ){
-						this.player.stats[this.enemy.damage.stat] -= dmg;
-				}else{
-				}			
-			}else{
-				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
-					if( dmg > this.player.stats.DEF ){
-						this.player.stats[this.enemy.damage.stat] -= dmg;
-						this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value2;
-						if (this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat)){
-							this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
-					}else{
-					}
-				}else{
-				}			
-			}
-		}
-		
-		if( this.player.damage.to == "enemy" ){
-			if (this.player.damage.effect == "AP" && this.player.damage.effect2 == "RE"){
-				var dmg = this.player.damage.value - this.enemy.stats.DEF - this.player.damage.value2;
-					if( dmg > this.enemy.stats.DEF ){
-						this.enemy.stats[this.player.damage.stat] -= dmg;
-						this.player.stats[this.player.damage.stat] += this.player.damage.value2;
-						if (this.player.stats[this.player.damage.stat] > this.player.getStats(this.player.damage.stat)){
-							this.player.stats[this.player.damage.stat] = this.player.getStats(this.player.damage.stat);
+		if( player1.damage.to == "enemy" ){
+			if (player1.damage.effect == "AP" && player1.damage.effect2 == "RE"){
+				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
+					if( dmg > player2.stats.DEF ){
+						player2.stats[player1.damage.stat] -= dmg;
+						player1.stats[player1.damage.stat] += player1.damage.value2;
+						if (player1.stats[player1.damage.stat] > player1.getStats(player1.damage.stat)){
+							player1.stats[player1.damage.stat] = player1.getStats(player1.damage.stat);
 					}else{
 					}
 				}else{
@@ -661,22 +634,6 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{	
 		}
 		
-		if( this.enemy.damage.to == "enemy" ){
-			if (this.enemy.damage.effect == "AP" && this.enemy.damage.effect2 == "RE"){
-				var dmg = this.enemy.damage.value - this.player.stats.DEF - this.enemy.damage.value2;
-					if( dmg > this.player.stats.DEF ){
-						this.player.stats[this.enemy.damage.stat] -= dmg;
-						this.enemy.stats[this.enemy.damage.stat] += this.enemy.damage.value2;
-						if (this.enemy.stats[this.enemy.damage.stat] > this.enemy.getStats(this.enemy.damage.stat)){
-							this.enemy.stats[this.enemy.damage.stat] = this.enemy.getStats(this.enemy.damage.stat);
-					}else{
-					}
-				}else{
-				}			
-			}else{			
-			}
-		}else{	
-		}
 	},
 	
 	battleStart: function (){	 // начало Игры.
@@ -719,22 +676,74 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	roundEnd: function(player, nextPlayer){
-		if (player.battleDeck[0][0] == "spades"){
-			this.calculateDamage(nextPlayer);
-			this.calculateDamage(player);
+		var bgSelf = this;
+		// проверяем, положил ли игрок карты в боевую деку или нет.
+		if (player.battleDeck.length == 0){ 
+			if (nextPlayer.battleDeck.length == 0){
+				// ничего не делаем, если оба не положили.
+			}else{
+				this.calculateDamage(nextPlayer);
+				this.doDamage(nextPlayer, player);
+				if (player.stats.HP <= 0){
+						doRefreshUiStats();
+						this.battleEnd(player);
+						return;
+				}else{};
+			}
 		}else{
-			this.calculateDamage(player);
-			this.calculateDamage(nextPlayer);
-		}
-		this.doDamage();
+			if (nextPlayer.battleDeck.length == 0){
+				this.calculateDamage(player);
+				this.doDamage(player, nextPlayer);
+				if (nextPlayer.stats.HP <= 0){
+						doRefreshUiStats();
+						this.battleEnd(nextPlayer);
+						return;
+					}else{};
+			}else{
+				this.calculateDamage(nextPlayer);
+				this.calculateDamage(player);
+				if (player.battleDeck[0][0] == "spades"){
+					this.doDamage(nextPlayer, player);
+					if (player.stats.HP <= 0){
+						doRefreshUiStats();
+						this.battleEnd(player);
+						return;
+					}else{};
+				}else{
+					this.doDamage(player, nextPlayer);
+					if (nextPlayer.stats.HP <= 0){
+						doRefreshUiStats();
+						this.battleEnd(nextPlayer);
+						return;
+					}else{};
+				};
+			};
+		};
+		
+		// анимация убирания карт из боевой деки
 		$("ul#top-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
 		$("ul#bot-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
-		player.battleDeck.length = 0; // чистим боевую деку от прошлых значений.
-		nextPlayer.battleDeck.length = 0; // чистим боевую деку от прошлых значений.
+			
+		// заполняю визуализированные статы игрока и противника
+		function doRefreshUiStats(){
+		$("#bpb-hp span").css("width", (bgSelf.player.getStats("HP")*bgSelf.player.stats.HP/100 + "%") );
+		$("#bpb-hp span").text(bgSelf.player.stats.HP);
+		$("#bottom-atk").text(bgSelf.player.stats.ATK);
+		$("#bottom-def").text(bgSelf.player.stats.DEF);
+		
+		$("#tpb-hp span").css("width", (bgSelf.enemy.getStats("HP")*bgSelf.enemy.stats.HP/100 + "%") );
+		$("#tpb-hp span").text(bgSelf.enemy.stats.HP);
+		$("#top-atk").text(bgSelf.enemy.stats.ATK);
+		$("#top-def").text(bgSelf.enemy.stats.DEF);
+		};
+		// чистим боевую деку от прошлых значений.
+		player.battleDeck.length = 0; 
+		nextPlayer.battleDeck.length = 0; 
+		doRefreshUiStats();
 		
 		if (player.stats.HP <= 0){ // проверка на смерть игрока
 			this.battleEnd(player);
@@ -748,22 +757,20 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	turnStart: function (player){ //начало хода для игрока
-		player.battleDeck.length = 0; // чистим боевую деку от прошлых значений.
-		if (player == this.player){ 
+		if (player == this.player){ // проверяем кто сейчас ходит  и выводим соответствующую надпись.
 			$('#overlay2').css('display', 'block');
 			$('#overlay2 #player_turn').text("Ваш ход").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
 			$("#turn").removeAttr('disabled');
-			//var playerHp = "#" + "bpb-hp span"; 
+			$(".connectedSortable").removeAttr('disabled');
+
 		}else{
 			$('#overlay2').css('display', 'block');
 			$('#overlay2 #player_turn').text("Ход противника").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
 			$("#turn").attr('disabled','disabled');
-			//var playerHp = "#" + "tpb-hp span";
-			//var playerMp = "#" + "tpb-mp span";
+			$(".connectedSortable").attr('disabled', 'disabled');
+
 		}
-		//var curHp = ((player.stats.current.HP/player.stats.HP)*100) + "%"; // меняем бар с ХП у текущего игрока.
-		//$(playerHp).css("width", curHp);
-		//$(playerHp).text(player.stats.current.HP);
+
 		
 		this.giveCard(player, this.cardsEveryTurn); // раздаем карты, помеченные как за каждый новый ход.	
 		var timer = this.timer; // биндим количество секунд на ход.
@@ -804,15 +811,16 @@ var Battleground = $.klass({ // класс для полебоя
 					$(cardId)
 						.appendTo("body")
 						.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-						.animate({top: cloneOffset.top, left: cloneOffset.left}, 800, function(){
+						.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
 						$(cardId).remove();
 						clone.appendTo($(cardToBattle));
 						});
 			}
+			player.battleDeck.length = 0; // после того как вернули карты, чистим боевую деку.
 		}else{
 		}
 		
-		if (this.turnCounter == 1){
+		if (this.turnCounter == 1){ // проверяем каждый ли сходил по 1 разу?
 			this.roundEnd(player, nextPlayer);
 		}else{
 			this.turnCounter++;
@@ -828,9 +836,10 @@ var Battleground = $.klass({ // класс для полебоя
 	},
  
 	giveCard: function (player, cards) { //раздача карт игроку.
-		for (var i = 0; i < cards; i++){ // генерируем, раздаем.
-			this.addCard(player);
-		}
+		var bgSelf = this;
+		var num = 0;
+		var cardTimer = setInterval(function(){ if( num < cards ){ num++; bgSelf.addCard(player); }else{ clearInterval(cardTimer);} }, 600);
+
 	},
 	
 	addCard: function(player) { //даем карту игроку. // переделать функцию добавления карт, что бы можно было запускать с таймером.
@@ -864,30 +873,46 @@ var Battleground = $.klass({ // класс для полебоя
 	
 	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
 		var cardId = "." + card.join("") + "#" + player.type;
-		if (player.type == "enemy"){
-			var cardOffset = $(".invisible").offset();
-			var cardToBattle = $("ul#top-battledeck");
+		function checkCard(player, card){ // проверка, можно ли положить карту, или нет.
+			if (player.battleDeck.length < 3){
+				return true;
+			}else{
+				if (player.battleDeck[0] == card[0] || player.battleDeck[1] == card[0] || player.battleDeck[2] == card[0]){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		};
+		if (checkCard(player, card)){
+			if (player.type == "enemy"){
+				var cardOffset = $(".invisible").offset();
+				var cardToBattle = $("ul#top-battledeck");
 			
+			}else{
+				var cardOffset = $(cardId).offset();
+				var cardToBattle = $("ul#bot-battledeck");
+			}
+			var clone = $(cardId).clone();
+			clone.appendTo($(cardToBattle)); 
+			var cloneOffset = clone.offset();
+			clone.remove();	
+			$(cardId)
+				.appendTo("body")
+				.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
+				.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
+					$(cardId).remove();
+					clone.appendTo($(cardToBattle));
+					clone.css("cursor", "default");
+				});
+			player.battleDeck.push(card); // пушим боевую деку игрока картой.
+			var cardToDelete = player.deck.indexOf(card);
+			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
+		
 		}else{
-			var cardOffset = $(cardId).offset();
-			var cardToBattle = $("ul#bot-battledeck");
+			$(cardId).effect("highlight", {color: "red"}, 500);
 		}
-		var clone = $(cardId).clone();
-		clone.appendTo($(cardToBattle)); 
-		var cloneOffset = clone.offset();
-		clone.remove();	
-
-		$(cardId)
-			.appendTo("body")
-			.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-			.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
-				$(cardId).remove();
-				clone.appendTo($(cardToBattle));
-				clone.css("cursor", "default");
-			});
-		player.battleDeck.push(card); // пушим боевую деку игрока картой.
-		var cardToDelete = player.deck.indexOf(card);
-		player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
+		
 	},
  
 	runTimer: function(timer, player){ // сам таймер хода.
@@ -905,100 +930,80 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 
 	runAi: function(){ 
-	var bgSelf = this;
-	function aiAttack(){
-		var attackArr = [];
-		var firstCard = searchLear("spades");
-		var secondCard = searchLear("cross");
-		var thirdCard = searchLear("diamonds");
-		var fourthCard = searchLear("herats");
-		if (firstCard.length > 2){
-			attackArr.push(firstCard[0]);
-			attackArr.push(firstCard[1]);
-			attackArr.push(firstCard[2]);
-		}else if (firstCard.length == 2){
-			attackArr.push(firstCard[0]);
-			attackArr.push(firstCard[1]);
-				if ( secondCard.length > 1){
-					attackArr.push(secondCard[0]);
-				}else if( thirdCard.length > 1 ){
-					attackArr.push(thirdCard[0]);
-				}else{
-					attackArr.push(fourthCard[0]);
-				}
-		}else{
-			attackArr.push(firstCard[0]);
-				if ( secondCard.length > 2){
-					attackArr.push(secondCard[0]);
-					attackArr.push(secondCard[1]);
-				}else if( thirdCard.length > 2 ){
-					attackArr.push(thirdCard[0]);
-					attackArr.push(thirdCard[1]);
-				}else if( fourthCard.length > 2){
-					attackArr.push(fourthCard[0]);
-					attackArr.push(fourthCard[1]);
-				}else{
-					var cardsArray = firstCard.concat(secondCard, thirdCard, fourthCard);
-					attackArr.push(cardsArray[getRandomFromArr(cardsArray)]);
-					attackArr.push(cardsArray[getRandomFromArr(cardsArray)]);
-				}
-		}
-	return attackArr;
-	};
-	// теоритически нужна функция анализа врага, которая запустит соответствующий ИИ. пока не заморачиваюсь.
-	function aiBuff(){}; //дает каст на себя в виде положительных эффектов, которые добавляются к оснвонвым
-	function aiDefend(){}; // дает каст н асебя. для восстанолвения исходных значений.
-	function aiDestroy(){}; // пытается сделать каст на врага, что бы уменьшить его сильные стороны.
-	
-	function aiPlay(arr){
-		if ( arr.length > 0){
-			bgSelf.moveCardToBattle(bgSelf.enemy, arr[0]);
-			arr.splice(0, 1);
-			
-		}else{
-			clearInterval(botTimer);
-			bgSelf.turnEnd(bgSelf.enemy);
-		}
-	}
-	if (this.enemy.deck.join(",").indexOf("spades") == -1){
-		return this.turnEnd(this.enemy);
-	}else{
-		var attack = aiAttack();
-		var botTimer = setInterval(function(){ var num = 0; aiPlay(attack)}, 2000);
-	};
-	
-	function searchLear(lear){ // функиця поиска карты по масти
-		var tempArr = [];
-		for (var i = 0; i < bgSelf.enemy.deck.length; i++){
-			if( bgSelf.enemy.deck[i][0] == lear ){
-				tempArr.push(bgSelf.enemy.deck[i]);
+		var bgSelf = this;
+		// функция атаки.
+		function aiAttack(){
+			var attackArr = [];
+			var firstCard = searchLear("spades"); 
+			var secondCard = searchLear("cross");
+			var thirdCard = searchLear("diamonds");
+			var fourthCard = searchLear("herats");
+			if (firstCard.length > 2){
+				attackArr.push(firstCard[0]);
+				attackArr.push(firstCard[1]);
+				attackArr.push(firstCard[2]);
+			}else if (firstCard.length == 2){
+				attackArr.push(firstCard[0]);
+				attackArr.push(firstCard[1]);
+					if ( secondCard.length > 1){
+						attackArr.push(secondCard[0]);
+					}else if( thirdCard.length > 1 ){
+						attackArr.push(thirdCard[0]);
+					}else{
+						attackArr.push(fourthCard[0]);
+					}
 			}else{
+				attackArr.push(firstCard[0]);
+					if ( secondCard.length > 2){
+						attackArr.push(secondCard[0]);
+						attackArr.push(secondCard[1]);
+					}else if( thirdCard.length > 2 ){
+						attackArr.push(thirdCard[0]);
+						attackArr.push(thirdCard[1]);
+					}else if( fourthCard.length > 2){
+						attackArr.push(fourthCard[0]);
+						attackArr.push(fourthCard[1]);
+					}else{
+						var cardsArray = firstCard.concat(secondCard, thirdCard, fourthCard);
+						attackArr.push(cardsArray[getRandomFromArr(cardsArray)]);
+						attackArr.push(cardsArray[getRandomFromArr(cardsArray)]);
+					}
 			}
+		return attackArr;
 		};
-		tempArr.sort(function (a, b){ return b[1] - a[1]; });
-		return tempArr;
-	};
-
+		// теоритически нужна функция анализа врага, которая запустит соответствующий ИИ. пока не заморачиваюсь.
+		function aiBuff(){}; //дает каст на себя в виде положительных эффектов, которые добавляются к оснвонвым
+		function aiDefend(){}; // дает каст н асебя. для восстанолвения исходных значений.
+		function aiDestroy(){}; // пытается сделать каст на врага, что бы уменьшить его сильные стороны.
 	
-	/*function aiCheckCard(){ 
-			var properCard = [];
-			for (var i = 0; i < bgSelf.enemy.deck.length; i++){ 
-				var nextCard = bgSelf.enemy.deck[i];
-				if (bgSelf.checkCard(nextCard)){ 
-					properCard.push(nextCard); 
-				}
-			}
-			if (properCard.length > 0){
-				var randomIndex = getRandomFromArr(properCard);
-				var chosenCard = properCard[randomIndex];
-				bgSelf.moveCardToBattle(bgSelf.enemy, chosenCard);
+		function aiPlay(arr){
+			if ( arr.length > 0){
+				bgSelf.moveCardToBattle(bgSelf.enemy, arr[0]);
+				arr.splice(0, 1);
+			
 			}else{
-				clearInterval(botTimer);// останавливаем проверку. когда нет подходящих карт.
+				clearInterval(botTimer);
 				bgSelf.turnEnd(bgSelf.enemy);
 			}
+		}
+		if (this.enemy.deck.join(",").indexOf("spades") == -1){ // проверка, можем ли бот атаковать?
+			return this.turnEnd(this.enemy);
+		}else{
+			var attack = aiAttack();
+			var botTimer = setInterval(function(){ aiPlay(attack)}, 1000);
 		};
-		var botTimer = setInterval(aiCheckCard, 1200);
-	}*/
+	
+		function searchLear(lear){ // функиця поиска карты по масти
+			var tempArr = [];
+			for (var i = 0; i < bgSelf.enemy.deck.length; i++){
+				if( bgSelf.enemy.deck[i][0] == lear ){
+					tempArr.push(bgSelf.enemy.deck[i]);
+				}else{
+				}
+			};
+			tempArr.sort(function (a, b){ return b[1] - a[1]; }); // сортируем, что бы большим значением были вначале
+			return tempArr;
+		};
 	}
 });
 
@@ -1126,9 +1131,9 @@ var World = { // то, что знает про все и про всех :)
 		$("#top-lvl").text(this.enemy.level);
 		
 		// подсказка по наведению на аватарку игрока.
-		var pinfo = "<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.MP + "</br></div>";
+		var pinfo = "<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.MP + "</br> Уворот: " + this.player.stats.DDG + "</br> Шанс на блок: " + this.player.stats.BR + "</br></div>";
 		var info2 = $(pinfo);
-		var einfo = "<div>" + this.enemy.name + "</br>Уровень: " + this.enemy.level + "</br>Раса: " + this.enemy.race +"</br>Жизни: " + this.enemy.stats.HP + "</br>Дух: " + this.enemy.stats.MP + "</br></div>";
+		var einfo = "<div>" + this.enemy.name + "</br>Уровень: " + this.enemy.level + "</br>Раса: " + this.enemy.race +"</br>Жизни: " + this.enemy.stats.HP + "</br>Дух: " + this.enemy.stats.MP + "</br> Уворот: " + this.enemy.stats.DDG + "</br> Шанс на блок: " + this.enemy.stats.BR + "</br></div>";
 		var info1 = $(einfo);
 	
 		var etool = $("#topavatar");
@@ -1168,9 +1173,30 @@ $(document).ready(function() {
 			$( this ).find("h1.tooltip").remove();
 		}
 	);
-	
-	
-
+	$( "#bpb-mp" ).hover(
+		function() {
+			$( this ).append("<h1 class='tooltip'>" + World.player.stats.MP + "/" + World.player.getStats('MP') + "</h1>");
+		},
+		function() {
+			$( this ).find("h1.tooltip").remove();
+		}
+	);
+	$( "#tpb-hp" ).hover(
+		function() {
+			$( this ).append("<h1 class='tooltip'>" + World.enemy.stats.HP + "/" + World.enemy.getStats('HP') + "</h1>");
+		},
+		function() {
+			$( this ).find("h1.tooltip").remove();
+		}
+	);
+	$( "#tpb-mp" ).hover(
+		function() {
+			$( this ).append("<h1 class='tooltip'>" + World.enemy.stats.MP + "/" + World.enemy.getStats('MP') + "</h1>");
+		},
+		function() {
+			$( this ).find("h1.tooltip").remove();
+		}
+	);
 
 	// запуск самого модального окошка, и маунт кнопок всех.
 	setTimeout(function(){
