@@ -171,10 +171,12 @@ battledeck {
 	display:block;
 	overflow: hidden;
 	height: 100%;
-	cursor:default;
 }
 .bd_connected li {
 	float:left;
+}
+#top-battledeck{
+	cursor: default;
 }
 .bar {
   width:128px;

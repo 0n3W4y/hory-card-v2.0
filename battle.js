@@ -306,6 +306,7 @@ var Battleground = $.klass({ // класс для полебоя
 				
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // уменьшение восстановление маны
 					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
@@ -340,8 +341,10 @@ var Battleground = $.klass({ // класс для полебоя
 					castCombo.effect = "SU";
 					
 				}else if ( comboArr[2] == "cross" ){
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					 // НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};
@@ -399,6 +402,7 @@ var Battleground = $.klass({ // класс для полебоя
 				
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){ 
+				alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // восстановление силы лечения
 					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
@@ -433,8 +437,10 @@ var Battleground = $.klass({ // класс для полебоя
 					castCombo.effect = "RE";
 					
 				}else if ( comboArr[2] == "cross" ){
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
@@ -493,6 +499,7 @@ var Battleground = $.klass({ // класс для полебоя
 				};
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // увеличение силы лечения
 					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
@@ -528,7 +535,9 @@ var Battleground = $.klass({ // класс для полебоя
 					
 				}else if ( comboArr[2] == "cross" ){
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 				}else{
+					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
@@ -598,16 +607,16 @@ var Battleground = $.klass({ // класс для полебоя
 		
 		if( player1.damage.to == "enemy" ){
 			if (player1.damage.effect == "AP"){
-				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
-					if( dmg > player2.stats.DEF ){
+				var dmg = player1.damage.value - (player2.stats.DEF - player1.damage.value2);
+					if( dmg > 0 ){
 						player2.stats[player1.damage.stat] -= dmg;
 				}else{
 				}			
 			}else{
-				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
-				if( dmg > player2.stats.DEF ){
+				var dmg = player1.damage.value - (player2.stats.DEF - player1.damage.value2);
+				if( dmg > 0 ){
 					player2.stats[player1.damage.stat] -= dmg;
-					player1.stats[player1.damage.stat] += player1.damage.value2;
+					player1.stats[player1.damage.stat] += Math.round(dmg*player1.damage.value2/100);
 					if (player1.stats[player1.damage.stat] > player1.getStats(player1.damage.stat)){
 						player1.stats[player1.damage.stat] = player1.getStats(player1.damage.stat);
 					}else{
@@ -615,14 +624,14 @@ var Battleground = $.klass({ // класс для полебоя
 				}else{
 				}			
 			}
-		}
+		}else{};
 		
 		if( player1.damage.to == "enemy" ){
 			if (player1.damage.effect == "AP" && player1.damage.effect2 == "RE"){
-				var dmg = player1.damage.value - player2.stats.DEF - player1.damage.value2;
-					if( dmg > player2.stats.DEF ){
+				var dmg = player1.damage.value - (player2.stats.DEF - player1.damage.value2);
+					if( dmg > 0 ){
 						player2.stats[player1.damage.stat] -= dmg;
-						player1.stats[player1.damage.stat] += player1.damage.value2;
+						player1.stats[player1.damage.stat] += Math.round(dmg*player1.damage.value2/100);
 						if (player1.stats[player1.damage.stat] > player1.getStats(player1.damage.stat)){
 							player1.stats[player1.damage.stat] = player1.getStats(player1.damage.stat);
 					}else{
@@ -631,8 +640,12 @@ var Battleground = $.klass({ // класс для полебоя
 				}			
 			}else{			
 			}
-		}else{	
-		}
+		}else{
+			var dmg = player1.damage.value - player2.stats.DEF;
+			if( dmg > 0 ){
+				player2.stats[player1.damage.stat] -= dmg;
+			}else{};
+		};
 		
 	},
 	
@@ -642,7 +655,7 @@ var Battleground = $.klass({ // класс для полебоя
 
 		this.historyDeck = []; // определяем деку истории боя.
 		this.giveCard(this.player, this.cards); // раздаем карты игроку
-		setTimeout(function() {bgSelf.giveCard(bgSelf.enemy, bgSelf.cards)}, 600); // раздаем карты противнику ( боту )
+		this.giveCard(this.enemy, this.cards); // раздаем карты противнику ( боту )
 		
 		function rndBoolean(){ // функция определения первого хода.
 			var num = Math.random();
@@ -676,6 +689,7 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	roundEnd: function(player, nextPlayer){
+		this.round++;
 		var bgSelf = this;
 		// проверяем, положил ли игрок карты в боевую деку или нет.
 		if (player.battleDeck.length == 0){ 
@@ -730,12 +744,12 @@ var Battleground = $.klass({ // класс для полебоя
 			
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
-		$("#bpb-hp span").css("width", (bgSelf.player.getStats("HP")*bgSelf.player.stats.HP/100 + "%") );
+		$("#bpb-hp span").css("width", (bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%") );
 		$("#bpb-hp span").text(bgSelf.player.stats.HP);
 		$("#bottom-atk").text(bgSelf.player.stats.ATK);
 		$("#bottom-def").text(bgSelf.player.stats.DEF);
 		
-		$("#tpb-hp span").css("width", (bgSelf.enemy.getStats("HP")*bgSelf.enemy.stats.HP/100 + "%") );
+		$("#tpb-hp span").css("width", (bgSelf.enemy.stats.HP/bgSelf.enemy.getStats("HP")*100 + "%") );
 		$("#tpb-hp span").text(bgSelf.enemy.stats.HP);
 		$("#top-atk").text(bgSelf.enemy.stats.ATK);
 		$("#top-def").text(bgSelf.enemy.stats.DEF);
@@ -751,7 +765,7 @@ var Battleground = $.klass({ // класс для полебоя
 			if (nextPlayer.stats.HP <= 0){
 				this.battleEnd(nextPlayer);
 			}else{
-				this.turnStart(player); // - а теперь внимание. Почему плеер? ведь он был последним ходящим. Хочу сделать что бы они менялись, Первый раунд ходит первым 1, а во второй раунд ходит первым 2
+				this.roundStart(player); // - а теперь внимание. Почему плеер? ведь он был последним ходящим. Хочу сделать что бы они менялись, Первый раунд ходит первым 1, а во второй раунд ходит первым 2
 			}
 		}
 	},
@@ -784,6 +798,7 @@ var Battleground = $.klass({ // класс для полебоя
 	turnEnd: function (player){ // заканчиваем ходигрока
 		clearInterval(this.timerId); // чистим таймер, если вдруг конец хода был вызван вручную.
 		$("#time-left").text(0); // показываем, что текущее время хода 0.
+		var bgSelf = this;
 		if (player.type == "player"){ // маунтим следующего игрока.
 			var nextPlayer = this.enemy; // если да, то выбираем следущего игрока как противник ( бот )
 			
@@ -903,18 +918,38 @@ var Battleground = $.klass({ // класс для полебоя
 				.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
 					$(cardId).remove();
 					clone.appendTo($(cardToBattle));
-					clone.css("cursor", "default");
+					if (player == this.player){
+						clone.click(function(){ bgSelf.moveCardToDeck(card);})
+					};
 				});
 			player.battleDeck.push(card); // пушим боевую деку игрока картой.
 			var cardToDelete = player.deck.indexOf(card);
 			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
 		
 		}else{
-			$(cardId).effect("highlight", {color: "red"}, 500);
+			$(cardId).effect("highlight", {color: "red"}, 500);	
 		}
 		
 	},
- 
+	
+	moveCardToDeck: function(card){
+		var bgSelf = this;
+		var cardId = "." + card.join("") + "#" + player.type;
+		var cardOffset = $(cardId).offset();
+			var clone = $(cardId).clone();
+			clone.appendTo($(".connectedSortable"));
+			var cloneOffset = clone.offset();
+			clone.remove();	
+			$(cardId)
+				.appendTo("body")
+				.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
+				.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
+					$(cardId).remove();
+					clone.appendTo($(cardToBattle));
+					clone.click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);})
+				});
+	},
+	
 	runTimer: function(timer, player){ // сам таймер хода.
 		var bgSelf = this;
 		var i = timer;
@@ -1131,9 +1166,9 @@ var World = { // то, что знает про все и про всех :)
 		$("#top-lvl").text(this.enemy.level);
 		
 		// подсказка по наведению на аватарку игрока.
-		var pinfo = "<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.MP + "</br> Уворот: " + this.player.stats.DDG + "</br> Шанс на блок: " + this.player.stats.BR + "</br></div>";
+		var pinfo = "<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.MP + "</br> Уворот: " + this.player.stats.DDG + "%</br> Шанс на блок: " + this.player.stats.BR + "%</br></div>";
 		var info2 = $(pinfo);
-		var einfo = "<div>" + this.enemy.name + "</br>Уровень: " + this.enemy.level + "</br>Раса: " + this.enemy.race +"</br>Жизни: " + this.enemy.stats.HP + "</br>Дух: " + this.enemy.stats.MP + "</br> Уворот: " + this.enemy.stats.DDG + "</br> Шанс на блок: " + this.enemy.stats.BR + "</br></div>";
+		var einfo = "<div>" + this.enemy.name + "</br>Уровень: " + this.enemy.level + "</br>Раса: " + this.enemy.race +"</br>Жизни: " + this.enemy.stats.HP + "</br>Дух: " + this.enemy.stats.MP + "</br> Уворот: " + this.enemy.stats.DDG + "%</br> Шанс на блок: " + this.enemy.stats.BR + "%</br></div>";
 		var info1 = $(einfo);
 	
 		var etool = $("#topavatar");
