@@ -135,6 +135,7 @@ var Battleground = $.klass({ // класс для полебоя
 	this.timerId = null;
 	this.round = null;
 	this.turnCounter = null;
+	this.turnQueue = null;
 	},
 	
 	doCombo: function(comboArr, costsArr, player){
@@ -306,7 +307,7 @@ var Battleground = $.klass({ // класс для полебоя
 				
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // уменьшение восстановление маны
 					castCombo.value = Math.round(  player.stats.AGI*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 );
@@ -341,7 +342,7 @@ var Battleground = $.klass({ // класс для полебоя
 					castCombo.effect = "SU";
 					
 				}else if ( comboArr[2] == "cross" ){
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					 // НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
 					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
@@ -402,7 +403,7 @@ var Battleground = $.klass({ // класс для полебоя
 				
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){ 
-				alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+				alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // восстановление силы лечения
 					castCombo.value = Math.round(  player.stats.END*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
@@ -437,10 +438,10 @@ var Battleground = $.klass({ // класс для полебоя
 					castCombo.effect = "RE";
 					
 				}else if ( comboArr[2] == "cross" ){
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else{
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
@@ -499,7 +500,7 @@ var Battleground = $.klass({ // класс для полебоя
 				};
 			}else if( comboArr[1] == "cross" ){
 				if ( comboArr[2] == "spades" ){
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				}else if ( comboArr[2] == "diamonds" ){ // увеличение силы лечения
 					castCombo.value = Math.round(  player.stats.INT*costsArr[0]/100 + costsArr[1]*costsArr[2]/100 ); 
@@ -535,9 +536,9 @@ var Battleground = $.klass({ // класс для полебоя
 					
 				}else if ( comboArr[2] == "cross" ){
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 				}else{
-					alert( "комбанации нет, скорей всего будет ошибка или зависон игры")
+					alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
 					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
 				};
 			};	
@@ -552,18 +553,18 @@ var Battleground = $.klass({ // класс для полебоя
 			var cardN1 = player.battleDeck[0]; //1 карта от плеера на полебоя
 			var cardN2 = player.battleDeck[1]; //2 карта от плеера на полебоя
 			var cardN3 = player.battleDeck[2]; //3 карта от плеера на полебоя
-			var costsArr = [cardN1[1], cardN2[1], cardN3[1]]; // делаем массив из достоинств, для последующего сложения
+			var costsArr = [cardsDeck.costs[cardN1[1]], cardsDeck.costs[cardN2[1]], cardsDeck.costs[cardN3[1]]]; // делаем массив из достоинств, для последующего сложения
 			var comboArr = [cardN1[0], cardN2[0], cardN3[0]]; // делаем массив из мастей, для последующей проверки комбинации
 			// складываем достоинства по мастям.
 			for (var i = 3; i < player.battleDeck.length; i++){  
 				if ( cardN1[0] == player.battleDeck[i][0] ){
-					costsArr[0] += player.battleDeck[i][1];
+					costsArr[0] += cardsDeck.costs[player.battleDeck[i][1]];
 					i++;
 				}else if( cardN2[0] == player.battleDeck[i][0] ){
-					costsArr[1] += player.battleDeck[i][1];
+					costsArr[1] += cardsDeck.costs[player.battleDeck[i][1]];
 					i++;
 				}else if( cardN3[0] == player.battleDeck[i][0] ){
-					costsArr[2] += player.battleDeck[i][1];
+					costsArr[2] += cardsDeck.costs[player.battleDeck[i][1]];
 					i++;
 				}else{
 						i++;
@@ -597,7 +598,7 @@ var Battleground = $.klass({ // класс для полебоя
 			if (player1.damage.effect = "SU"){
 				player2.stats[player1.damage.stat] -= player1.damage.value;
 				if (player2.stats[player1.damage.stat] < 0) {
-					player2.stats[player2.damage.stat] = 0;
+					player2.stats[player1.damage.stat] = 0;
 				}else{
 				}
 			}else{
@@ -744,15 +745,15 @@ var Battleground = $.klass({ // класс для полебоя
 			
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
-		$("#bpb-hp span").css("width", (bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%") );
-		$("#bpb-hp span").text(bgSelf.player.stats.HP);
-		$("#bottom-atk").text(bgSelf.player.stats.ATK);
-		$("#bottom-def").text(bgSelf.player.stats.DEF);
+			$("#bpb-hp span").css("width", (bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%") );
+			$("#bpb-hp span").text(bgSelf.player.stats.HP);
+			$("#bottom-atk").text(bgSelf.player.stats.ATK);
+			$("#bottom-def").text(bgSelf.player.stats.DEF);
 		
-		$("#tpb-hp span").css("width", (bgSelf.enemy.stats.HP/bgSelf.enemy.getStats("HP")*100 + "%") );
-		$("#tpb-hp span").text(bgSelf.enemy.stats.HP);
-		$("#top-atk").text(bgSelf.enemy.stats.ATK);
-		$("#top-def").text(bgSelf.enemy.stats.DEF);
+			$("#tpb-hp span").css("width", (bgSelf.enemy.stats.HP/bgSelf.enemy.getStats("HP")*100 + "%") );
+			$("#tpb-hp span").text(bgSelf.enemy.stats.HP);
+			$("#top-atk").text(bgSelf.enemy.stats.ATK);
+			$("#top-def").text(bgSelf.enemy.stats.DEF);
 		};
 		// чистим боевую деку от прошлых значений.
 		player.battleDeck.length = 0; 
@@ -771,27 +772,28 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	turnStart: function (player){ //начало хода для игрока
+		var bgSelf = this;
+		this.turnQueue = player;
 		if (player == this.player){ // проверяем кто сейчас ходит  и выводим соответствующую надпись.
 			$('#overlay2').css('display', 'block');
 			$('#overlay2 #player_turn').text("Ваш ход").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
-			$("#turn").removeAttr('disabled');
-			$(".connectedSortable").removeAttr('disabled');
+			$("#turn").prop('disabled', false);
+
 
 		}else{
 			$('#overlay2').css('display', 'block');
 			$('#overlay2 #player_turn').text("Ход противника").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
-			$("#turn").attr('disabled','disabled');
-			$(".connectedSortable").attr('disabled', 'disabled');
+			$("#turn").prop('disabled', true);
 
 		}
 
-		
-		this.giveCard(player, this.cardsEveryTurn); // раздаем карты, помеченные как за каждый новый ход.	
+		if (this.round == 0){}else{ this.giveCard(player, this.cardsEveryTurn); };// раздаем карты, помеченные как за каждый новый ход.	
+
 		var timer = this.timer; // биндим количество секунд на ход.
 		this.runTimer(timer , player); // запускаем таймера хода.
 			
 		if (player == this.enemy){ // проверяем, является ли текущий игрок ботом
-			this.runAi(); // если да - запускаем логику ИИ.
+			setTimeout(function(){bgSelf.runAi()}, 1500); // если да - запускаем логику ИИ.
 		}
 	},
  
@@ -839,7 +841,7 @@ var Battleground = $.klass({ // класс для полебоя
 			this.roundEnd(player, nextPlayer);
 		}else{
 			this.turnCounter++;
-			this.turnStart(nextPlayer); 	
+		setTimeout(function(){bgSelf.turnStart(nextPlayer)}, 2000); 	
 		}
 		
 	},
@@ -853,7 +855,7 @@ var Battleground = $.klass({ // класс для полебоя
 	giveCard: function (player, cards) { //раздача карт игроку.
 		var bgSelf = this;
 		var num = 0;
-		var cardTimer = setInterval(function(){ if( num < cards ){ num++; bgSelf.addCard(player); }else{ clearInterval(cardTimer);} }, 600);
+		var cardTimer = setInterval(function(){ if( num < cards ){ num++; bgSelf.addCard(player); }else{ clearInterval(cardTimer);} }, 300);
 
 	},
 	
@@ -874,30 +876,33 @@ var Battleground = $.klass({ // класс для полебоя
 		var cloneSuit = $("div#full_deck").clone();
 		
 		if (player.type == "player"){ // если плеер - делаем *анимацию* и движение карт в его руки.
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 500, function(){ $(this).remove()});
+			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 300, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.connectedSortable")).click( function(){
 				bgSelf.moveCardToBattle(player, card);
 			});
 
 		}else{
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 500, function(){ $(this).remove()});
+			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 300, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.invisible"));
 			// делаем карту рубашкой вверх, и кладем ее ко врагу ( боту ) в невидимую деку.
 			}
 	},
 	
 	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
+		var bgSelf = this;
 		var cardId = "." + card.join("") + "#" + player.type;
 		function checkCard(player, card){ // проверка, можно ли положить карту, или нет.
-			if (player.battleDeck.length < 3){
-				return true;
-			}else{
-				if (player.battleDeck[0] == card[0] || player.battleDeck[1] == card[0] || player.battleDeck[2] == card[0]){
+			if (bgSelf.turnQueue == player){
+				if (player.battleDeck.length < 3){
 					return true;
 				}else{
-					return false;
+					if (player.battleDeck[0][0] == card[0] || player.battleDeck[1][0] == card[0] || player.battleDeck[2][0] == card[0]){
+						return true;
+					}else{
+						return false;
+					}
 				}
-			}
+			}else{return false};
 		};
 		if (checkCard(player, card)){
 			if (player.type == "enemy"){
@@ -915,39 +920,44 @@ var Battleground = $.klass({ // класс для полебоя
 			$(cardId)
 				.appendTo("body")
 				.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-				.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
+				.animate({top: cloneOffset.top, left: cloneOffset.left}, 300, function(){
 					$(cardId).remove();
 					clone.appendTo($(cardToBattle));
-					if (player == this.player){
-						clone.click(function(){ bgSelf.moveCardToDeck(card);})
-					};
 				});
+			if (player == this.player){
+				clone.click(function(){ bgSelf.moveCardToDeck(card);})
+			};
 			player.battleDeck.push(card); // пушим боевую деку игрока картой.
 			var cardToDelete = player.deck.indexOf(card);
 			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
 		
 		}else{
-			$(cardId).effect("highlight", {color: "red"}, 500);	
+			$(cardId).effect("highlight", {color: "red"}, 300);	
 		}
 		
 	},
 	
 	moveCardToDeck: function(card){
-		var bgSelf = this;
-		var cardId = "." + card.join("") + "#" + player.type;
-		var cardOffset = $(cardId).offset();
-			var clone = $(cardId).clone();
-			clone.appendTo($(".connectedSortable"));
-			var cloneOffset = clone.offset();
-			clone.remove();	
-			$(cardId)
-				.appendTo("body")
-				.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-				.animate({top: cloneOffset.top, left: cloneOffset.left}, 500, function(){
-					$(cardId).remove();
-					clone.appendTo($(cardToBattle));
-					clone.click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);})
-				});
+		var cardId = "." + card.join("") + "#" + this.player.type;
+		if( this.turnQueue == bgSelf.player){
+			var bgSelf = this;
+			var cardOffset = $(cardId).offset();
+				var clone = $(cardId).clone();
+				clone.appendTo($(".connectedSortable"));
+				var cloneOffset = clone.offset();
+				clone.remove();	
+				$(cardId)
+					.appendTo("body")
+					.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
+					.animate({top: cloneOffset.top, left: cloneOffset.left}, 400, function(){
+						$(cardId).remove();
+						clone.appendTo($(".connectedSortable"));
+						clone.click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);})
+					});
+			this.player.deck.push(card); // возвращаем карту обратно.
+			var cardToDelete = this.player.battleDeck.indexOf(card);
+			this.player.battleDeck.splice(cardToDelete, 1);
+		}else{ $(cardId).effect("highlight", {color: "red"}, 300);	}
 	},
 	
 	runTimer: function(timer, player){ // сам таймер хода.
@@ -1121,14 +1131,29 @@ var World = { // то, что знает про все и про всех :)
 		var timer = +document.forms.preStart.elements.timeturn.value;
 		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value;
 	
-		var avatar1 = null;
-		if (race == "human"){
-			avatar1 = "img/c.jpg";
-		}else if (race == "orc"){
-			avatar1 = "img/a.jpg";
-		}else{
-			avatar1 = "img/b.jpg";
-		}
+
+		function chooseAvatar(player){
+			if (player.race == "human"){
+				return "img/human.jpg";
+			}else if (player.race == "orc"){
+				return "img/orc.jpg";
+			}else if (player.race == "troll"){
+				return "img/troll.jpg";
+			}else if (player.race == "werewolf"){
+				return "img/werewolf.png";
+			}else if (player.race == "dwarf"){
+				return "img/dwarf.jpg";
+			}else if (player.race == "gnome"){
+				return "img/gnome.jpg";
+			}else if (player.race == "elf"){
+				return "img/elf.jpg";
+			}else if (player.race == "goblin"){
+				return "img/goblin.jpg";
+			}else{
+				return "img/vampire.jpg";
+			}
+		};
+		
 	
 		this.player = new Player(name, race, 0, 0);
 		this.player.stats();
@@ -1143,12 +1168,12 @@ var World = { // то, что знает про все и про всех :)
 		$("#bpb-mp span").text(this.player.stats.MP);		
 		$("#bottom-atk").text(this.player.stats.ATK);
 		$("#bottom-def").text(this.player.stats.DEF);
-		$("#bottomavatar img").attr("src", avatar1);
+		$("#bottomavatar img").attr("src", chooseAvatar(this.player));
 		$("#bottom-lvl").text(this.player.level);
 	
 		// сгенерирую постоянного бота
-	
-		this.enemy = new Player("Robot", "human", 0, Math.round(Math.random()*10));
+		var randomRace = ["human", "elf", "orc", "troll", "werewolf", "dwarf", "goblin", "gnome", "vampire"][Math.round(Math.random()*9)];
+		this.enemy = new Player("Robot", randomRace, 0, Math.round(Math.random()*10));
 
 		this.enemy.stats();
 		this.enemy.fillStats();
@@ -1162,7 +1187,7 @@ var World = { // то, что знает про все и про всех :)
 		$("#tpb-mp span").text(this.enemy.stats.MP);
 		$("#top-atk").text(this.enemy.stats.ATK);
 		$("#top-def").text(this.enemy.stats.DEF);
-		$("#topavatar img").attr("src", "img/c.jpg");
+		$("#topavatar img").attr("src", chooseAvatar(this.enemy));
 		$("#top-lvl").text(this.enemy.level);
 		
 		// подсказка по наведению на аватарку игрока.
@@ -1198,7 +1223,7 @@ var World = { // то, что знает про все и про всех :)
 
 $(document).ready(function() {
 	
-	$("button.playAgain").click(function(){ window.location.reload("true")} );
+	$("button.playAgain").click(function(){window.location.reload("true")});
 	
 	$( "#bpb-hp" ).hover(
 		function() {
