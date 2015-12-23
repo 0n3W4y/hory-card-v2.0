@@ -755,12 +755,12 @@ var Battleground = $.klass({ // класс для полебоя
 			
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
-			$("#bpb-hp span").css("width", (bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%") );
+			$("#bpb-hp span").css("width", bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%" );
 			$("#bpb-hp span").text(Math.round(bgSelf.player.stats.HP));
 			$("#bottom-atk").text(Math.round(bgSelf.player.stats.ATK));
 			$("#bottom-def").text(Math.round(bgSelf.player.stats.DEF));
 		
-			$("#tpb-hp span").css("width", (bgSelf.enemy.stats.HP)/bgSelf.enemy.getStats("HP")*100 + "%") );
+			$("#tpb-hp span").css("width", bgSelf.enemy.stats.HP/bgSelf.enemy.getStats("HP")*100 + "%" );
 			$("#tpb-hp span").text(Math.round(bgSelf.enemy.stats.HP));
 			$("#top-atk").text(Math.round(bgSelf.enemy.stats.ATK));
 			$("#top-def").text(Math.round(bgSelf.enemy.stats.DEF));
