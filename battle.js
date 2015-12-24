@@ -770,7 +770,7 @@ var Battleground = $.klass({ // класс для полебоя
 							return;
 						}else{};
 					}else{};	
-			}else if{ (player1.damage.effect == "AP"){
+			}else if (player1.damage.effect == "AP"){
 				var dmg = player1.damage.value - (player2.stats.DEF - player1.damage.value2*player1.stats.AP);
 					if( dmg > 0 ){
 						player2.stats[player1.damage.stat] -= dmg;
@@ -783,7 +783,7 @@ var Battleground = $.klass({ // класс для полебоя
 						return;
 					}else{};
 			};
-
+		};
 
 	},
 	
@@ -1340,7 +1340,7 @@ var Battleground = $.klass({ // класс для полебоя
 			}
 		}
 		//if (this.enemy.deck.join(",").indexOf("spades") == -1){ // проверка, можем ли бот атаковать?
-		if( $.inArray("spades", this.enemy.deck == -1){
+		if( $.inArray("spades", this.enemy.deck == -1)){
 			return this.turnEnd(this.enemy);
 		}else{
 			var attack = aiAttack();
@@ -1454,7 +1454,7 @@ var World = { // то, что знает про все и про всех :)
 		$("#bpb-mp span").text(this.player.stats.MP);		
 		$("#bottom-atk").text(this.player.stats.ATK);
 		$("#bottom-def").text(this.player.stats.DEF);
-		$("#bottomavatar img").attr("src", races.[this.player.race].avatar);
+		$("#bottomavatar img").attr("src", races[this.player.race].avatar);
 		$("#bottom-lvl").text(this.player.level);
 	
 		// сгенерирую постоянного бота
@@ -1472,7 +1472,7 @@ var World = { // то, что знает про все и про всех :)
 		$("#tpb-mp span").text(this.enemy.stats.MP);
 		$("#top-atk").text(this.enemy.stats.ATK);
 		$("#top-def").text(this.enemy.stats.DEF);
-		$("#topavatar img").attr("src", races.[this.enemy.race].avatar);
+		$("#topavatar img").attr("src", races[this.enemy.race].avatar);
 		$("#top-lvl").text(this.enemy.level);
 		
 		// подсказка по наведению на аватарку игрока.
