@@ -299,10 +299,10 @@ battledeck {
 	background-color: rgba(255,255,255,255.8);
 }
 .overlay-top-combo {
-    position: relative;
-    top: 130px;
+    position: absolute;
+    top: 340px;
     left: 300px;
-    display: block;
+    display: none;
     width: 400px;
     height: 50px;
 	text-align:center;
@@ -314,10 +314,10 @@ battledeck {
     overflow: hidden;
 }
 .overlay-bot-combo {
-    position: relative;
-    top: 130px;
+    position:absolute;
+    top: 540px;
     left: 300px;
-    display: block;
+    display: none;
     width: 400px;
     height: 50px;
 	text-align:center;

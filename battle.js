@@ -139,18 +139,21 @@ var Battleground = $.klass({ // класс для полебоя
 	},
 	
 	findCombo: function(player){
-		var card1 = player.battleDeck[0];
-		var card2 = player.battleDeck[1];
-		var card3 = player.battleDeck[2];
-		var comboArrayCosts = [card1, card2, card3];
-		var comboArrayLear = [card1[0], card2[0], card3[0]];
+		var card1cost = player.battleDeck[0][1];
+		var card2cost = player.battleDeck[1][1];
+		var card3cost = player.battleDeck[2][1];
+		var card1lear = player.battleDeck[0][0];
+		var card2lear = player.battleDeck[1][0];
+		var card3lear = player.battleDeck[2][0];
+		var comboArrayCosts = [card1cost, card2cost, card3cost];
+		var comboArrayLear = [card1lear, card2lear, card3lear];
 		for (var j = 3; j < player.battleDeck.length; j++){
-			if( player.battleDeck[i][0] == card1[0]){
-				comboArrayCosts[0] += player.battleDeck[i][1];
-			}else if( player.battleDeck[i][0] == card2[0] ){
-				comboArrayCosts[1] += player.battleDeck[i][1];
+			if( player.battleDeck[j][0] == card1lear){
+				comboArrayCosts[0] += player.battleDeck[j][1];
+			}else if( player.battleDeck[j][0] == card2lear ){
+				comboArrayCosts[1] += player.battleDeck[j][1];
 			}else{
-				comboArrayCosts[2] += player.battleDeck[i][1];
+				comboArrayCosts[2] += player.battleDeck[j][1];
 			}
 		}
 		return this.doCombo( comboArrayLear, comboArrayCosts, player );
@@ -813,8 +816,8 @@ var Battleground = $.klass({ // класс для полебоя
 	roundEnd: function(player, nextPlayer){
 		this.round++;
 		var bgSelf = this;
-		$("top-battledeck").unbind('mouseenter mouseleave');
-		$("bot-battledeck").unbind('mouseenter mouseleave');
+		//$("top-battledeck").unbind('mouseenter mouseleave');
+		//$("bot-battledeck").unbind('mouseenter mouseleave');
 		// проверяем, положил ли игрок карты в боевую деку или нет.
 		if (player.battleDeck.length == 0){ 
 			if (nextPlayer.battleDeck.length == 0){
@@ -865,20 +868,21 @@ var Battleground = $.klass({ // класс для полебоя
 		$("ul#bot-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
-			
+		$( ".overlay-top-combo" ).empty();
+		$( ".overlay-bot-combo" ).empty();
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
 			$("#bpb-hp span").css("width", bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%" );
 			$("#bpb-mp span").css("width", bgSelf.player.stats.MP/bgSelf.player.getStats("MP")*100 + "%" );
 			$("#bpb-hp span").text(Math.round(bgSelf.player.stats.HP));
-			$("#bpb-hp span").text(Math.round(bgSelf.player.stats.MP));
+			$("#bpb-mp span").text(Math.round(bgSelf.player.stats.MP));
 			$("#bottom-atk").text(Math.round(bgSelf.player.stats.ATK));
 			$("#bottom-def").text(Math.round(bgSelf.player.stats.DEF));
 		
 			$("#tpb-hp span").css("width", bgSelf.enemy.stats.HP/bgSelf.enemy.getStats("HP")*100 + "%" );
-			$("#tpb-hp span").css("width", bgSelf.enemy.stats.MP/bgSelf.enemy.getStats("MP")*100 + "%" );
+			$("#tpb-mp span").css("width", bgSelf.enemy.stats.MP/bgSelf.enemy.getStats("MP")*100 + "%" );
 			$("#tpb-hp span").text(Math.round(bgSelf.enemy.stats.HP));
-			$("#tpb-hp span").text(Math.round(bgSelf.enemy.stats.MP));
+			$("#tpb-mp span").text(Math.round(bgSelf.enemy.stats.MP));
 			$("#top-atk").text(Math.round(bgSelf.enemy.stats.ATK));
 			$("#top-def").text(Math.round(bgSelf.enemy.stats.DEF));
 		};
@@ -965,30 +969,12 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{
 		}
 		
-		if( player.battleDeck.length > 2){
+		if (player == this.enemy){
+			if ( player.battleDeck.length > 2){
 			var combo = this.findCombo(player);
-			if (player == this.player){
-				$( "#bot-battledeck" ).hover(
-				function() {
-					$( this ).append("<div class='overlay-bot-combo'>" + combo.info + " на " + combo.value + "</div>");
-				},
-				function() {
-					$( this ).find("div.overlay-bot-combo").remove();
-				}
-				);
-			}else{
-				$( "#top-battledeck" ).hover(
-				function() {
-					$( this ).append("<div class='overlay-top-combo'>" + combo.info + " на " + combo.value + "</div>");
-				},
-				function() {
-					$( this ).find("div.overlay-top-combo").remove();
-				}
-				);
+			$( ".overlay-top-combo" ).text(combo.info + " на " + combo.value);
 			};
-		}else{	
-		}
-		
+		};
 		
 		if (this.turnCounter == 1){ // проверяем каждый ли сходил по 1 разу?
 			this.roundEnd(player, nextPlayer);
@@ -1099,30 +1085,12 @@ var Battleground = $.klass({ // класс для полебоя
 		}else{
 			$(cardId).effect("highlight", {color: "red"}, 300);	
 		}
-		
-		if( player.battleDeck.length > 2){
-			var combo = this.findCombo(player);
-			if (this.turnQueue == player){
-				$( "#bot-battledeck" ).hover(
-				function() {
-					$( this ).append("<div class='overlay-bot-combo'>" + combo.info + " на " + combo.value + "</div>");
-				},
-				function() {
-					$( this ).find("div.overlay-bot-combo").remove();
-				}
-				);
-			}else{
-				$( "#top-battledeck" ).hover(
-				function() {
-					$( this ).append("<div class='overlay-top-combo'>" + combo.info + " на " + combo.value + "</div>");
-				},
-				function() {
-					$( this ).find("div.overlay-top-combo").remove();
-				}
-				);
+		if(this.player.battleDeck.length > 2){
+			if( this.player == this.turnQueue){
+				var combo = this.findCombo(player);
+				$( ".overlay-bot-combo" ).text(combo.info + " на " + combo.value);
 			};
-		}else{	
-		}
+		};
 	},
 	
 	moveCardToDeck: function(card){
@@ -1171,7 +1139,7 @@ var Battleground = $.klass({ // класс для полебоя
 			var firstCard = searchLear("spades"); 
 			var secondCard = searchLear("cross");
 			var thirdCard = searchLear("diamonds");
-			var fourthCard = searchLear("herats");
+			var fourthCard = searchLear("hearts");
 			if (firstCard.length > 2){
 				attackArr.push(firstCard[0]);
 				attackArr.push(firstCard[1]);
@@ -1446,8 +1414,25 @@ $(document).ready(function() {
 			$( this ).find("h1.tooltip").remove();
 		}
 	);
-	
-	
+	$( "#bot-battledeck" ).append("<div class='overlay-bot-combo'></div>");
+	$( "#top-battledeck" ).append("<div class='overlay-top-combo'></div>");
+	$( "#bot-battledeck" ).hover(
+		function() {
+			$( ".overlay-bot-combo" ).show();
+		},
+		function() {
+			$( ".overlay-bot-combo" ).hide();
+		}
+	);
+	$( "#top-battledeck" ).hover(
+		function() {
+			$( ".overlay-top-combo" ).show();
+		},
+		function() {
+			$( ".overlay-top-combo" ).hide();
+		}
+	);
+
 
 	// запуск самого модального окошка, и маунт кнопок всех.
 	setTimeout(function(){
