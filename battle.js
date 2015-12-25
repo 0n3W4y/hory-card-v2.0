@@ -1228,16 +1228,23 @@ var Battleground = $.klass({ // класс для полебоя
 			
 			if ( variant == "SU" ){
 				var variantCard = cardDiamonds;
+				if (variantCard[0]){
+					var firstCard = variantCard[0];
+					cardDiamonds.slice(0, 1);
+				}else{ return false;};
 			}else if( variant == "RE" ){
 				var variantCard = cardCross;
+				if (variantCard[0]){
+					var firstCard = variantCard[0];
+					cardCross.slice(0, 1);
+				}else{ return false;};
 			}else{
 				var variantCard = cardHearts;
+				if (variantCard[0]){
+					var firstCard = variantCard[0];
+					cardHearts.slice(0, 1);
+				}else{ return false;};
 			};
-			
-			if (variantCard[0]){
-				var firstCard = variantCard[0];
-				variantCard.slice(0, 1);
-			}else{ return false;};
 			
 			if ( priority == "ATK"){
 				if ( cardSpades.length > 1){
@@ -1339,7 +1346,7 @@ var Battleground = $.klass({ // класс для полебоя
 				bgSelf.turnEnd(bgSelf.enemy);
 			}
 		}
-		//if (this.enemy.deck.join(",").indexOf("spades") == -1){ // проверка, можем ли бот атаковать?
+		// проверка, можем ли бот атаковать?
 		if( $.inArray("spades", this.enemy.deck == -1)){
 			return this.turnEnd(this.enemy);
 		}else{
