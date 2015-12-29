@@ -97,7 +97,7 @@ var Stats = $.trait({ // трейт стат, для заполнения нуж
 		AP : null, //armor piercing
 		LL : null, // life leech
 		HR : null, // health recovery
-		MR : null // mana recovery
+		MR : null // mana recovery //[STR, AGI, END, INT, ATK, DEF, BR, DDG, HP, MP, AP, LL, HR, MR]
 	}
   }
 });
@@ -1153,7 +1153,7 @@ var Battleground = $.klass({ // класс для полебоя
 			return [spadesCard, crossCard, diamondsCard, heartsCard];
 		};
 		
-		function aiAttack(priority){ // команда *фас* :) с приоритетом
+		function aiAttack(priority){ // функция генерации массива карт дял выкладки в боевую деку, Это атака.
 			var tempArr = findAllCards();
 			var cardSpades = tempArr[0];
 			var cardCross = tempArr[1];
@@ -1219,7 +1219,7 @@ var Battleground = $.klass({ // класс для полебоя
 			};
 		};
 		
-		function aiDefense(priority, variant){//дает каст на себя в виде положительных эффектов, которые добавляются к оснвонвым
+		function aiDefense(priority, variant){//функция генерации массива карт дял выкладки. Это бафы, дебафы и восстановление.
 			var tempArr = findAllCards();
 			var cardSpades = tempArr[0];
 			var cardCross = tempArr[1];
@@ -1335,8 +1335,135 @@ var Battleground = $.klass({ // класс для полебоя
 			};
 		}; 
 		
+		function analysis(play){ // функция анализа ситуации, грубая, но работает так, как я задумывал.
+			var arrStats = [];
+			for ( var index in bgSelf.enemy.stats ){
+					if( bgSelf.enemy.stats[index] < bgSelf.enemy.getStats(index) ){
+						arrStats.push(index);
+					};
+				};
+			if (play == "attack"){
+
+				var arrAtkAP = aiAttack("AP");
+				var arrAtkLL = aiAttack("LL");
+				var arrAtkMP = aiAttack("MP");
+				var arrAtk = aiAttack("");
+				var arrAttack = [arrAtkAP, arrAtkLL, arrAtkMP, arrAtk];	
+				if ( arrAttack.length > 0 ){
+					return [arrAtkAP, arrAtkLL, arrAtkMP, arrAtk];
+				}else 
+					return false;
+			}else if( play == "recovery"){
+				var arrRecovery = [];
+				for (var i = 0; i < arrStats.length; i++){
+					var number = aiDefense("RE", arrStats[i]);
+					arrRecovery.push(number);
+				};
+				if ( arrRecovery.length > 0 ){
+					return arrRecovery;
+				}else 
+					return false;
+			}else if( play == "substract"){
+				var arrSubstract = [];
+				for (var i = 0; i < arrStats.length; i++){
+					var number = aiDefense("SU", arrStats[i]);
+					arrSubstract.push(number);
+				};
+				if ( arrSubstract.length > 0 ){
+					return arrSubstract;
+				}else 
+					return false;
+			}else{ // add
+				var arrAdd = [];
+				for (var i = 0; i < arrStats.length; i++){
+					var number = aiDefense("ADD", arrStats[i]);
+					arrAdd.push(number);
+				};
+				if ( arrAdd.length > 0 ){
+					return arrAdd;
+				}else 
+					return false;
+			};
+	
+		};
 		
-		function aiPlay(arr){
+		function collectingResults (){ // пытаюсь собрать все воедино, что бы уже отсюда выдавать в функции aiPlay готовый массив карт.
+			var attackArr = analysis("attack");
+			var attackAP = attackArr[0];
+			var attackLL = attackArr[1];
+			var attackMP = attackArr[2];
+			var attackLinear = attackArr[3];
+			
+			var recoveryArr = analysis("recovery");
+			var substractArr = analysis("substract");
+			var addArr = analysis("add");
+			
+			var arrSelfStats = []; // собираю коллекцию статов, которые были уменьшены.
+			for ( var index in bgSelf.enemy.stats ){
+					if( bgSelf.enemy.stats[index] < bgSelf.enemy.getStats(index) ){
+						arrSelfStats.push(index);
+					};
+				};
+			arrSelfStats.sort(function(a,b){ return bgSelf.enemy.stats.b - bgSelf.enemy.stats.a }); // соритруем так, что бы стата, котора ябыла уменьшена больше всего, попала в начало массива.
+			
+			var arrEnemyStats = []; // собираю коллекцию статов, которые больше чем у бота.
+			for ( var index in bgSelf.player.stats ){
+					if( bgSelf.player.stats[index] > bgSelf.enemy.stats[index] ){
+						arrEnemyStats.push(index);
+					};
+				};
+			arrEnemyStats.sort(function(a,b){ return bgSelf.player.stats.b - bgSelf.player.stats.a });  // сортируем, самое слиьное различие в первую очередь.
+			
+			//включаю логику:
+			// 1. Попытка восстановить здоровье атакой, если нет - попытка восстановить здоровье с помщью бафа и восстановления.
+			// 2. Если здорвье впорядке, мы пытаемся навязать атаку, любым способом.
+			// 3. Если не получается атаковать, пытаемся восстановить себе статы, если такие есть
+			// 4. Если со статами все впорядке, пытаемся уменьшить статы у  противника.
+			// 5. Если ничего из перечисленного не получается, пропускаем ход.
+			if ( (bgSelf.enemy.stats.HP < bgSelf.enemy.getStats("HP")/2) && attackLL  ){  //1; attackArr[1] == "LL" - lifeLeech
+				var cardArr = aiAttack("LL")
+				return cardArr;
+			}else if( (bgSelf.enemy.stats.HP < bgSelf.enemy.getStats("HP")/2) && (recoveryArr || addArr) ) {
+				if( recoveryArr[arrSelfStatsindexOf["HP"]] != false ){
+					var cardArr = aiDefense("RE", "HP");
+					return cardArr;
+				}else if( addArr[arrSelfStatsindexOf["HP"]] != false ){
+					var cardArr = aiDefense("ADD", "HP");
+					return cardArr;
+				}else{};
+			}else{};
+			
+			if ( attackAP || attackLinear || attackLL ){ //2
+				var tempNumber = attackAP || attackLinear || attackLL;
+				return tempNumber;
+			}else{};
+			
+			if ( arrSelfStats.length > 0 && (recoveryArr || addArr) ){ //3
+				for (var i = 0; i < arrSelfStats.length; i++){
+					if( recoveryArr[arrSelfStats.indexOf[i]] != false ){
+						return recoveryArr[i];
+						break;
+					}else if( addArr[arrSelfStats.indexOf[i]] != false ){
+						return addArr[i];
+						break;
+					}else{};
+				};
+			}else{};
+			
+			if( arrEnemyStats.length > 0 && substractArr ){ //4
+				for (var i = 0; i < arrEnemyStats.length; i++){
+					if( substractArr[arrSelfStats.indexOf[i]] != false ){
+						return substractArr[i];
+						break;
+					}else{};
+				};
+			}else{};
+			
+			return false; //5
+
+		};
+		
+		function aiPlay(arr){ // работает с массивом карт, функция выкладки карт на боевую деку.
 			if ( arr.length > 0){
 				bgSelf.moveCardToBattle(bgSelf.enemy, arr[0]);
 				arr.splice(0, 1);
@@ -1345,15 +1472,8 @@ var Battleground = $.klass({ // класс для полебоя
 				clearInterval(botTimer);
 				bgSelf.turnEnd(bgSelf.enemy);
 			}
-		}
-		// проверка, можем ли бот атаковать?
-		if( $.inArray("spades", this.enemy.deck == -1)){
-			return this.turnEnd(this.enemy);
-		}else{
-			var attack = aiAttack();
-			var botTimer = setInterval(function(){ aiPlay(attack)}, 1000);
 		};
-	
+		
 		function searchLear(lear){ // функиця поиска карты по масти
 			var tempArr = [];
 			for (var i = 0; i < bgSelf.enemy.deck.length; i++){
@@ -1364,6 +1484,16 @@ var Battleground = $.klass({ // класс для полебоя
 			};
 			tempArr.sort(function (a, b){ return b[1] - a[1]; }); // сортируем, что бы большим значением были вначале
 			return tempArr;
+		};
+		
+		var botChoise = collectingResults();
+		
+		// проверка, можем ли бот атаковать?
+		if( botChoise == false ){
+			return this.turnEnd(this.enemy);
+		}else{
+			var botTimer = setInterval(function(){ aiPlay(botChoise)}, 2000);
+			return;
 		};
 	}
 });
@@ -1569,7 +1699,7 @@ $(document).ready(function() {
 	);
 
 
-	// запуск самого модального окошка, и маунт кнопок всех.
+	// запуск самого модального окошка, и маунт кнопок в нем.
 	setTimeout(function(){
 		$('#overlay').css('display', 'block');
 		$("input.close").attr("onclick", "World.closeModalWindow()");
