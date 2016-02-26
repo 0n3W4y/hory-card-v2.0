@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+ <meta charset="utf-8">
+ <meta name="description" content="hory-card-v.2.0"> 
+ <title>hory-card-v.2.0</title>
+<head>
+ <script type="text/javascript" src="js/jquery-2.1.4.js"></script>
+ <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" ></script>
+ <script type="text/javascript" src="js/jquery.klass.js"></script>
+ <script type="text/javascript" src="js/jquery.klass.traits.js"></script>
+ <script type="text/javascript" src="js/jquery.klass.namespaces.js"></script>
+ <script type="text/javascript" src="js/jquery.klass.private.js"></script>
+ <script type="text/javascript" src="js/jquery.klass.proxy.js"></script>
+ <script type="text/javascript" src="battle_tick.js"></script>
+ <link rel="stylesheet" href="if.css"> 
+</head>
+<body>
+ <battlescreen> <!--делаем 1 блок, в котором размещаем все относительного этого блока-->
+  <table align="center" class="toptable" cellspacing="0" id="topplayer"> <!--создаем таблицу для верха-->
+   <tr>
+    <td></td>
+	<td width="5%"></td> <!--ячейка для стрелочки влево-->
+	<td width="15%">
+	 <div align="center">
+	  <playeravatar>    <!--новый блок внутри таблицы для игрока\бота-->
+	   <table align="center" width="100%" height="100%">
+	    <tr height="10%">
+		 <td colspan="2"><div class="playername" id="top-playername"></div></td>
+		<tr>
+		 <td height="30%"> <!--статы по дефе, атаке мдеф и т.п.-->
+		  <div class="atktext" id="top-atk" title="Attack"></div><div class="deftext" id="top-def" title="Defense"></div>
+		 </td>
+		 <td rowspan="2" width="100px">
+		  <div id="topavatar"><img class="playerpic" src=""></div>
+		 </td>
+		<tr>
+		 <td><div class="lvl" id="top-lvl"></div></td>
+		<tr height="20%">
+		 <td colspan="2">
+		  <div id="tpb-hp" class="bar" title="HP"><span class="red"></span></div>
+		  <div id="tpb-mp" class="bar" title="MP"><span class="blue"></span></div>
+		 </td>
+	   </table>
+	   <ul class="invisible">
+		   
+		</ul>
+	  </playeravatar>
+	 </div>
+	</td>
+	<td width="5%"></td> <!--ячейка для стрелочки право-->
+	<td></td>
+  </table>
+  
+<!-- middle --> 
+
+  <table align="center" class="middletable" cellspacing="0" id="battleground" border="1">
+	<tr height="50%">
+	 <td class="bd_connected">
+		<ul id="top-battledeck">
+		</ul>
+	 </td>
+	 <td rowspan="2" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
+	  <div id="full_deck" class="card card_suit"></div>
+	  <center><h1 id="time-left">&nbsp;</h1></center>
+      <center><input id="turn" type="button" value="End turn" style="width:80px"></center>
+	 </td>
+	<tr>
+	 <td class="bd_connected">
+		<ul id="bot-battledeck">
+		</ul>
+	 </td>
+  </table>
+  
+<!-- bottom -->  
+
+  <table align="center" class="bottomtable" cellspacing="0" border="1" id="bottomplayer">
+	<tr>
+	<td width="13%">
+	 <div align="center">
+	  <playeravatar>
+	   <table align="center" width="100%" height="100%">
+	    <tr height="10%">
+		 <td colspan="2">
+		  <div class="playername" id="bottom-playername"></div>
+		 </td>
+		<tr>
+		 <td height="30%">
+		  <div class="atktext" id="bottom-atk" title="Attack"></div><div class="deftext" id="bottom-def" title="Defense"></div>
+		 </td>
+		 <td rowspan="2" width="100px"><div id="bottomavatar"><img class="playerpic" src=""></div></td>
+		<tr>
+		 <td><div class="lvl" id="bottom-lvl" title="Level"></div></td>
+		<tr height="20%">
+		 <td colspan="2">
+		  <div id="bpb-hp" class="bar"><span class="red" title="HP"></span></div>
+		  <div id="bpb-mp" class="bar"><span class="blue" title="MP"></span></div>
+		 </td>
+	   </table>
+	  </playeravatar>
+	 </div>
+	</td>
+	<td width="5%">
+	 <table align="center" width="100%" height="100%" cellspacing="0" border="1">
+	  <tr>
+	   <td></td>
+	  <tr>
+	   <td></td>
+	  <tr>
+	   <td></td>
+	  <tr>
+	   <td></td>
+	  <tr>
+	   <td></td>
+	   </table>
+	</td>
+	<td width="50%" bgcolor="black">
+	 <table align="center" cellspacing="0" id="bottomdeck">
+	  <tr>
+	   <td height="20%" bgcolor="#000">
+	    <table align="center" id="belt" cellspacing="0">
+		 <tr>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+		 </tr>
+		</table>
+	   </td>
+	  </tr>
+	  <tr>
+		<td class="player_deck">
+	     <ul class="connectedSortable">
+         </ul>
+	   </td>
+	  </tr>
+	 </table>
+	</td>
+	<td></td>
+	</tr>
+	</table>
+	
+	<!-- менюшка внизу-->
+	
+	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> 
+	 <tr>
+	  <td width="10%" align="center"><input type="button" class="menu" align="center">menu</input></td>
+	  <td width="10%" align="center"><input type="button" class="playAgain" title="Начать игру заново" value="Play again"></input></td>
+	  <td></td>
+	  <td width="15%" align="right">nickname</td>
+	  <td align="right"><input type="button" class="stopGame" value="Stop" title="stop the game"></input></td>
+	</table>
+
+</battlescreen>
+
+<!-- Модальное Окно  -->
+<div id="overlay">
+ <div class="popup">
+  <h2><center>Опции игры</center></h2>
+   <div id="#StartForm">
+    <form name="preStart">
+	  <center>Ваше никнэйм<input name="nickname" type="text" onfocus="title='Введите ваш никнэйм'" value="NickName"></input></center><br>
+	  <center>Выберите расу
+	   <select name="race">
+        <option value="human">Человек</option>
+        <option value="goblin">Гоблин</option>
+        <option value="orc">Орк</option>
+		<option value="troll">Тролль</option>
+		<option value="elf">Эльф</option>
+		<option value="gnome">Гном</option>
+		<option value="dwarf">Дварф</option>
+		<option value="vampire">Вампир</option>
+		<option value="werewolf">Оборотень</option>
+       </select>
+	  </center><br>
+      <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
+	  <center>Время на ход<input name="timeturn" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
+	  <center>Количество карт за ход<input name="cardeveryturn" type="text" onfocus="title='от 0 до 6'" value="1"></input></center><br>
+   </div>
+   <div align="center" id="#buttonsifstartform">
+    <input type="button" class="close" title="Закрыть" value="Закрыть"></input>
+	<input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="checkStartForm()"></input>
+	</div>
+	</form>
+ </div>
+</div>
+
+<!-- окошко с выводом про ход -->
+<div id="overlay2">
+	<center id="player_turn"></center>
+</div>
+<script>
+
+</script>
+
+
+</body>
+</html>
