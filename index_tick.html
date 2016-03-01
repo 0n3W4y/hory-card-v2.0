@@ -15,19 +15,19 @@
  <link rel="stylesheet" href="if.css"> 
 </head>
 <body>
- <battlescreen> <!--делаем 1 блок, в котором размещаем все относительного этого блока-->
-  <table align="center" class="toptable" cellspacing="0" id="topplayer"> <!--создаем таблицу для верха-->
+ <battlescreen> <!--РґРµР»Р°РµРј 1 Р±Р»РѕРє, РІ РєРѕС‚РѕСЂРѕРј СЂР°Р·РјРµС‰Р°РµРј РІСЃРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕРіРѕ СЌС‚РѕРіРѕ Р±Р»РѕРєР°-->
+  <table align="center" class="toptable" cellspacing="0" id="topplayer"> <!--СЃРѕР·РґР°РµРј С‚Р°Р±Р»РёС†Сѓ РґР»СЏ РІРµСЂС…Р°-->
    <tr>
     <td></td>
-	<td width="5%"></td> <!--ячейка для стрелочки влево-->
+	<td width="5%"></td> <!--СЏС‡РµР№РєР° РґР»СЏ СЃС‚СЂРµР»РѕС‡РєРё РІР»РµРІРѕ-->
 	<td width="15%">
 	 <div align="center">
-	  <playeravatar>    <!--новый блок внутри таблицы для игрока\бота-->
+	  <playeravatar>    <!--РЅРѕРІС‹Р№ Р±Р»РѕРє РІРЅСѓС‚СЂРё С‚Р°Р±Р»РёС†С‹ РґР»СЏ РёРіСЂРѕРєР°\Р±РѕС‚Р°-->
 	   <table align="center" width="100%" height="100%">
 	    <tr height="10%">
 		 <td colspan="2"><div class="playername" id="top-playername"></div></td>
 		<tr>
-		 <td height="30%"> <!--статы по дефе, атаке мдеф и т.п.-->
+		 <td height="30%"> <!--СЃС‚Р°С‚С‹ РїРѕ РґРµС„Рµ, Р°С‚Р°РєРµ РјРґРµС„ Рё С‚.Рї.-->
 		  <div class="atktext" id="top-atk" title="Attack"></div><div class="deftext" id="top-def" title="Defense"></div>
 		 </td>
 		 <td rowspan="2" width="100px">
@@ -47,7 +47,7 @@
 	  </playeravatar>
 	 </div>
 	</td>
-	<td width="5%"></td> <!--ячейка для стрелочки право-->
+	<td width="5%"></td> <!--СЏС‡РµР№РєР° РґР»СЏ СЃС‚СЂРµР»РѕС‡РєРё РїСЂР°РІРѕ-->
 	<td></td>
   </table>
   
@@ -59,7 +59,7 @@
 		<ul id="top-battledeck">
 		</ul>
 	 </td>
-	 <td rowspan="2" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- правая сторона. Конец хода, таймер -->
+	 <td rowspan="2" width="10%" id="cards_deck" style="border-left:2px solid black">  <!-- РїСЂР°РІР°СЏ СЃС‚РѕСЂРѕРЅР°. РљРѕРЅРµС† С…РѕРґР°, С‚Р°Р№РјРµСЂ -->
 	  <div id="full_deck" class="card card_suit"></div>
 	  <center><h1 id="time-left">&nbsp;</h1></center>
       <center><input id="turn" type="button" value="End turn" style="width:80px"></center>
@@ -144,12 +144,12 @@
 	</tr>
 	</table>
 	
-	<!-- менюшка внизу-->
+	<!-- РјРµРЅСЋС€РєР° РІРЅРёР·Сѓ-->
 	
 	<table align="center" class="menutable" cellspacing="0" id="tablemenu"> 
 	 <tr>
-	  <td width="10%" align="center"><input type="button" class="menu" align="center">menu</input></td>
-	  <td width="10%" align="center"><input type="button" class="playAgain" title="Начать игру заново" value="Play again"></input></td>
+	  <td width="10%" align="center"><input type="button" class="menu" align="center" title="РњРµРЅСЋ" value="Menu"></input></td>
+	  <td width="10%" align="center"><input type="button" class="playAgain" title="РќР°С‡Р°С‚СЊ РёРіСЂСѓ Р·Р°РЅРѕРІРѕ" value="Play again"></input></td>
 	  <td></td>
 	  <td width="15%" align="right">nickname</td>
 	  <td align="right"><input type="button" class="stopGame" value="Stop" title="stop the game"></input></td>
@@ -157,39 +157,39 @@
 
 </battlescreen>
 
-<!-- Модальное Окно  -->
+<!-- РњРѕРґР°Р»СЊРЅРѕРµ РћРєРЅРѕ  -->
 <div id="overlay">
  <div class="popup">
-  <h2><center>Опции игры</center></h2>
+  <h2><center>РћРїС†РёРё РёРіСЂС‹</center></h2>
    <div id="#StartForm">
     <form name="preStart">
-	  <center>Ваше никнэйм<input name="nickname" type="text" onfocus="title='Введите ваш никнэйм'" value="NickName"></input></center><br>
-	  <center>Выберите расу
+	  <center>Р’Р°С€Рµ РЅРёРєРЅСЌР№Рј<input name="nickname" type="text" onfocus="title='Р’РІРµРґРёС‚Рµ РІР°С€ РЅРёРєРЅСЌР№Рј'" value="NickName"></input></center><br>
+	  <center>Р’С‹Р±РµСЂРёС‚Рµ СЂР°СЃСѓ
 	   <select name="race">
-        <option value="human">Человек</option>
-        <option value="goblin">Гоблин</option>
-        <option value="orc">Орк</option>
-		<option value="troll">Тролль</option>
-		<option value="elf">Эльф</option>
-		<option value="gnome">Гном</option>
-		<option value="dwarf">Дварф</option>
-		<option value="vampire">Вампир</option>
-		<option value="werewolf">Оборотень</option>
+        <option value="human">Р§РµР»РѕРІРµРє</option>
+        <option value="goblin">Р“РѕР±Р»РёРЅ</option>
+        <option value="orc">РћСЂРє</option>
+		<option value="troll">РўСЂРѕР»Р»СЊ</option>
+		<option value="elf">Р­Р»СЊС„</option>
+		<option value="gnome">Р“РЅРѕРј</option>
+		<option value="dwarf">Р”РІР°СЂС„</option>
+		<option value="vampire">Р’Р°РјРїРёСЂ</option>
+		<option value="werewolf">РћР±РѕСЂРѕС‚РµРЅСЊ</option>
        </select>
 	  </center><br>
-      <center>Количество карт в начале игры<input name="cards" type="text" onfocus="title='Значения от 3 до 52'" value="6"></input></center><br>
-	  <center>Время на ход<input name="timeturn" type="text" onfocus="title='Значения от 15 до 60'" value="30"></input></center><br>
-	  <center>Количество карт за ход<input name="cardeveryturn" type="text" onfocus="title='от 0 до 6'" value="1"></input></center><br>
+      <center>РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚ РІ РЅР°С‡Р°Р»Рµ РёРіСЂС‹<input name="cards" type="text" onfocus="title='Р—РЅР°С‡РµРЅРёСЏ РѕС‚ 3 РґРѕ 52'" value="6"></input></center><br>
+	  <center>Р’СЂРµРјСЏ РЅР° С…РѕРґ<input name="timeturn" type="text" onfocus="title='Р—РЅР°С‡РµРЅРёСЏ РѕС‚ 15 РґРѕ 60'" value="30"></input></center><br>
+	  <center>РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚ Р·Р° С…РѕРґ<input name="cardeveryturn" type="text" onfocus="title='РѕС‚ 0 РґРѕ 6'" value="1"></input></center><br>
    </div>
    <div align="center" id="#buttonsifstartform">
-    <input type="button" class="close" title="Закрыть" value="Закрыть"></input>
-	<input type="button" class="startBattle" title="начать игру" value="Начать игру" onclick="checkStartForm()"></input>
+    <input type="button" class="close" title="Р—Р°РєСЂС‹С‚СЊ" value="Р—Р°РєСЂС‹С‚СЊ"></input>
+	<input type="button" class="startBattle" title="РЅР°С‡Р°С‚СЊ РёРіСЂСѓ" value="РќР°С‡Р°С‚СЊ РёРіСЂСѓ" onclick="checkStartForm()"></input>
 	</div>
 	</form>
  </div>
 </div>
 
-<!-- окошко с выводом про ход -->
+<!-- РѕРєРѕС€РєРѕ СЃ РІС‹РІРѕРґРѕРј РїСЂРѕ С…РѕРґ -->
 <div id="overlay2">
 	<center id="player_turn"></center>
 </div>

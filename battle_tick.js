@@ -19,7 +19,7 @@ var Stats = $.trait({
 				"HR":null,
 				"MR":null
 			};
-			console.log('trait stats activated');
+			console.log('trait Stats activated');
 			return;
 		}
 		return;
@@ -35,6 +35,24 @@ var Stats = $.trait({
 			console.log(stat + " doesn't exist");
 			return;
 		};
+	},
+	calculateStats: function(x){
+		var curRace = Game.races[this.race];
+	 	if( x == "STR" || x == "END" || x == "AGI" || x == "INT" ){
+			return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
+	 	}else if( x == "ATK" ){
+			return Math.round( curRace.ATK + curRace.lvlup.ATK*this.level + curRace.STR*this.level/2 );
+	 	}else if( x == "DEF" ){
+			return Math.round( curRace.DEF + curRace.lvlup.DEF*this.level + curRace.END*this.level/10 );
+	 	}else if( x == "DDG" ){
+			return Math.round( curRace.DDG + curRace.lvlup.DDG*this.level + curRace.AGI*this.level/10 );
+	  	}else if( x == "HP" || x == "MP"){
+			return Math.round( curRace[x] + curRace.lvlup[x]*this.level + curRace.END*this.level/5 );
+	  	}else if( x == "BR" || x == "AP" || x == "LL" || x == "HR" || x == "MR"){
+			return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
+	 	}else{
+		 	return null;
+	  	}
 	}
 });
 var AiLogic = $.trait({
@@ -45,7 +63,7 @@ var AiLogic = $.trait({
 			data.runAi = function(){ 
 			var bgSelf = this;
 		
-			function findAllCards(){ // возвращаем массив карт из деки.
+			function findAllCards(){ // РІРѕР·РІСЂР°С‰Р°РµРј РјР°СЃСЃРёРІ РєР°СЂС‚ РёР· РґРµРєРё.
 				var spadesCard = searchLear("spades"); 
 				var crossCard = searchLear("cross");
 				var diamondsCard = searchLear("diamonds");
@@ -53,7 +71,7 @@ var AiLogic = $.trait({
 				return [spadesCard, crossCard, diamondsCard, heartsCard];
 			};
 		
-			function aiAttack(priority){ // функция генерации массива карт дял выкладки в боевую деку, Это атака.
+			function aiAttack(priority){ // С„СѓРЅРєС†РёСЏ РіРµРЅРµСЂР°С†РёРё РјР°СЃСЃРёРІР° РєР°СЂС‚ РґСЏР» РІС‹РєР»Р°РґРєРё РІ Р±РѕРµРІСѓСЋ РґРµРєСѓ, Р­С‚Рѕ Р°С‚Р°РєР°.
 				var tempArr = findAllCards();
 				var cardSpades = tempArr[0];
 				var cardCross = tempArr[1];
@@ -61,7 +79,7 @@ var AiLogic = $.trait({
 				var cardHearts = tempArr[3];
 				if ( priority == "AP" ){ //ArmorPiercing
 					if( cardSpades.length > 1 && cardCross.length > 0){ //spades+spades+cross
-						if (cardSpades[1] > cardCross[0]){ // првоеряем, какая комбинация лучше, урон_х2 или бронебой_х2
+						if (cardSpades[1] > cardCross[0]){ // РїСЂРІРѕРµСЂСЏРµРј, РєР°РєР°СЏ РєРѕРјР±РёРЅР°С†РёСЏ Р»СѓС‡С€Рµ, СѓСЂРѕРЅ_С…2 РёР»Рё Р±СЂРѕРЅРµР±РѕР№_С…2
 							return [cardSpades[0], cardSpades[1], cardCross[0]];
 						}else{
 							return [cardSpades[0], cardCross[0], cardSpades[1]];
@@ -119,7 +137,7 @@ var AiLogic = $.trait({
 				};
 			};
 		
-			function aiDefense(priority, variant){//функция генерации массива карт дял выкладки. Это бафы, дебафы и восстановление.
+			function aiDefense(priority, variant){//С„СѓРЅРєС†РёСЏ РіРµРЅРµСЂР°С†РёРё РјР°СЃСЃРёРІР° РєР°СЂС‚ РґСЏР» РІС‹РєР»Р°РґРєРё. Р­С‚Рѕ Р±Р°С„С‹, РґРµР±Р°С„С‹ Рё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ.
 				var tempArr = findAllCards();
 				var cardSpades = tempArr[0];
 				var cardCross = tempArr[1];
@@ -235,7 +253,7 @@ var AiLogic = $.trait({
 				};
 			}; 
 		
-			function analysis(play){ // функция анализа ситуации, грубая, но работает так, как я задумывал.
+			function analysis(play){ // С„СѓРЅРєС†РёСЏ Р°РЅР°Р»РёР·Р° СЃРёС‚СѓР°С†РёРё, РіСЂСѓР±Р°СЏ, РЅРѕ СЂР°Р±РѕС‚Р°РµС‚ С‚Р°Рє, РєР°Рє СЏ Р·Р°РґСѓРјС‹РІР°Р».
 				var arrStats = [];
 				for ( var index in bgSelf.enemy.stats ){
 					if( bgSelf.enemy.stats[index] < bgSelf.enemy.getStats(index) ){
@@ -287,7 +305,7 @@ var AiLogic = $.trait({
 	
 			};
 		
-			function collectingResults (){ // пытаюсь собрать все воедино, что бы уже отсюда выдавать в функции aiPlay готовый массив карт.
+			function collectingResults (){ // РїС‹С‚Р°СЋСЃСЊ СЃРѕР±СЂР°С‚СЊ РІСЃРµ РІРѕРµРґРёРЅРѕ, С‡С‚Рѕ Р±С‹ СѓР¶Рµ РѕС‚СЃСЋРґР° РІС‹РґР°РІР°С‚СЊ РІ С„СѓРЅРєС†РёРё aiPlay РіРѕС‚РѕРІС‹Р№ РјР°СЃСЃРёРІ РєР°СЂС‚.
 				var attackArr = analysis("attack");
 				var attackAP = attackArr[0];
 				var attackLL = attackArr[1];
@@ -298,28 +316,28 @@ var AiLogic = $.trait({
 				var substractArr = analysis("substract");
 				var addArr = analysis("add");
 			
-				var arrSelfStats = []; // собираю коллекцию статов, которые были уменьшены.
+				var arrSelfStats = []; // СЃРѕР±РёСЂР°СЋ РєРѕР»Р»РµРєС†РёСЋ СЃС‚Р°С‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ Р±С‹Р»Рё СѓРјРµРЅСЊС€РµРЅС‹.
 				for ( var index in bgSelf.enemy.stats ){
 					if( bgSelf.enemy.stats[index] < bgSelf.enemy.getStats(index) ){
 						arrSelfStats.push(index);
 					};
 				};
-				arrSelfStats.sort(function(a,b){ return bgSelf.enemy.stats.b - bgSelf.enemy.stats.a }); // соритруем так, что бы стата, котора ябыла уменьшена больше всего, попала в начало массива.
+				arrSelfStats.sort(function(a,b){ return bgSelf.enemy.stats.b - bgSelf.enemy.stats.a }); // СЃРѕСЂРёС‚СЂСѓРµРј С‚Р°Рє, С‡С‚Рѕ Р±С‹ СЃС‚Р°С‚Р°, РєРѕС‚РѕСЂР° СЏР±С‹Р»Р° СѓРјРµРЅСЊС€РµРЅР° Р±РѕР»СЊС€Рµ РІСЃРµРіРѕ, РїРѕРїР°Р»Р° РІ РЅР°С‡Р°Р»Рѕ РјР°СЃСЃРёРІР°.
 			
-				var arrEnemyStats = []; // собираю коллекцию статов, которые больше чем у бота.
+				var arrEnemyStats = []; // СЃРѕР±РёСЂР°СЋ РєРѕР»Р»РµРєС†РёСЋ СЃС‚Р°С‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ Р±РѕР»СЊС€Рµ С‡РµРј Сѓ Р±РѕС‚Р°.
 				for ( var index in bgSelf.player.stats ){
 					if( bgSelf.player.stats[index] > bgSelf.enemy.stats[index] ){
 						arrEnemyStats.push(index);
 					};
 				};
-				arrEnemyStats.sort(function(a,b){ return bgSelf.player.stats.b - bgSelf.player.stats.a });  // сортируем, самое слиьное различие в первую очередь.
+				arrEnemyStats.sort(function(a,b){ return bgSelf.player.stats.b - bgSelf.player.stats.a });  // СЃРѕСЂС‚РёСЂСѓРµРј, СЃР°РјРѕРµ СЃР»РёСЊРЅРѕРµ СЂР°Р·Р»РёС‡РёРµ РІ РїРµСЂРІСѓСЋ РѕС‡РµСЂРµРґСЊ.
 			
-			//включаю логику:
-			// 1. Попытка восстановить здоровье атакой, если нет - попытка восстановить здоровье с помщью бафа и восстановления.
-			// 2. Если здорвье впорядке, мы пытаемся навязать атаку, любым способом.
-			// 3. Если не получается атаковать, пытаемся восстановить себе статы, если такие есть
-			// 4. Если со статами все впорядке, пытаемся уменьшить статы у  противника.
-			// 5. Если ничего из перечисленного не получается, пропускаем ход.
+			//РІРєР»СЋС‡Р°СЋ Р»РѕРіРёРєСѓ:
+			// 1. РџРѕРїС‹С‚РєР° РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РґРѕСЂРѕРІСЊРµ Р°С‚Р°РєРѕР№, РµСЃР»Рё РЅРµС‚ - РїРѕРїС‹С‚РєР° РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РґРѕСЂРѕРІСЊРµ СЃ РїРѕРјС‰СЊСЋ Р±Р°С„Р° Рё РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ.
+			// 2. Р•СЃР»Рё Р·РґРѕСЂРІСЊРµ РІРїРѕСЂСЏРґРєРµ, РјС‹ РїС‹С‚Р°РµРјСЃСЏ РЅР°РІСЏР·Р°С‚СЊ Р°С‚Р°РєСѓ, Р»СЋР±С‹Рј СЃРїРѕСЃРѕР±РѕРј.
+			// 3. Р•СЃР»Рё РЅРµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ Р°С‚Р°РєРѕРІР°С‚СЊ, РїС‹С‚Р°РµРјСЃСЏ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРµР±Рµ СЃС‚Р°С‚С‹, РµСЃР»Рё С‚Р°РєРёРµ РµСЃС‚СЊ
+			// 4. Р•СЃР»Рё СЃРѕ СЃС‚Р°С‚Р°РјРё РІСЃРµ РІРїРѕСЂСЏРґРєРµ, РїС‹С‚Р°РµРјСЃСЏ СѓРјРµРЅСЊС€РёС‚СЊ СЃС‚Р°С‚С‹ Сѓ  РїСЂРѕС‚РёРІРЅРёРєР°.
+			// 5. Р•СЃР»Рё РЅРёС‡РµРіРѕ РёР· РїРµСЂРµС‡РёСЃР»РµРЅРЅРѕРіРѕ РЅРµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ, РїСЂРѕРїСѓСЃРєР°РµРј С…РѕРґ.
 				if ( (bgSelf.enemy.stats.HP < bgSelf.enemy.getStats("HP")/2) && attackLL  ){  //1; attackArr[1] == "LL" - lifeLeech
 					var cardArr = aiAttack("LL")
 					return cardArr;
@@ -363,7 +381,7 @@ var AiLogic = $.trait({
 
 			};
 		
-			function aiPlay(arr){ // работает с массивом карт, функция выкладки карт на боевую деку.
+			function aiPlay(arr){ // СЂР°Р±РѕС‚Р°РµС‚ СЃ РјР°СЃСЃРёРІРѕРј РєР°СЂС‚, С„СѓРЅРєС†РёСЏ РІС‹РєР»Р°РґРєРё РєР°СЂС‚ РЅР° Р±РѕРµРІСѓСЋ РґРµРєСѓ.
 				if ( arr.length > 0){
 					bgSelf.moveCardToBattle(bgSelf.enemy, arr[0]);
 					arr.splice(0, 1);
@@ -374,7 +392,7 @@ var AiLogic = $.trait({
 				}
 			};
 		
-			function searchLear(lear){ // функиця поиска карты по масти
+			function searchLear(lear){ // С„СѓРЅРєРёС†СЏ РїРѕРёСЃРєР° РєР°СЂС‚С‹ РїРѕ РјР°СЃС‚Рё
 				var tempArr = [];
 				for (var i = 0; i < bgSelf.enemy.deck.length; i++){
 					if( bgSelf.enemy.deck[i][0] == lear ){
@@ -382,13 +400,13 @@ var AiLogic = $.trait({
 					}else{
 					}
 				};
-				tempArr.sort(function (a, b){ return b[1] - a[1]; }); // сортируем, что бы большим значением были вначале
+				tempArr.sort(function (a, b){ return b[1] - a[1]; }); // СЃРѕСЂС‚РёСЂСѓРµРј, С‡С‚Рѕ Р±С‹ Р±РѕР»СЊС€РёРј Р·РЅР°С‡РµРЅРёРµРј Р±С‹Р»Рё РІРЅР°С‡Р°Р»Рµ
 				return tempArr;
 			};
 		
 			var botChoise = collectingResults();
 		
-			// проверка, может ли бот сделать ход?
+			// РїСЂРѕРІРµСЂРєР°, РјРѕР¶РµС‚ Р»Рё Р±РѕС‚ СЃРґРµР»Р°С‚СЊ С…РѕРґ?
 			if( botChoise == false ){
 				return this.turnEnd(this.enemy);
 			}else{
@@ -405,6 +423,7 @@ var AiLogic = $.trait({
 		var randomRace = ["human", "elf", "orc", "troll", "werewolf", "dwarf", "goblin", "gnome", "vampire"][Math.round(Math.random()*8)];
 		Game.enemy = new Player("Robot", randomRace, 0, Math.round(Math.random()*10));
 		Game.enemy.id = "enemy";
+		Game.enemy.meta_onInit(Game.enemy);
 		console.log("enemy(bot) is initialized");
 	}
 });
@@ -436,10 +455,10 @@ var Combos = $.trait({
 				var comboArrayCosts = [card1cost, card2cost, card3cost];
 				var comboArrayLear = [card1lear, card2lear, card3lear];
 				return this.doCombo( comboArrayLear, comboArrayCosts, player );
-			},
+				},
 	
 			doCombo: function(comboArr, costsArr, player){
-			//обратить внимание сюда - castCombo  - то, что мы возвращаем в переменую player.damage, для дальнейшего использования.
+			//РѕР±СЂР°С‚РёС‚СЊ РІРЅРёРјР°РЅРёРµ СЃСЋРґР° - castCombo  - С‚Рѕ, С‡С‚Рѕ РјС‹ РІРѕР·РІСЂР°С‰Р°РµРј РІ РїРµСЂРµРјРµРЅСѓСЋ player.damage, РґР»СЏ РґР°Р»СЊРЅРµР№С€РµРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ.
 				var castCombo = {value:0, stat:null, to:null, value2:0, effect:null, value3:0, effect2:null, info:null, toString: function(){ return "value=" + this.value + "; stat=" + this.stat + "; to=" +this.to + "; value2=" + this.value2 + "; effect=" + this.effect + "; value3=" + this.value3 + "; effect2=" + this.effect2} }; // effect: AP(armorPiercing), RE(restore), ADD(add(++)), SU(substract)
 				var card1cost = costsArr[0];
 				var card2cost = costsArr[1];
@@ -450,95 +469,95 @@ var Combos = $.trait({
 
 				if ( card1lear == "spades" ){
 					if ( card2lear == "spades" ){
-						if ( card3lear == "spades" ){ // критический урон (х3)
+						if ( card3lear == "spades" ){ // РєСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…3)
 							castCombo.value = player.stats.ATK+((card2cost+card3cost)*3)*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
-							castCombo.info = "Критический урон (х3)";
+							castCombo.info = "РљСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…3)";
 					
-						}else if ( card3lear == "diamonds" ){ // критический урон (х2) с использованием маны 
+						}else if ( card3lear == "diamonds" ){ // РєСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…2) СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹ 
 							castCombo.value = player.stats.ATK +((card2cost)*2)+(player.stats.MP*card3cost/10)*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
-							castCombo.info = "критический урон (х2) с использованием маны";
+							castCombo.info = "РєСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…2) СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹";
 					
-						}else if ( card3lear == "cross" ){ // критический урон (х2) пробивающий броню 
+						}else if ( card3lear == "cross" ){ // РєСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…2) РїСЂРѕР±РёРІР°СЋС‰РёР№ Р±СЂРѕРЅСЋ 
 							castCombo.value = player.stats.ATK+((card2cost)*2)*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = card3cost*card1cost/100;
 							castCombo.effect = "AP";
-							castCombo.info = "критический урон (х2) пробивающий броню";
+							castCombo.info = "РєСЂРёС‚РёС‡РµСЃРєРёР№ СѓСЂРѕРЅ (С…2) РїСЂРѕР±РёРІР°СЋС‰РёР№ Р±СЂРѕРЅСЋ";
 				
-						}else{ // критчиеский урон (х2) с вампиризмом
+						}else{ // РєСЂРёС‚С‡РёРµСЃРєРёР№ СѓСЂРѕРЅ (С…2) СЃ РІР°РјРїРёСЂРёР·РјРѕРј
 							castCombo.value = player.stats.ATK+(card2cost*2)*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = player.stats.ATK*card3cost/100;
 							castCombo.effect = "RE";
-							castCombo.info = "критчиеский урон (х2) с вампиризмом";
+							castCombo.info = "РєСЂРёС‚С‡РёРµСЃРєРёР№ СѓСЂРѕРЅ (С…2) СЃ РІР°РјРїРёСЂРёР·РјРѕРј";
 						};
 				
 					}else if( card2lear == "diamonds" ){
-						if ( card3lear == "spades" ){ // урон (х2)  по мане  
+						if ( card3lear == "spades" ){ // СѓСЂРѕРЅ (С…2)  РїРѕ РјР°РЅРµ  
 							castCombo.value = player.stats.ATK+((card3cost*2)*card1cost/100)*card3cost/100;
 							castCombo.stat = "MP";
 							castCombo.effect = "SU";
 							castCombo.to = "enemy";
-							castCombo.info = "урон (х2)  по мане";
+							castCombo.info = "СѓСЂРѕРЅ (С…2)  РїРѕ РјР°РЅРµ";
 						
-						}else if ( card3lear == "diamonds" ){ // Урон по мане с использованием маны 
+						}else if ( card3lear == "diamonds" ){ // РЈСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹ 
 							castCombo.value = player.stats.ATK+card2cost+(player.stats.MP*card3cost/10)*card1cost/100;
 							castCombo.stat = "MP";
 							castCombo.effect = "SU";
 							castCombo.to = "enemy";
-							castCombo.info = "урон по мане с использованием маны";
+							castCombo.info = "СѓСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹";
 					
-						}else if ( card3lear == "cross" ){ // урон по мане с пробиванием брони 
+						}else if ( card3lear == "cross" ){ // СѓСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РїСЂРѕР±РёРІР°РЅРёРµРј Р±СЂРѕРЅРё 
 							castCombo.value = player.stats.ATK + card2cost*card1cost/100;
 							castCombo.stat = "MP";
 							castCombo.to = "enemy";
 							castCombo.value2 = card3cost*card1cost/100;
 							castCombo.effect2 = "AP";
 							castCombo.effect = "SU";
-							castCombo.info = "урон по мане с пробиванием брони";
+							castCombo.info = "СѓСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РїСЂРѕР±РёРІР°РЅРёРµРј Р±СЂРѕРЅРё";
 				
-						}else{ //урон по мане с вампиризмом overmana не может быть!
+						}else{ //СѓСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РІР°РјРїРёСЂРёР·РјРѕРј overmana РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ!
 							castCombo.value = player.stats.ATK + card2cost*card1cost/100 ;
 							castCombo.stat = "MP";
 							castCombo.to = "enemy";
 							castCombo.value2 = player.stats.ATK*card3cost*card1cost/100;
 							castCombo.effect2 = "RE";
 							castCombo.effect = "SU";
-							castCombo.info = "урон по мане с вампиризмом";
+							castCombo.info = "СѓСЂРѕРЅ РїРѕ РјР°РЅРµ СЃ РІР°РјРїРёСЂРёР·РјРѕРј";
 						};
 				
 					}else if( card2lear == "cross" ){
-						if ( card3lear == "spades" ){ // бронебойный (х2) урон
+						if ( card3lear == "spades" ){ // Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ
 							castCombo.value =  player.stats.ATK + card3cost*card1cost/100; 
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = (card2cost*2)*card1cost/100;
 							castCombo.effect = "AP";
-							castCombo.info = "бронебойный (х2) урон";
+							castCombo.info = "Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ";
 					
-						}else if ( card3lear == "diamonds" ){ // бронебойный (х2) урон с использованием маны
+						}else if ( card3lear == "diamonds" ){ // Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹
 							castCombo.value = player.stats.ATK + (player.stats.MP*card3cost)*card1cost/100; 
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = (card2cost*2)*card1cost/100;
 							castCombo.effect = "AP";
-							castCombo.info = "бронебойный (х2) урон с использованием маны";
+							castCombo.info = "Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РјР°РЅС‹";
 					
-						}else if ( card3lear == "cross" ){ // бронебойный (х3) урон.
+						}else if ( card3lear == "cross" ){ // Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…3) СѓСЂРѕРЅ.
 							castCombo.value = player.stats.ATK;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = (card2cost*3)*card1cost/100;
 							castCombo.effect = "AP";
-							castCombo.info = "бронебойный (х3) урон";
+							castCombo.info = "Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…3) СѓСЂРѕРЅ";
 							
-						}else{ //бронебойный (х2) урон с вампиризмом
+						}else{ //Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј
 							castCombo.value = player.stats.ATK;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
@@ -546,377 +565,377 @@ var Combos = $.trait({
 							castCombo.effect = "AP";
 							castCombo.value3 = player.stats.ATK*card3cost/100;
 							castCombo.effect2 = "RE";
-							castCombo.info = "бронебойный (х2) урон с вампиризмом";
+							castCombo.info = "Р±СЂРѕРЅРµР±РѕР№РЅС‹Р№ (С…2) СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј";
 						};
 				
 					}else{
-						if ( card3lear == "spades" ){ //урон с вампиризмом
+						if ( card3lear == "spades" ){ //СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј
 							castCombo.value = player.stats.ATK + card2cost*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
-							castCombo.info = "урон с вампиризмом";
+							castCombo.info = "СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј";
 							cast.combo.value2 = player.stats.ATK*card3cost/100;
 							cast.combo.effect = "RE";
 							
-						}else if ( card3lear == "diamonds" ){ //урон с маной
+						}else if ( card3lear == "diamonds" ){ //СѓСЂРѕРЅ СЃ РјР°РЅРѕР№
 							castCombo.value = player.stats.ATK + card2cost*card1cost/100 + (player.stats.MP + card3cost)*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
-							castCombo.info = "урон с маной";
+							castCombo.info = "СѓСЂРѕРЅ СЃ РјР°РЅРѕР№";
 					
-						}else if ( card3lear == "cross" ){ // урон с пробиванием
+						}else if ( card3lear == "cross" ){ // СѓСЂРѕРЅ СЃ РїСЂРѕР±РёРІР°РЅРёРµРј
 							castCombo.value =  player.stats.ATK + card2cost*card1cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.value2 = card3cost*card1cost/100;
 							castCombo.effect = "AP";
-							castCombo.info = "урон с пробиванием";
+							castCombo.info = "СѓСЂРѕРЅ СЃ РїСЂРѕР±РёРІР°РЅРёРµРј";
 					
-						}else{ // урон с вампиризмом (х3)
+						}else{ // СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј (С…3)
 							castCombo.value = player.stats.ATK
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.effect = "RE"
 							castCombo.value2 = player.stats.ATK*(card1cost/25)*(card2cost+card3cost)*3/100;
-							castCombo.info = "урон с вампиризмом (х3)";
+							castCombo.info = "СѓСЂРѕРЅ СЃ РІР°РјРїРёСЂРёР·РјРѕРј (С…3)";
 						};
 					};
 				}else if ( card1lear == "diamonds" ){
 					if ( card2lear == "spades" ){
-						if ( card3lear == "spades" ){ // уменьшение урона
+						if ( card3lear == "spades" ){ // СѓРјРµРЅСЊС€РµРЅРёРµ СѓСЂРѕРЅР°
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "ATK";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение урона";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ СѓСЂРѕРЅР°";
 					
-						}else if ( card3lear == "diamonds" ){ //уменьшение базового значения маны
+						}else if ( card3lear == "diamonds" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ Р±Р°Р·РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РјР°РЅС‹
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "MP";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение базового значения маны";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р±Р°Р·РѕРІРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РјР°РЅС‹";
 					
-						}else if ( card3lear == "cross" ){ //уменьшение бронебойности
+						}else if ( card3lear == "cross" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ Р±СЂРѕРЅРµР±РѕР№РЅРѕСЃС‚Рё
 							castCombo.value = (player.stats.AGI*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "AP";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение бронебойности";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р±СЂРѕРЅРµР±РѕР№РЅРѕСЃС‚Рё";
 					
-						}else{ //уменьшение вампиризма
+						}else{ //СѓРјРµРЅСЊС€РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°
 							castCombo.value = (player.stats.AGI*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "LL";
 							castCOmbo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение вампиризма";					
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°";					
 						};
 				
 					}else if( card2lear == "diamonds" ){
-						if ( card3lear == "spades" ){ //уменьшение силы
+						if ( card3lear == "spades" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ СЃРёР»С‹
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "STR";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение силы";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ СЃРёР»С‹";
 					
-						}else if ( card3lear == "diamonds" ){ //уменьшение интеллекта
+						}else if ( card3lear == "diamonds" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "INT";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение интеллекта";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°";
 					
-						}else if ( card3lear == "cross" ){ //уменьшение ловкости
+						}else if ( card3lear == "cross" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "AGI";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение ловкости";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё";
 					
-						}else{ // уменьшение выносливости
+						}else{ // СѓРјРµРЅСЊС€РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "END";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение выносливости";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё";
 						};
 				
 					}else if( card2lear == "cross" ){
 						if ( card3lear == "spades" ){
-							alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
-					// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-						}else if ( card3lear == "diamonds" ){ // уменьшение восстановление маны
+							alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
+					// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+						}else if ( card3lear == "diamonds" ){ // СѓРјРµРЅСЊС€РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РјР°РЅС‹
 							castCombo.value = (player.stats.AGI*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "MR";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение восстановление маны";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РјР°РЅС‹";
 							
-						}else if ( card3lear == "cross" ){ // уменьшение брони
+						}else if ( card3lear == "cross" ){ // СѓРјРµРЅСЊС€РµРЅРёРµ Р±СЂРѕРЅРё
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "DEF";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение брони";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р±СЂРѕРЅРё";
 						
-						}else{ // уменьшение силы лечения
+						}else{ // СѓРјРµРЅСЊС€РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ
 							castCombo.value = (player.stats.AGI*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "HR";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение силы лечения";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ";
 						};
 				
 					}else{
-						if ( card3lear == "spades" ){ // уменьшение уворота
+						if ( card3lear == "spades" ){ // СѓРјРµРЅСЊС€РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "DDG";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение уворота";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°";
 					
-						}else if ( card3lear == "diamonds" ){ //уменьшение блок рейта
+						}else if ( card3lear == "diamonds" ){ //СѓРјРµРЅСЊС€РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "BR";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение блок рейта";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°";
 					
 						}else if ( card3lear == "cross" ){
-							alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
-							// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-						}else{ // уменьшение ХП
+							alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
+							// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+						}else{ // СѓРјРµРЅСЊС€РµРЅРёРµ РҐРџ
 							castCombo.value = player.stats.AGI*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "enemy";
 							castCombo.effect = "SU";
-							castCombo.info = "уменьшение жизней";
+							castCombo.info = "СѓРјРµРЅСЊС€РµРЅРёРµ Р¶РёР·РЅРµР№";
 						};
 					};
 				}else if ( card1lear == "cross" ){
 					if ( card2lear == "spades" ){
-						if ( card3lear == "spades" ){ // восстановление урона
+						if ( card3lear == "spades" ){ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СѓСЂРѕРЅР°
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "ATK";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление урона";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СѓСЂРѕРЅР°";
 						
-						}else if ( card3lear == "diamonds" ){ // Восстановление маны
+						}else if ( card3lear == "diamonds" ){ // Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РјР°РЅС‹
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "MP";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление маны";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РјР°РЅС‹";
 					
-						}else if ( card3lear == "cross" ){ // восстановление пробивания 
+						}else if ( card3lear == "cross" ){ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РїСЂРѕР±РёРІР°РЅРёСЏ 
 							castCombo.value = (player.stats.END*card1cost/40 + card2cost*card3cost/100)/10; 
 							castCombo.stat = "AP";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление бронебойности";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±СЂРѕРЅРµР±РѕР№РЅРѕСЃС‚Рё";
 					
-						}else{ // восстановление вампиризма
+						}else{ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°
 							castCombo.value = (player.stats.END*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "LL";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление вампиризма";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°";
 						};
 					}else if( card2lear == "diamonds" ){
-						if ( card3lear == "spades" ){ // восстанвление силы
+						if ( card3lear == "spades" ){ // РІРѕСЃСЃС‚Р°РЅРІР»РµРЅРёРµ СЃРёР»С‹
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "STR";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление силы";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃРёР»С‹";
 					
-						}else if ( card3lear == "diamonds" ){ //восстановление интеллекта
+						}else if ( card3lear == "diamonds" ){ //РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "INT";
 							castCombo.to = "self"; 
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление интеллекта";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°";
 							
-						}else if ( card3lear == "cross" ){ //восстановление ловкости
+						}else if ( card3lear == "cross" ){ //РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "AGI";
 							castCombo.to = "self"; 
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление ловкости";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё";
 					
-						}else{ // восстановление выносливости
+						}else{ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "END";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление выносливости";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё";
 						};
 				
 					}else if( card2lear == "cross" ){
 						if ( card3lear == "spades" ){ 
-						alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
-							// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-						}else if ( card3lear == "diamonds" ){ // восстановление восстановления маны
+						alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
+							// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+						}else if ( card3lear == "diamonds" ){ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РјР°РЅС‹
 							castCombo.value = (player.stats.END*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "MR";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление восстановления маны";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РјР°РЅС‹";
 						
-						}else if ( card3lear == "cross" ){// восстановление брони 
+						}else if ( card3lear == "cross" ){// РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±СЂРѕРЅРё 
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "DEF";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление брони";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±СЂРѕРЅРё";
 					
-						}else{ //восстановление силы лечения
+						}else{ //РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ
 							castCombo.value = (player.stats.END*card1cost/40 + card2cost*card3cost/100)/10;
 							castCombo.stat = "HR";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление силы лечения";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ";
 						};
 				
 					}else{
-						if ( card3lear == "spades" ){ // восстановление уворота
+						if ( card3lear == "spades" ){ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "DDG";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление уворота";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°";
 					
-						}else if ( card3lear == "diamonds" ){ // восстановление блок рейта
+						}else if ( card3lear == "diamonds" ){ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "BR";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление блок рейта";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°";
 					
 						}else if ( card3lear == "cross" ){
-							alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
-							// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-						}else{ // восстановление ХП
+							alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
+							// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+						}else{ // РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РҐРџ
 							castCombo.value = player.stats.END*card1cost/40 + card2cost*card3cost/100;
 							castCombo.stat = "HP";
 							castCombo.to = "self";
 							castCombo.effect = "RE";
-							castCombo.info = "восстановление жизней";
+							castCombo.info = "РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р¶РёР·РЅРµР№";
 						};
 					};	
 				}else{
 					if ( card2lear == "spades" ){
-						if ( card3lear == "spades" ){ // увеличение урона
+						if ( card3lear == "spades" ){ // СѓРІРµР»РёС‡РµРЅРёРµ СѓСЂРѕРЅР°
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "ATK";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение урона";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ СѓСЂРѕРЅР°";
 					
-						}else if ( card3lear == "diamonds" ){// увеличение маны
+						}else if ( card3lear == "diamonds" ){// СѓРІРµР»РёС‡РµРЅРёРµ РјР°РЅС‹
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "MP";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение маны";					
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РјР°РЅС‹";					
 					 
-						}else if ( card3lear == "cross" ){ //увеличение пробивания
+						}else if ( card3lear == "cross" ){ //СѓРІРµР»РёС‡РµРЅРёРµ РїСЂРѕР±РёРІР°РЅРёСЏ
 							castCombo.value = (player.stats.INT*card1cost/40 + card2cost*card3cost/100)/10; 
 							castCombo.stat = "AP";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение пробивания";						
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РїСЂРѕР±РёРІР°РЅРёСЏ";						
 					 
-						}else{ // увеличение вампиризма
+						}else{ // СѓРІРµР»РёС‡РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°
 							castCombo.value = (player.stats.INT*card1cost/40 + card2cost*card3cost/100)/10; 
 							castCombo.stat = "LL";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение вампиризма";	
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РІР°РјРїРёСЂРёР·РјР°";	
 					
 						};
 					}else if( card2lear == "diamonds" ){
-						if ( card3lear == "spades" ){ // увеличение силы
+						if ( card3lear == "spades" ){ // СѓРІРµР»РёС‡РµРЅРёРµ СЃРёР»С‹
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "STR";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение силы";					
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ СЃРёР»С‹";					
 					 
-						}else if ( card3lear == "diamonds" ){ // увеличение интеллекта
+						}else if ( card3lear == "diamonds" ){ // СѓРІРµР»РёС‡РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100;  
 							castCombo.stat = "INT";
 							castCombo.to = "self";
 							castCombo.effect = "ADD"; 
-							castCombo.info = "увеличение интеллекта";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РёРЅС‚РµР»Р»РµРєС‚Р°";
 					 
-						}else if ( card3lear == "cross" ){ // увеличение ловкости
+						}else if ( card3lear == "cross" ){ // СѓРІРµР»РёС‡РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "AGI";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение ловкости";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ Р»РѕРІРєРѕСЃС‚Рё";
 					 
-						}else{ // увеличение выносливости
+						}else{ // СѓРІРµР»РёС‡РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100;  
 							castCombo.stat = "END";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение выносливости";					
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РІС‹РЅРѕСЃР»РёРІРѕСЃС‚Рё";					
 							
 						};
 					}else if( card2lear == "cross" ){
 						if ( card3lear == "spades" ){
-							alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
-							// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-						}else if ( card3lear == "diamonds" ){ // увеличение восстановления маны
+							alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
+							// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+						}else if ( card3lear == "diamonds" ){ // СѓРІРµР»РёС‡РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РјР°РЅС‹
 							castCombo.value = (player.stats.INT*card1cost/40 + card2cost*card3cost/100)/10; 
 							castCombo.stat = "MR";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение восстановления маны";						
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РјР°РЅС‹";						
 					
-						}else if ( card3lear == "cross" ){ // увеличение брони
+						}else if ( card3lear == "cross" ){ // СѓРІРµР»РёС‡РµРЅРёРµ Р±СЂРѕРЅРё
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "DEF";
 							castCombo.to = "self";
 							castCombo.effect = "ADD"; 
-							castCombo.info = "увеличение брони";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ Р±СЂРѕРЅРё";
 					
-						}else{ // увеличение силы лечения
+						}else{ // СѓРІРµР»РёС‡РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ
 							castCombo.value = (player.stats.INT*card1cost/40 + card2cost*card3cost/100)/10;  
 							castCombo.stat = "HR";
 							castCombo.to = "self";
 							castCombo.effect = "ADD"; 
-							castCombo.info = "увеличение силы лечения";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ СЃРёР»С‹ Р»РµС‡РµРЅРёСЏ";
 						};
 					
 					}else{
-						if ( card3lear == "spades" ){ // увеличение уворота
+						if ( card3lear == "spades" ){ // СѓРІРµР»РёС‡РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100; 
 							castCombo.stat = "DDG";
 							castCombo.to = "self";
 							castCombo.effect = "ADD"; 
-							castCombo.info = "увеличение уворота";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ СѓРІРѕСЂРѕС‚Р°";
 					
-						}else if ( card3lear == "diamonds" ){// увеличение блок рейта
+						}else if ( card3lear == "diamonds" ){// СѓРІРµР»РёС‡РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100;  
 							castCombo.stat = "BR";
 							castCombo.to = "self";
 							castCombo.effect = "ADD"; 
-							castCombo.info = "увеличение блок рейта";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ Р±Р»РѕРє СЂРµР№С‚Р°";
 					
 						}else if ( card3lear == "cross" ){
-							// НУЖНА КОМБИНАЦИЯ!!!!!!!!!!!!!!!!!!!
-							alert( "комбинации нет, скорей всего будет ошибка или зависон игры")
+							// РќРЈР–РќРђ РљРћРњР‘РРќРђР¦РРЇ!!!!!!!!!!!!!!!!!!!
+							alert( "РєРѕРјР±РёРЅР°С†РёРё РЅРµС‚, СЃРєРѕСЂРµР№ РІСЃРµРіРѕ Р±СѓРґРµС‚ РѕС€РёР±РєР° РёР»Рё Р·Р°РІРёСЃРѕРЅ РёРіСЂС‹")
 						}else{
 							castCombo.value = player.stats.INT*card1cost/40 + card2cost*card3cost/100;  
 							castCombo.stat = "HP";
 							castCombo.to = "self";
 							castCombo.effect = "ADD";
-							castCombo.info = "увеличение жизней";
+							castCombo.info = "СѓРІРµР»РёС‡РµРЅРёРµ Р¶РёР·РЅРµР№";
 						};
 					};	
 				}
@@ -925,14 +944,14 @@ var Combos = $.trait({
 		
 			},
 			
-			calculateDamage: function (player){ // функция подсчета дамага, пока без мастей и комбо
+			calculateDamage: function (player){ // С„СѓРЅРєС†РёСЏ РїРѕРґСЃС‡РµС‚Р° РґР°РјР°РіР°, РїРѕРєР° Р±РµР· РјР°СЃС‚РµР№ Рё РєРѕРјР±Рѕ
 				if ( player.battleDeck.length >= 3){
-					var cardN1 = player.battleDeck[0]; //1 карта от плеера на полебоя
-					var cardN2 = player.battleDeck[1]; //2 карта от плеера на полебоя
-					var cardN3 = player.battleDeck[2]; //3 карта от плеера на полебоя
-					var costsArr = [cardsDeck.costs[cardN1[1]], cardsDeck.costs[cardN2[1]], cardsDeck.costs[cardN3[1]]]; // делаем массив из достоинств, для последующего сложения
-					var comboArr = [cardN1[0], cardN2[0], cardN3[0]]; // делаем массив из мастей, для последующей проверки комбинации
-					// складываем достоинства по мастям.
+					var cardN1 = player.battleDeck[0]; //1 РєР°СЂС‚Р° РѕС‚ РїР»РµРµСЂР° РЅР° РїРѕР»РµР±РѕСЏ
+					var cardN2 = player.battleDeck[1]; //2 РєР°СЂС‚Р° РѕС‚ РїР»РµРµСЂР° РЅР° РїРѕР»РµР±РѕСЏ
+					var cardN3 = player.battleDeck[2]; //3 РєР°СЂС‚Р° РѕС‚ РїР»РµРµСЂР° РЅР° РїРѕР»РµР±РѕСЏ
+					var costsArr = [cardsDeck.costs[cardN1[1]], cardsDeck.costs[cardN2[1]], cardsDeck.costs[cardN3[1]]]; // РґРµР»Р°РµРј РјР°СЃСЃРёРІ РёР· РґРѕСЃС‚РѕРёРЅСЃС‚РІ, РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµРіРѕ СЃР»РѕР¶РµРЅРёСЏ
+					var comboArr = [cardN1[0], cardN2[0], cardN3[0]]; // РґРµР»Р°РµРј РјР°СЃСЃРёРІ РёР· РјР°СЃС‚РµР№, РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµР№ РїСЂРѕРІРµСЂРєРё РєРѕРјР±РёРЅР°С†РёРё
+					// СЃРєР»Р°РґС‹РІР°РµРј РґРѕСЃС‚РѕРёРЅСЃС‚РІР° РїРѕ РјР°СЃС‚СЏРј.
 					for (var i = 3; i < player.battleDeck.length; i++){  
 						if ( cardN1[0] == player.battleDeck[i][0] ){
 							costsArr[0] += cardsDeck.costs[player.battleDeck[i][1]];
@@ -947,7 +966,7 @@ var Combos = $.trait({
 								i++;
 						};
 					};
-					player.damage = this.doCombo(comboArr, costsArr, player); // передаем управление функции подсчета.
+					player.damage = this.doCombo(comboArr, costsArr, player); // РїРµСЂРµРґР°РµРј СѓРїСЂР°РІР»РµРЅРёРµ С„СѓРЅРєС†РёРё РїРѕРґСЃС‡РµС‚Р°.
 					console.log("Player=" + player.name + "; " + player.damage.toString());
 					return;
 			
@@ -1075,32 +1094,15 @@ var Player = $.klass({
 			for (var i = 0; i < allTraits.length; i++){
 				allTraits[i].functions.meta_onInit(data);
 			}
+		this.fillStats();
 		return;
 	},
 	
-	getStats : function(x){
-		var curRace = Game.races[this.race];
-	  if( x == "STR" || x == "END" || x == "AGI" || x == "INT" ){
-		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
-	  }else if( x == "ATK" ){
-		  return Math.round( curRace.ATK + curRace.lvlup.ATK*this.level + curRace.STR*this.level/2 );
-	  }else if( x == "DEF" ){
-		  return Math.round( curRace.DEF + curRace.lvlup.DEF*this.level + curRace.END*this.level/10 );
-	  }else if( x == "DDG" ){
-		  return Math.round( curRace.DDG + curRace.lvlup.DDG*this.level + curRace.AGI*this.level/10 );
-	  }else if( x == "HP" || x == "MP"){
-		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level + curRace.END*this.level/5 );
-	  }else if( x == "BR" || x == "AP" || x == "LL" || x == "HR" || x == "MR"){
-		  return Math.round( curRace[x] + curRace.lvlup[x]*this.level );
-	  }else{
-		  return null;
-	  }
-	},
 	
 	fillStats : function(){
 		if (this.stats){
 			for(var index in this.stats) { 
-				this.stats[index] = this.getStats(index);
+				this.stats[index] = this.calculateStats(index);
 			};
 			console.log("stats are filled");
 			return;
@@ -1109,72 +1111,75 @@ var Player = $.klass({
 			return;
 		}
 	},
+
+	initDecks: function(){
+		this.deck = [];
+		this.battleDeck = [];
+	},
 	
 	_traits: [Stats]
 });
 
 var Battleground = $.klass({
-	init: function (name, timer, cards, cardsEveryTurn, enemy, player){
+	init: function (name, timer, cards, cardsEveryTurn){
 	this.name = name;
-	this.historyDeck = null;
 	this.timer = timer;
 	this.cards = cards;
-	this.player = player;
-	this.enemy = enemy;
 	this.cardsEveryTurn = cardsEveryTurn;
-	this.timerId = null;
 	this.round = null;
+	this.roundStarted = false;
 	this.turnCounter = null;
 	this.turnQueue = null;
+	this.firstPlayerTurn = null;
+	this.currentPlayerTurn = null;
+	this.timeLeft = null;
+	this.countdownRun = false;
+	this.countdownRunning = false;
+	this.countdownStep = 0;
+	this.countdownEnded = false;
+	this.turnStarted = false;
+	this.needCards = false;
+
 	},
 	
-	battleStart: function (){	 // начало Игры.
-		var bgSelf = this;
+	battleStart: function (){	 // РЅР°С‡Р°Р»Рѕ РРіСЂС‹.
+		this.firstPlayerTurn = (Math.round(Math.random())) ? Game.player : Game.enemy;
+		this.currentPlayerTurn = this.firstPlayerTurn;
 		this.round = 0;
-		this.historyDeck = []; // определяем деку истории боя.
-		
-		function rndBoolean(){ // функция определения первого хода.
-			var num = Math.random();
-			if (Math.round(num)){
-				return bgSelf.player;
-			}else{
-				return bgSelf.enemy;
-			}
-		};
-		
-		var firstPlayer = rndBoolean(); // выбираем кто ходит первый.
-		setTimeout(function(){ bgSelf.roundStart(firstPlayer)}, 1000); // передаем управлениераундами.
+		Game.player.initDecks();
+		Game.enemy.initDecks();
+		console.log("battlestart is complete, first turn = " + this.firstPlayerTurn.id);
 	},
  
-	battleEnd: function(player){ // конец игры ( вывод сообщений подсчет очков, статистика )
+	battleEnd: function(){ // РєРѕРЅРµС† РёРіСЂС‹ ( РІС‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёР№ РїРѕРґСЃС‡РµС‚ РѕС‡РєРѕРІ, СЃС‚Р°С‚РёСЃС‚РёРєР° )
 		if (this.player == player){
-			alert ( " ВЫ проиграли сражение " );
+			alert ( " Р’Р« РїСЂРѕРёРіСЂР°Р»Рё СЃСЂР°Р¶РµРЅРёРµ " );
 			
 		}else{
-			alert ( " ВЫ выйграли сражение " );
+			alert ( " Р’Р« РІС‹Р№РіСЂР°Р»Рё СЃСЂР°Р¶РµРЅРёРµ " );
 		}
 	},
 	
-	roundStart: function(player) {
-		this.turnCounter = 0; // обнуляем счетчик.
-		var currentRound = "ROUND " + (this.round + 1); // больше на 1 , так как отсчет внутри кода начниается с 0
-		$('#overlay2').css('display', 'block');
-		$('#overlay2 #player_turn').text(currentRound).animate({opacity: 1}, 1000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
-		var bgSelf = this;
-					// очищаем подсказку про комбинации
-		$( ".overlay-top-combo" ).empty(); 
-		$( ".overlay-bot-combo" ).empty();
-		
-		setTimeout( function(){ bgSelf.turnStart(player) } ,1000);
+	roundStart: function() {
+		this.round++;
+		this.turnCounter = 0;
+		//var currentRound = "ROUND " + this.round;
+		//$('#overlay2').css('display', 'block');
+		//$('#overlay2 #player_turn').text(currentRound).animate({opacity: 1}, 1000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
+		// РѕС‡РёС‰Р°РµРј РїРѕРґСЃРєР°Р·РєСѓ РїСЂРѕ РєРѕРјР±РёРЅР°С†РёРё
+		//$( ".overlay-top-combo" ).empty(); 
+		//$( ".overlay-bot-combo" ).empty();
+		this.needCards = true;
+		console.log("Round started. Current round is " + this.round);
 	},
 	
 	roundEnd: function(player, nextPlayer){
 		this.round++;
 		var bgSelf = this;
-		// проверяем, положил ли игрок карты в боевую деку или нет.
+		// РїСЂРѕРІРµСЂСЏРµРј, РїРѕР»РѕР¶РёР» Р»Рё РёРіСЂРѕРє РєР°СЂС‚С‹ РІ Р±РѕРµРІСѓСЋ РґРµРєСѓ РёР»Рё РЅРµС‚.
 		if (player.battleDeck.length == 0){ 
 			if (nextPlayer.battleDeck.length == 0){
-				// ничего не делаем, если оба не положили.
+				// РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј, РµСЃР»Рё РѕР±Р° РЅРµ РїРѕР»РѕР¶РёР»Рё.
 			}else{
 				this.calculateDamage(nextPlayer);
 				this.doDamage(nextPlayer, player);
@@ -1228,7 +1233,7 @@ var Battleground = $.klass({
 			};
 		};
 		
-		// анимация убирания карт из боевой деки
+		// Р°РЅРёРјР°С†РёСЏ СѓР±РёСЂР°РЅРёСЏ РєР°СЂС‚ РёР· Р±РѕРµРІРѕР№ РґРµРєРё
 		$("ul#top-battledeck li").css( "position", "relative").animate({left: "-500px", opacity: "0"}, 800, function(){
 			$(this).remove();
 			});
@@ -1236,7 +1241,7 @@ var Battleground = $.klass({
 			$(this).remove();
 			});
 
-		// заполняю визуализированные статы игрока и противника
+		// Р·Р°РїРѕР»РЅСЏСЋ РІРёР·СѓР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ СЃС‚Р°С‚С‹ РёРіСЂРѕРєР° Рё РїСЂРѕС‚РёРІРЅРёРєР°
 		function doRefreshUiStats(){
 			$("#bpb-hp span").css("width", bgSelf.player.stats.HP/bgSelf.player.getStats("HP")*100 + "%" );
 			$("#bpb-mp span").css("width", bgSelf.player.stats.MP/bgSelf.player.getStats("MP")*100 + "%" );
@@ -1252,68 +1257,62 @@ var Battleground = $.klass({
 			$("#top-atk").text(Math.round(bgSelf.enemy.stats.ATK));
 			$("#top-def").text(Math.round(bgSelf.enemy.stats.DEF));
 		};
-		// чистим боевую деку от прошлых значений.
+		// С‡РёСЃС‚РёРј Р±РѕРµРІСѓСЋ РґРµРєСѓ РѕС‚ РїСЂРѕС€Р»С‹С… Р·РЅР°С‡РµРЅРёР№.
 		player.battleDeck.length = 0; 
 		nextPlayer.battleDeck.length = 0; 
 		doRefreshUiStats();
 		
-		if (player.stats.HP <= 0){ // проверка на смерть игрока
+		if (player.stats.HP <= 0){ // РїСЂРѕРІРµСЂРєР° РЅР° СЃРјРµСЂС‚СЊ РёРіСЂРѕРєР°
 			this.battleEnd(player);
 		}else{
 			if (nextPlayer.stats.HP <= 0){
 				this.battleEnd(nextPlayer);
 			}else{
-				this.roundStart(player); // - а теперь внимание. Почему плеер? ведь он был последним ходящим. Хочу сделать что бы они менялись, Первый раунд ходит первым 1, а во второй раунд ходит первым 2
+				this.roundStart(player); // - Р° С‚РµРїРµСЂСЊ РІРЅРёРјР°РЅРёРµ. РџРѕС‡РµРјСѓ РїР»РµРµСЂ? РІРµРґСЊ РѕРЅ Р±С‹Р» РїРѕСЃР»РµРґРЅРёРј С…РѕРґСЏС‰РёРј. РҐРѕС‡Сѓ СЃРґРµР»Р°С‚СЊ С‡С‚Рѕ Р±С‹ РѕРЅРё РјРµРЅСЏР»РёСЃСЊ, РџРµСЂРІС‹Р№ СЂР°СѓРЅРґ С…РѕРґРёС‚ РїРµСЂРІС‹Рј 1, Р° РІРѕ РІС‚РѕСЂРѕР№ СЂР°СѓРЅРґ С…РѕРґРёС‚ РїРµСЂРІС‹Рј 2
 			}
 		}
 	},
 	
-	turnStart: function (player){ //начало хода для игрока
-		var bgSelf = this;
-		this.turnQueue = player;
-		if (player == this.player){ // проверяем кто сейчас ходит  и выводим соответствующую надпись.
-			$('#overlay2').css('display', 'block');
-			$('#overlay2 #player_turn').text("Ваш ход").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
-			$("#turn").prop('disabled', false);
+	turnStart: function (){ //РЅР°С‡Р°Р»Рѕ С…РѕРґР° РґР»СЏ РёРіСЂРѕРєР°
+		//if ( == this.player){ // РїСЂРѕРІРµСЂСЏРµРј РєС‚Рѕ СЃРµР№С‡Р°СЃ С…РѕРґРёС‚  Рё РІС‹РІРѕРґРёРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰СѓСЋ РЅР°РґРїРёСЃСЊ.
+		//	$('#overlay2').css('display', 'block');
+		//	$('#overlay2 #player_turn').text("Р’Р°С€ С…РѕРґ").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
+		//	$("#turn").prop('disabled', false);
 
 
-		}else{
-			$('#overlay2').css('display', 'block');
-			$('#overlay2 #player_turn').text("Ход противника").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
-			$("#turn").prop('disabled', true);
+		//}else{
+		//	$('#overlay2').css('display', 'block');
+		//	$('#overlay2 #player_turn').text("РҐРѕРґ РїСЂРѕС‚РёРІРЅРёРєР°").animate({opacity: 1}, 2000, function(){ $('#overlay2').css("display", "none"), $('#overlay2 #player_turn').css("opacity", "0.5") });
+		//	$("#turn").prop('disabled', true);
 
-		}
-
-		if (this.round == 0){ this.giveCard(player, this.cards); }else{ this.giveCard(player, this.cardsEveryTurn); };// раздаем карты, помеченные как за каждый новый ход.	
-
-		var timer = this.timer; // биндим количество секунд на ход.
-		this.runTimer(timer , player); // запускаем таймера хода.
+		//}
+		this.countdownRun = true;
 			
-		if (player == this.enemy){ // проверяем, является ли текущий игрок ботом
-			setTimeout(function(){bgSelf.runAi()}, 1500); // если да - запускаем логику ИИ.
+		if (player == this.enemy){ // РїСЂРѕРІРµСЂСЏРµРј, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С‚РµРєСѓС‰РёР№ РёРіСЂРѕРє Р±РѕС‚РѕРј
+			setTimeout(function(){bgSelf.runAi()}, 1500); // РµСЃР»Рё РґР° - Р·Р°РїСѓСЃРєР°РµРј Р»РѕРіРёРєСѓ РР.
 		}
 	},
  
-	turnEnd: function (player){ // заканчиваем ходигрока
-		clearInterval(this.timerId); // чистим таймер, если вдруг конец хода был вызван вручную.
-		$("#time-left").text(0); // показываем, что текущее время хода 0.
+	turnEnd: function (player){ // Р·Р°РєР°РЅС‡РёРІР°РµРј С…РѕРґРёРіСЂРѕРєР°
+		clearInterval(this.timerId); // С‡РёСЃС‚РёРј С‚Р°Р№РјРµСЂ, РµСЃР»Рё РІРґСЂСѓРі РєРѕРЅРµС† С…РѕРґР° Р±С‹Р» РІС‹Р·РІР°РЅ РІСЂСѓС‡РЅСѓСЋ.
+		$("#time-left").text(0); // РїРѕРєР°Р·С‹РІР°РµРј, С‡С‚Рѕ С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ С…РѕРґР° 0.
 		var bgSelf = this;
 		if (player == this.enemy){
 			if ( player.battleDeck.length > 2){
 			var combo = this.findCombo(player);
-			$( ".overlay-top-combo" ).text(combo.info + " на " + combo.value);
+			$( ".overlay-top-combo" ).text(combo.info + " РЅР° " + combo.value);
 			};
 		};
 		
-		if (player.id == "player"){ // маунтим следующего игрока.
-			var nextPlayer = this.enemy; // если да, то выбираем следущего игрока как противник ( бот )
+		if (player.id == "player"){ // РјР°СѓРЅС‚РёРј СЃР»РµРґСѓСЋС‰РµРіРѕ РёРіСЂРѕРєР°.
+			var nextPlayer = this.enemy; // РµСЃР»Рё РґР°, С‚Рѕ РІС‹Р±РёСЂР°РµРј СЃР»РµРґСѓС‰РµРіРѕ РёРіСЂРѕРєР° РєР°Рє РїСЂРѕС‚РёРІРЅРёРє ( Р±РѕС‚ )
 			
 		}else{
-			var nextPlayer = this.player; // если нет - то выбираем игрока.
+			var nextPlayer = this.player; // РµСЃР»Рё РЅРµС‚ - С‚Рѕ РІС‹Р±РёСЂР°РµРј РёРіСЂРѕРєР°.
 		}
 		this.turnQueue = nextPlayer;
-		// функция взята из мувКартТубатлле, не стал переделывать переменные
-		if ( player.battleDeck.length < 3){ // возвращаем карты в деку, если игрок выложил 2 карты или 1 карту вместо 3-х
+		// С„СѓРЅРєС†РёСЏ РІР·СЏС‚Р° РёР· РјСѓРІРљР°СЂС‚РўСѓР±Р°С‚Р»Р»Рµ, РЅРµ СЃС‚Р°Р» РїРµСЂРµРґРµР»С‹РІР°С‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ
+		if ( player.battleDeck.length < 3){ // РІРѕР·РІСЂР°С‰Р°РµРј РєР°СЂС‚С‹ РІ РґРµРєСѓ, РµСЃР»Рё РёРіСЂРѕРє РІС‹Р»РѕР¶РёР» 2 РєР°СЂС‚С‹ РёР»Рё 1 РєР°СЂС‚Сѓ РІРјРµСЃС‚Рѕ 3-С…
 			for ( var i = 0; i < player.battleDeck.length; i++ ){
 				player.deck.push(player.battleDeck[i]);
 				var cardId = "." + player.battleDeck[i].join("") + "#" + player.id;
@@ -1338,10 +1337,10 @@ var Battleground = $.klass({
 						clone.appendTo($(cardToBattle));
 						});
 			}
-			player.battleDeck.length = 0; // после того как вернули карты, чистим боевую деку.
+			player.battleDeck.length = 0; // РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РІРµСЂРЅСѓР»Рё РєР°СЂС‚С‹, С‡РёСЃС‚РёРј Р±РѕРµРІСѓСЋ РґРµРєСѓ.
 		}else{};
 		
-		if (this.turnCounter == 1){ // проверяем каждый ли сходил по 1 разу?
+		if (this.turnCounter == 1){ // РїСЂРѕРІРµСЂСЏРµРј РєР°Р¶РґС‹Р№ Р»Рё СЃС…РѕРґРёР» РїРѕ 1 СЂР°Р·Сѓ?
 			this.roundEnd(player, nextPlayer);
 		}else{
 			this.turnCounter++;
@@ -1350,22 +1349,25 @@ var Battleground = $.klass({
 		
 	},
  
-	generateCard: function(){ // генерация значений карты.
-		var a = Math.floor(Math.random() * cardsDeck.numbers.length);
-		var b = Math.floor(Math.random() * cardsDeck.types.length);
-		return [cardsDeck.types[b], cardsDeck.numbers[a]];
+	generateCard: function(){ // РіРµРЅРµСЂР°С†РёСЏ Р·РЅР°С‡РµРЅРёР№ РєР°СЂС‚С‹.
+		var a = Math.floor(Math.random() * Game.cards.numbers.length);
+		var b = Math.floor(Math.random() * Game.cards.types.length);
+		return [Game.cards.types[b], Game.cards.numbers[a]];
 	},
  
-	giveCard: function (player, cards) { //раздача карт игроку.
-		var bgSelf = this;
-		var num = 0;
-		var cardTimer = setInterval(function(){ if( num < cards ){ num++; bgSelf.addCard(player); }else{ clearInterval(cardTimer);} }, 300);
-
+	giveCard: function () { //СЂР°Р·РґР°С‡Р° РєР°СЂС‚ РёРіСЂРѕРєСѓ.
+		//var bgSelf = this;
+		//var cardTimer = setInterval(function(){ if( num < cards ){ num++; bgSelf.addCard(player); }else{ clearInterval(cardTimer);} }, 300);
+		var cards = (this.round - 1) ? this.cardsEveryTurn : this.cards;
+		while (cards){
+			this.addCard(Game.player);
+			this.addCard(Game.enemy);
+			cards--;
+		}
 	},
 	
-	addCard: function(player) { //даем карту игроку. // переделать функцию добавления карт, что бы можно было запускать с таймером.
-		var bgSelf = this; // маунт себя для функции движения карты в игровую деку.
-		var card = this.generateCard(); // генерируем карту.
+	addCard: function(player) { //РґР°РµРј РєР°СЂС‚Сѓ РёРіСЂРѕРєСѓ. // РїРµСЂРµРґРµР»Р°С‚СЊ С„СѓРЅРєС†РёСЋ РґРѕР±Р°РІР»РµРЅРёСЏ РєР°СЂС‚, С‡С‚Рѕ Р±С‹ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ Р·Р°РїСѓСЃРєР°С‚СЊ СЃ С‚Р°Р№РјРµСЂРѕРј.
+		var card = this.generateCard(); // РіРµРЅРµСЂРёСЂСѓРµРј РєР°СЂС‚Сѓ.
 		
 		function searchInArray(value, arr){
 			var counter = 0
@@ -1378,7 +1380,7 @@ var Battleground = $.klass({
 			if (counter == 0){return false;}else{return true;};
 		};
 		
-		for (var i = 0; i < 1;){ // делаем проверку, на то, есть ли такая карта у игрока на руках или нет. во избежании повторов и не правильной работы дальнейших функций (!!!)
+		for (var i = 0; i < 1;){ // РґРµР»Р°РµРј РїСЂРѕРІРµСЂРєСѓ, РЅР° С‚Рѕ, РµСЃС‚СЊ Р»Рё С‚Р°РєР°СЏ РєР°СЂС‚Р° Сѓ РёРіСЂРѕРєР° РЅР° СЂСѓРєР°С… РёР»Рё РЅРµС‚. РІРѕ РёР·Р±РµР¶Р°РЅРёРё РїРѕРІС‚РѕСЂРѕРІ Рё РЅРµ РїСЂР°РІРёР»СЊРЅРѕР№ СЂР°Р±РѕС‚С‹ РґР°Р»СЊРЅРµР№С€РёС… С„СѓРЅРєС†РёР№ (!!!)
 			if ( searchInArray(card, player.deck) ){
 				card = this.generateCard();
 			}else{
@@ -1388,26 +1390,26 @@ var Battleground = $.klass({
 		};
 		
 		var uiCard = "<li class='card " + card.join("") + "' id='" + player.id + "'></li>";
-		var fromCardOffset = $("div#full_deck").offset();
-		var cloneSuit = $("div#full_deck").clone();
+		//var fromCardOffset = $("div#full_deck").offset();
+		//var cloneSuit = $("div#full_deck").clone();
 		
-		if (player.id == "player"){ // если плеер - делаем *анимацию* и движение карт в его руки.
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 300, function(){ $(this).remove()});
+		if (player.id == "player"){ // РµСЃР»Рё РїР»РµРµСЂ - РґРµР»Р°РµРј *Р°РЅРёРјР°С†РёСЋ* Рё РґРІРёР¶РµРЅРёРµ РєР°СЂС‚ РІ РµРіРѕ СЂСѓРєРё.
+			//cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: "660px", left: "560px"}, 300, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.connectedSortable")).click( function(){
-				bgSelf.moveCardToBattle(player, card);
+				Game.battleground.moveCardToBattle(player, card);
 			});
 
 		}else{
-			cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 300, function(){ $(this).remove()});
+			//cloneSuit.appendTo("body").css({"position": "absolute", "top": fromCardOffset.top, "left": fromCardOffset.left}).animate({top: ($("ul.invisible").offset().top - 150), left: ($("ul.invisible").offset().left + 50)}, 300, function(){ $(this).remove()});
 			$( uiCard ).appendTo($("ul.invisible"));
-			// делаем карту рубашкой вверх, и кладем ее ко врагу ( боту ) в невидимую деку.
+			// РґРµР»Р°РµРј РєР°СЂС‚Сѓ СЂСѓР±Р°С€РєРѕР№ РІРІРµСЂС…, Рё РєР»Р°РґРµРј РµРµ РєРѕ РІСЂР°РіСѓ ( Р±РѕС‚Сѓ ) РІ РЅРµРІРёРґРёРјСѓСЋ РґРµРєСѓ.
 			}
 	},
 	
-	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
+	moveCardToBattle: function(player, card) { // С„СѓРЅРєС†РёСЏ РѕРїРёСЃС‹РІР°СЋС‰РµРµ СЃР°РјРѕ РїРµСЂРµРјРµС‰РµРЅРёРµ РєР°СЂС‚С‹ РІ Р±РѕРµРІСѓСЋ РґРµРєСѓ.
 		var bgSelf = this;
 		var cardId = "." + card.join("") + "#" + player.id;
-		function checkCard(player, card){ // проверка, можно ли положить карту, или нет.
+		function checkCard(player, card){ // РїСЂРѕРІРµСЂРєР°, РјРѕР¶РЅРѕ Р»Рё РїРѕР»РѕР¶РёС‚СЊ РєР°СЂС‚Сѓ, РёР»Рё РЅРµС‚.
 			if (bgSelf.turnQueue == player){
 				if (player.battleDeck.length < 3){
 					return true;
@@ -1422,30 +1424,32 @@ var Battleground = $.klass({
 		};
 		if (checkCard(player, card)){
 			if (player.id == "enemy"){
-				var cardOffset = $(".invisible").offset();
+				//var cardOffset = $(".invisible").offset();
 				var cardToBattle = $("ul#top-battledeck");
 			
 			}else{
-				var cardOffset = $(cardId).offset();
+				//var cardOffset = $(cardId).offset();
 				var cardToBattle = $("ul#bot-battledeck");
 			}
-			var clone = $(cardId).clone();
-			clone.appendTo($(cardToBattle)); 
-			var cloneOffset = clone.offset();
-			clone.remove();	
-			$(cardId)
-				.appendTo("body")
-				.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-				.animate({top: cloneOffset.top, left: cloneOffset.left}, 300, function(){
-					$(cardId).remove();
-					clone.appendTo($(cardToBattle));
-				});
+			//var clone = $(cardId).clone();
+			//clone.appendTo($(cardToBattle)); 
+			$(cardId).appendTo($(cardToBattle));
+			//var cloneOffset = clone.offset();
+			//clone.remove();	
+			//$(cardId)
+			//	.appendTo("body")
+			//	.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
+			//	.animate({top: cloneOffset.top, left: cloneOffset.left}, 300, function(){
+			//		$(cardId).remove();
+			//		clone.appendTo($(cardToBattle));
+			//	});
 			if (player == this.player){
-				clone.click(function(){ bgSelf.moveCardToDeck(card);})
+			//	clone.click(function(){ bgSelf.moveCardToDeck(card);});
+				$(cardId).click(function(){ bgSelf.moveCardToDeck(card);});
 			};
-			player.battleDeck.push(card); // пушим боевую деку игрока картой.
+			player.battleDeck.push(card); // РїСѓС€РёРј Р±РѕРµРІСѓСЋ РґРµРєСѓ РёРіСЂРѕРєР° РєР°СЂС‚РѕР№.
 			var cardToDelete = player.deck.indexOf(card);
-			player.deck.splice(cardToDelete, 1); //обязательное удаление карты из руки игрока. (!!!) - то место, когда задвоенные карты делают свою гадкую работу. (!!!)
+			player.deck.splice(cardToDelete, 1); //РѕР±СЏР·Р°С‚РµР»СЊРЅРѕРµ СѓРґР°Р»РµРЅРёРµ РєР°СЂС‚С‹ РёР· СЂСѓРєРё РёРіСЂРѕРєР°. (!!!) - С‚Рѕ РјРµСЃС‚Рѕ, РєРѕРіРґР° Р·Р°РґРІРѕРµРЅРЅС‹Рµ РєР°СЂС‚С‹ РґРµР»Р°СЋС‚ СЃРІРѕСЋ РіР°РґРєСѓСЋ СЂР°Р±РѕС‚Сѓ. (!!!)
 		
 		}else{
 			$(cardId).effect("highlight", {color: "red"}, 300);	
@@ -1453,7 +1457,7 @@ var Battleground = $.klass({
 		if(this.player.battleDeck.length > 2){
 			if( this.player == this.turnQueue){
 				var combo = this.findCombo(player);
-				$( ".overlay-bot-combo" ).text(combo.info + " на " + combo.value);
+				$( ".overlay-bot-combo" ).text(combo.info + " РЅР° " + combo.value);
 			};
 		};
 	},
@@ -1462,38 +1466,35 @@ var Battleground = $.klass({
 		var cardId = "." + card.join("") + "#" + this.player.id;
 		var bgSelf = this;
 		if( this.turnQueue == this.player){
-			var cardOffset = $(cardId).offset();
-				var clone = $(cardId).clone();
-				clone.appendTo($(".connectedSortable"));
-				var cloneOffset = clone.offset();
-				clone.remove();	
-				$(cardId)
-					.appendTo("body")
-					.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
-					.animate({top: cloneOffset.top, left: cloneOffset.left}, 400, function(){
-						$(cardId).remove();
-						clone.appendTo($(".connectedSortable"));
-						clone.click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);})
-					});
-			this.player.deck.push(card); // возвращаем карту обратно.
+			//var cardOffset = $(cardId).offset();
+			//var clone = $(cardId).clone();
+			//clone.appendTo($(".connectedSortable"));
+			$(cardId).appendTo($(".connectedSortable"));
+			$(cardId).click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);});
+			//var cloneOffset = clone.offset();
+			//clone.remove();	
+			//$(cardId)
+			//	.appendTo("body")
+			//	.css({ "position" : "absolute", "top" : (cardOffset.top - 5), "left" : (cardOffset.left - 5) })
+			//	.animate({top: cloneOffset.top, left: cloneOffset.left}, 400, function(){
+			//		$(cardId).remove();
+			//		clone.appendTo($(".connectedSortable"));
+			//		clone.click(function(){ bgSelf.moveCardToBattle(bgSelf.player, card);})
+			//	});
+			this.player.deck.push(card); // РІРѕР·РІСЂР°С‰Р°РµРј РєР°СЂС‚Сѓ РѕР±СЂР°С‚РЅРѕ.
 			var cardToDelete = this.player.battleDeck.indexOf(card);
 			this.player.battleDeck.splice(cardToDelete, 1);
 		$("bot-battledeck").unbind('mouseenter mouseleave');
 		}else{ $(cardId).effect("highlight", {color: "red"}, 300);	}
 	},
 	
-	runTimer: function(timer, player){ // сам таймер хода.
-		var bgSelf = this;
-		var i = timer;
-		this.timerId = setInterval(function(){ // маунтим его в родительский объект, что бы можно было вызвать его остановку в ручную.
-			if (i >= 0){
-			$("#time-left").text(i--); // показываем количество оставшися секунд, на самом деле на 1 больше дает :)
-			
-			}else{
-			clearInterval(bgSelf.timerId); // чистим таймер, как только секунды закончатся.
-			bgSelf.turnEnd(player); // заканчиваем ход игрока ( плеера берет из стака функций ).
-			}
-		}, 1000);
+	runContdown: function(player){ // СЃР°Рј С‚Р°Р№РјРµСЂ С…РѕРґР°.
+		if (this.timeLeft >= 0){
+			$("#time-left").text(this.timeLeft--); // РїРѕРєР°Р·С‹РІР°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РѕСЃС‚Р°РІС€РёСЃСЏ СЃРµРєСѓРЅРґ.
+		}else{
+			this.countdownRun = false;
+			this.countdownEnded = true;
+		}
 	},
 	
 	meta_onInit: function(data){
@@ -1552,7 +1553,35 @@ var Game = {
 		return $.now();
 	},
 	
-	update: function(){
+	update: function(delta){
+		if (!this.running){
+			this.battleground.battleStart();
+			this.running = true;
+			return;
+		}
+		if (!this.battleground.roundStarted){
+			this.battleground.roundStart();
+			this.battleground.roundStarted = true;
+			return;
+		}
+		if (this.battleground.needCards){
+			this.battleground.giveCard();
+			this.battleground.needCards = false;
+			return;
+		}
+		if (!this.battleground.turnStarted){
+			this.battleground.turnStart();
+			this.battleground.turnStarted = true;
+			return;
+		}
+		if (this.battleground.countdownRun){
+			this.battleground.countdownStep += delta;
+			if (this.battleground.countdownStep >= 1000){
+				this.battleground.runContdown();
+				this.battleground.countdownStep = 0;
+			}
+		}
+
 
 	},
 	
@@ -1567,18 +1596,17 @@ var Game = {
 		var time = this.now();
 		var delta = time - this.lastTick;
 		if (delta >= this.tickStep){
-			this.update();
+			this.update(delta);
 			this.lastTick = time;
+
 		}
 		
 		this.draw();
 	},
 
 	initialize: function(){
-		//генерирую полебоя.
-		this.battleground = new Battleground();
-		this.battleground.meta_onInit(battleground);
-		//собираю информацию из данных от пользователя.
+
+		//СЃРѕР±РёСЂР°СЋ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РґР°РЅРЅС‹С… РѕС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
 		var name = document.forms.preStart.elements.nickname.value;
 		var cards = +document.forms.preStart.elements.cards.value;
 		var timer = +document.forms.preStart.elements.timeturn.value;
@@ -1588,26 +1616,30 @@ var Game = {
 				var race = document.forms.preStart.elements.race[i].value;
 			}
 		}
-		var lvl = 0; // временно
-		var exp = 0; // временно
-		
+		var lvl = 0; // РІСЂРµРјРµРЅРЅРѕ
+		var exp = 0; // РІСЂРµРјРµРЅРЅРѕ
+		//РіРµРЅРµСЂРёСЂСѓСЋ РїРѕР»РµР±РѕСЏ.
+		this.battleground = new Battleground("Hells gate", timer, cards, cardsEveryTurn);
+		this.battleground.meta_onInit(this.battleground);
+		console.log("Battleground initialized");
+		//РіРµРЅРµСЂРёСЂСѓСЋ РёРіСЂРѕРєР°.
 		this.player = new Player(name, race, exp, lvl);
 		this.player.meta_onInit(this.player);
 		this.player.id = "player";
 		console.log("player is initialized");
-		//сгенерирую бота.
+		//СЃРіРµРЅРµСЂРёСЂСѓСЋ Р±РѕС‚Р°.
+		console.log("bot start initializing");
 		this.battleground.generateBot();
-		//закрою модальное окно.
+		//РґРѕР±Р°РІР»СЋ СЃС‚Р°С‚С‹ РЅР° UI
+		this.initiBattleUi();
+		//Р·Р°РєСЂРѕСЋ РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ.
 		$('#overlay').css('display', 'none');
 		
 		console.log("the game is initialized");
-		//даем гейм старт.
+		//РґР°РµРј РіРµР№Рј СЃС‚Р°СЂС‚.
 		this.start();
 	},
 
-	update: function(){
-		
-	},
 	
 	cards : {
 		numbers : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
@@ -1666,49 +1698,100 @@ var Game = {
 		return Math.floor(Math.random() * arr.length);
 	},
 
-	closeModalWindow: function(){ // модальное окно с начальными опциями игры.
+	closeModalWindow: function(){ // РјРѕРґР°Р»СЊРЅРѕРµ РѕРєРЅРѕ СЃ РЅР°С‡Р°Р»СЊРЅС‹РјРё РѕРїС†РёСЏРјРё РёРіСЂС‹.
 		$('#overlay').css('display', 'none')
-		if (confirm( "Что бы запустить игру, выберите все пункты меню, и нажмите начать игру. \n Обновите окно" )){
+		if (confirm( "Р§С‚Рѕ Р±С‹ Р·Р°РїСѓСЃС‚РёС‚СЊ РёРіСЂСѓ, РІС‹Р±РµСЂРёС‚Рµ РІСЃРµ РїСѓРЅРєС‚С‹ РјРµРЅСЋ, Рё РЅР°Р¶РјРёС‚Рµ РЅР°С‡Р°С‚СЊ РёРіСЂСѓ. \n РћР±РЅРѕРІРёС‚Рµ РѕРєРЅРѕ" )){
 			window.location.reload("true");
 		}
 	},
 	
-	checkStartForm: function(){ // проверка формы, которую нам отправил игрок ( сингл ).
-		var name = document.forms.preStart.elements.nickname.value; // имя игрока
-		var cards = Math.round(+document.forms.preStart.elements.cards.value); // количество карт в начале игры
-		var timer = Math.round(+document.forms.preStart.elements.timeturn.value); // сколько секунд на ход.
-		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value; // количество карт каждый последующий ход.
-			// обычные проверки с алертом.
+	checkStartForm: function(){ // РїСЂРѕРІРµСЂРєР° С„РѕСЂРјС‹, РєРѕС‚РѕСЂСѓСЋ РЅР°Рј РѕС‚РїСЂР°РІРёР» РёРіСЂРѕРє ( СЃРёРЅРіР» ).
+		var name = document.forms.preStart.elements.nickname.value; // РёРјСЏ РёРіСЂРѕРєР°
+		var cards = Math.round(+document.forms.preStart.elements.cards.value); // РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚ РІ РЅР°С‡Р°Р»Рµ РёРіСЂС‹
+		var timer = Math.round(+document.forms.preStart.elements.timeturn.value); // СЃРєРѕР»СЊРєРѕ СЃРµРєСѓРЅРґ РЅР° С…РѕРґ.
+		var cardsEveryTurn = +document.forms.preStart.elements.cardeveryturn.value; // РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°СЂС‚ РєР°Р¶РґС‹Р№ РїРѕСЃР»РµРґСѓСЋС‰РёР№ С…РѕРґ.
+			// РѕР±С‹С‡РЅС‹Рµ РїСЂРѕРІРµСЂРєРё СЃ Р°Р»РµСЂС‚РѕРј.
 		if (name.length > 15){
-			alert( '${name} +  слишком длинное имя, сделайте его короче!' );
+			alert( '${name} +  СЃР»РёС€РєРѕРј РґР»РёРЅРЅРѕРµ РёРјСЏ, СЃРґРµР»Р°Р№С‚Рµ РµРіРѕ РєРѕСЂРѕС‡Рµ!' );
 			return false;
 			
 		}else if(name.length < 1){
-			alert( 'Слишком короткое имя ');
+			alert( 'РЎР»РёС€РєРѕРј РєРѕСЂРѕС‚РєРѕРµ РёРјСЏ ');
 			return false;
 		}
 	
 		if ( !this.isNumeric(cards) || cards <= 3 || cards >= 52){
-			alert( cards + '- не верно, 3< число карт < 52 ');
+			alert( cards + '- РЅРµ РІРµСЂРЅРѕ, 3 < С‡РёСЃР»Рѕ РєР°СЂС‚ < 52 ');
 			return false;
 		}
 	
 		if ( (!this.isNumeric(timer)) || timer <= 15 || timer >= 60){
-			alert( timer + '- не верно, 15< вермя на ход <= 60');
+			alert( timer + '- РЅРµ РІРµСЂРЅРѕ, 15 < РІРµСЂРјСЏ РЅР° С…РѕРґ <= 60');
 			return false;
 		}
 		
 		if ( cardsEveryTurn > 4 || cardsEveryTurn <= 0 || (!(this.isNumeric(cardsEveryTurn))) ){
-			alert( cardsEveryTurn + " - не верно, 1 <= число карт за ход < 5" );
+			alert( cardsEveryTurn + " - РЅРµ РІРµСЂРЅРѕ, 1 <= С‡РёСЃР»Рѕ РєР°СЂС‚ Р·Р° С…РѕРґ < 5" );
 			return false;
 		}
 
-		// передаем управление функции начинающий бой.
-		return Game.initialize(); 
+		// РїРµСЂРµРґР°РµРј СѓРїСЂР°РІР»РµРЅРёРµ С„СѓРЅРєС†РёРё РЅР°С‡РёРЅР°СЋС‰РёР№ Р±РѕР№.
+		return this.initialize(); 
+	},
+
+	initiBattleUi: function(){ // РІРЅРµС€РЅРёРµ СЌС„С„РµРєС‚С‹ РІ РІРёРґРµ Р·Р°РїРѕР»РЅРµРЅС‹С… Р±Р°СЂРѕРІ СЃ С…Рї, Р°РІР°С‚Р°СЂС‹ Рё С‚.Рї.
+		var tool;
+
+		$("div#bottom-playername").html(this.player.name);
+		$("#bpb-hp span").css("width", "100%");
+		$("#bpb-hp span").text(this.player.stats.HP);
+		$("#bpb-mp span").css("width", "100%");
+		$("#bpb-mp span").text(this.player.stats.MP);		
+		$("#bottom-atk").text(this.player.stats.ATK);
+		$("#bottom-def").text(this.player.stats.DEF);
+		$("#bottomavatar img").attr("src", this.races[this.player.race].avatar);
+		$("#bottom-lvl").text(this.player.level);
+		//Р±РѕС‚
+		$("div#top-playername").html(this.enemy.name);
+		$("#tpb-hp span").css("width", "100%");
+		$("#tpb-hp span").text(this.enemy.stats.HP);
+		$("#tpb-mp span").css("width", "100%");
+		$("#tpb-mp span").text(this.enemy.stats.MP);
+		$("#top-atk").text(this.enemy.stats.ATK);
+		$("#top-def").text(this.enemy.stats.DEF);
+		$("#topavatar img").attr("src", this.races[this.enemy.race].avatar);
+		$("#top-lvl").text(this.enemy.level);
+
+		btool = $("#topavatar");
+		ptool = $("#bottomavatar");
+
+		var pinfo = $("<div>" + this.player.name + "</br>РЈСЂРѕРІРµРЅСЊ: " + this.player.level + "</br> Р Р°СЃР°: " + this.player.race +"</br> Р–РёР·РЅРё: " + this.player.stats.HP + "</br> Р”СѓС…: " + this.player.stats.MP + "</br> РЈРІРѕСЂРѕС‚: " + this.player.stats.DDG + "%</br> РЁР°РЅСЃ РЅР° Р±Р»РѕРє: " + this.player.stats.BR + "%</br></div>");
+		var binfo = $("<div>" + this.enemy.name + "</br>РЈСЂРѕРІРµРЅСЊ: " + this.enemy.level + "</br> Р Р°СЃР°: " + this.enemy.race +"</br> Р–РёР·РЅРё: " + this.enemy.stats.HP + "</br> Р”СѓС…: " + this.enemy.stats.MP + "</br> РЈРІРѕСЂРѕС‚: " + this.enemy.stats.DDG + "%</br> РЁР°РЅСЃ РЅР° Р±Р»РѕРє: " + this.enemy.stats.BR + "%</br></div>");
+		this.appendTooltip(ptool, pinfo);
+		this.appendTooltip(btool, binfo);
 	},
 	
-	isNumeric: function(n) { // проверка на число
+	isNumeric: function(n) { // РїСЂРѕРІРµСЂРєР° РЅР° С‡РёСЃР»Рѕ
 		return !isNaN(parseFloat(n)) && isFinite(n);
+	},
+
+	appendTooltip: function(par, elem){
+		$(par).hover(
+    		function() {
+      			var d = $('<div id="overlay3">');
+      			d.append(elem);
+      			d.appendTo('body').fadeIn('fast');
+      			$('div#overlay3').css({
+				'top': $(par).offset().top,
+				'left': ($(par).offset().left + 100)
+        		});
+    		},
+   			function () {
+      			$('div#overlay3').fadeOut('fast', function(){
+        		//$(this).remove();
+      			});
+    		}
+		);
 	}
 };
 
@@ -1767,7 +1850,7 @@ $(document).ready(function() {
 	);
 
 */
-	// запуск самого модального окошка, и маунт кнопок в нем.
+	// Р·Р°РїСѓСЃРє СЃР°РјРѕРіРѕ РјРѕРґР°Р»СЊРЅРѕРіРѕ РѕРєРѕС€РєР°, Рё РјР°СѓРЅС‚ РєРЅРѕРїРѕРє РІ РЅРµРј.
 	setTimeout(function(){
 		$('#overlay').css('display', 'block');
 		$("input.close").attr("onclick", "Game.closeModalWindow()");
