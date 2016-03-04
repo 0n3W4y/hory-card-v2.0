@@ -57,21 +57,23 @@ var Stats = $.trait({
 });
 var AiLogic = $.trait({
 	meta_onInit: function(data){
-		if(data.runAi){
+		if(data.ailogic){
 			conlose.log("Ai already added");
 		}else{
-			data.runAi = function(){ 
+			data.ailogic = {
+			aiChoice: null,
+			playStep: 0,
 		
-			function findAllCards(){ // возвращаем массив карт из деки.
-				var spadesCard = searchLear("spades"); 
-				var crossCard = searchLear("cross");
-				var diamondsCard = searchLear("diamonds");
-				var heartsCard = searchLear("hearts");
+			findAllCards: function(){ // возвращаем массив карт из деки.
+				var spadesCard = this.searchLear("spades"); 
+				var crossCard = this.searchLear("cross");
+				var diamondsCard = this.searchLear("diamonds");
+				var heartsCard = this.searchLear("hearts");
 				return [spadesCard, crossCard, diamondsCard, heartsCard];
-			};
+			},
 		
-			function aiAttack(priority){ // функция генерации массива карт дял выкладки в боевую деку, Это атака.
-				var tempArr = findAllCards();
+			aiAttack: function(priority){ // функция генерации массива карт дял выкладки в боевую деку, Это атака.
+				var tempArr = this.findAllCards();
 				var cardSpades = tempArr[0];
 				var cardCross = tempArr[1];
 				var cardDiamonds = tempArr[2];
@@ -134,10 +136,10 @@ var AiLogic = $.trait({
 						return [cardSpades[0], secondCard, thirdCard];
 					}else{ return false;};
 				};
-			};
+			},
 		
-			function aiDefense(priority, variant){//функция генерации массива карт дял выкладки. Это бафы, дебафы и восстановление.
-				var tempArr = findAllCards();
+			aiDefense: function(priority, variant){//функция генерации массива карт дял выкладки. Это бафы, дебафы и восстановление.
+				var tempArr = this.findAllCards();
 				var cardSpades = tempArr[0];
 				var cardCross = tempArr[1];
 				var cardDiamonds = tempArr[2];
@@ -250,9 +252,9 @@ var AiLogic = $.trait({
 				}else{
 					return false;
 				};
-			}; 
+			}, 
 		
-			function analysis(play){ // функция анализа ситуации, грубая, но работает так, как я задумывал.
+			analysis: function(play){ // функция анализа ситуации, грубая, но работает так, как я задумывал.
 				var arrStats = [];
 				for ( var index in Game.enemy.stats ){
 					if( Game.enemy.stats[index] < Game.enemy.getStats(index) ){
@@ -261,10 +263,10 @@ var AiLogic = $.trait({
 				};
 				if (play == "attack"){
 
-					var arrAtkAP = aiAttack("AP");
-					var arrAtkLL = aiAttack("LL");
-					var arrAtkMP = aiAttack("MP");
-					var arrAtk = aiAttack("");
+					var arrAtkAP = this.aiAttack("AP");
+					var arrAtkLL = this.aiAttack("LL");
+					var arrAtkMP = this.aiAttack("MP");
+					var arrAtk = this.aiAttack("");
 					var arrAttack = [arrAtkAP, arrAtkLL, arrAtkMP, arrAtk];	
 					if ( arrAttack.length > 0 ){
 						return [arrAtkAP, arrAtkLL, arrAtkMP, arrAtk];
@@ -302,18 +304,18 @@ var AiLogic = $.trait({
 						return false;
 				};
 	
-			};
+			},
 		
-			function collectingResults (){ // пытаюсь собрать все воедино, что бы уже отсюда выдавать в функции aiPlay готовый массив карт.
-				var attackArr = analysis("attack");
+			collectingResults: function(){ // пытаюсь собрать все воедино, что бы уже отсюда выдавать в функции aiPlay готовый массив карт.
+				var attackArr = this.analysis("attack");
 				var attackAP = attackArr[0];
 				var attackLL = attackArr[1];
 				var attackMP = attackArr[2];
 				var attackLinear = attackArr[3];
 			
-				var recoveryArr = analysis("recovery");
-				var substractArr = analysis("substract");
-				var addArr = analysis("add");
+				var recoveryArr = this.analysis("recovery");
+				var substractArr = this.analysis("substract");
+				var addArr = this.analysis("add");
 			
 				var arrSelfStats = []; // собираю коллекцию статов, которые были уменьшены.
 				for ( var index in Game.enemy.stats ){
@@ -342,10 +344,10 @@ var AiLogic = $.trait({
 					return cardArr;
 				}else if( (Game.enemy.stats.HP < Game.enemy.getStats("HP")/2) && (recoveryArr || addArr) ) {
 					if( recoveryArr[arrSelfStats.indexOf["HP"]] != false ){
-						var cardArr = aiDefense("RE", "HP");
+						var cardArr = this.aiDefense("RE", "HP");
 						return cardArr;
 					}else if( addArr[arrSelfStats.indexOf["HP"]] != false ){
-						var cardArr = aiDefense("ADD", "HP");
+						var cardArr = this.aiDefense("ADD", "HP");
 						return cardArr;
 					}else{};
 				}else{};
@@ -378,17 +380,29 @@ var AiLogic = $.trait({
 			
 				return false; //5
 
-			};
+			},
 		
-			function aiPlay(arr){ // работает с массивом карт, функция выкладки карт на боевую деку.
-				while (arr.length){
-					Game.battleground.moveCardToBattle(Game.enemy, arr[0]);
-					arr.splice(0, 1);
+			aiPlay: function(delta){ // работает с массивом карт, функция выкладки карт на боевую деку.
+				if (this.aiChoice === null){
+					this.aiChoice = this.collectingResults();
 				}
-				return;
-			};
+				if (this.aiChoice.length > 0){
+					if (this.playStep >= 1250){
+						Game.battleground.moveCardToBattle(Game.enemy, this.aiChoice[0]);
+						this.aiChoice.splice(0, 1);
+						this.playStep = 0;
+					}else{
+						this.playStep += delta;
+					}
+				}else{
+					this.aiChoice = null;
+					Game.battleground.countdownEnded = true;
+					Game.battleground.aiRunning = false;
+				}
+
+			},
 		
-			function searchLear(lear){ // функиця поиска карты по масти
+			searchLear: function(lear){ // функиця поиска карты по масти
 				var tempArr = [];
 				for (var i = 0; i < Game.enemy.deck.length; i++){
 					if( Game.enemy.deck[i][0] == lear ){
@@ -398,21 +412,9 @@ var AiLogic = $.trait({
 				};
 				tempArr.sort(function (a, b){ return b[1] - a[1]; }); // сортируем, что бы большим значением были вначале
 				return tempArr;
-			};
+			},
 		
-			var botChoise = collectingResults();
-		
-			// проверка, может ли бот сделать ход?
-			if( botChoise ){
-				aiPlay(botChoise);
-				this.aiRunning = false;
-				return this.turnEnd();
-			}else{
-				this.aiRunning = false;
-				return this.turnEnd();
-			};
-			console.log("Ai activated");
-			}
+		}
 		}
 		
 	},
@@ -965,6 +967,7 @@ var Combos = $.trait({
 					return;
 			
 				}else{
+					player.damage = {};
 					return; 
 				}
 			},
@@ -1130,10 +1133,13 @@ var Battleground = $.klass({
 	this.countdownStep = 0;
 	this.countdownEnded = false;
 	this.turnStarted = false;
+	this.turnRunning = false;
 	this.turnEnded = false;
 	this.needCards = false;
 	this.aiRunning = false;
 	this.battleEnded = false;
+	this.giveCardStep = 0;
+	this.cardsLeft = undefined;
 	},
 	
 	battleStart: function (){	 // начало Игры.
@@ -1161,6 +1167,7 @@ var Battleground = $.klass({
 		this.turnCounter = 0;
 		this.needCards = true;
 		this.turnStarted = false;
+		this.cardsLeft = (this.round - 1) ? this.cardsEveryTurn : this.cards;
 		console.log("Round started. Current round is " + this.round);
 		return;
 	},
@@ -1172,24 +1179,30 @@ var Battleground = $.klass({
 		// проверяем, положил ли игрок карты в боевую деку или нет.
 		this.calculateDamage(this.currentPlayerTurn);
 		this.calculateDamage(nextPlayer);
-		if (this.currentPlayerTurn.battleDeck[0] && this.nextPlayer[0] && this.currentPlayerTurn.battleDeck[0][0] == "spades" && nextPlayer.battleDeck[0][0] == "spades"){
+		if (this.currentPlayerTurn.battleDeck[0] && nextPlayer.battleDeck[0]){
+			if (nextPlayer.battleDeck[0][0] == "spades"){
+				this.doDamage(this.currentPlayerTurn, nextPlayer);
+				this.doDamage(nextPlayer, this.currentPlayerTurn);
+			}else{
+				this.doDamage(nextPlayer, this.currentPlayerTurn);
+				this.doDamage(this.currentPlayerTurn, nextPlayer);
+			}
+		}else if (this.currentPlayerTurn.battleDeck[0]){
 			this.doDamage(this.currentPlayerTurn, nextPlayer);
-		}else if (this.currentPlayerTurn.battleDeck[0][0] == "spades"){
+		}else if (nextPlayer.battleDeck[0]){
 			this.doDamage(nextPlayer, this.currentPlayerTurn);
-		}else{
-			this.doDamage(this.currentPlayerTurn, nextPlayer);
 		}
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
-			$("#bpb-hp span").css("width", Game.player.stats.HP/Game.player.getStats("HP")*100 + "%" );
-			$("#bpb-mp span").css("width", Game.player.stats.MP/Game.player.getStats("MP")*100 + "%" );
+			$("#bpb-hp span").css("width", Game.player.stats.HP/Game.player.calculateStats("HP")*100 + "%" );
+			$("#bpb-mp span").css("width", Game.player.stats.MP/Game.player.calculateStats("MP")*100 + "%" );
 			$("#bpb-hp span").text(Math.round(Game.player.stats.HP));
 			$("#bpb-mp span").text(Math.round(Game.player.stats.MP));
 			$("#bottom-atk").text(Math.round(Game.player.stats.ATK));
 			$("#bottom-def").text(Math.round(Game.player.stats.DEF));
 		
-			$("#tpb-hp span").css("width", Game.enemy.stats.HP/Game.enemy.getStats("HP")*100 + "%" );
-			$("#tpb-mp span").css("width", Game.enemy.stats.MP/Game.enemy.getStats("MP")*100 + "%" );
+			$("#tpb-hp span").css("width", Game.enemy.stats.HP/Game.enemy.calculateStats("HP")*100 + "%" );
+			$("#tpb-mp span").css("width", Game.enemy.stats.MP/Game.enemy.calculateStats("MP")*100 + "%" );
 			$("#tpb-hp span").text(Math.round(Game.enemy.stats.HP));
 			$("#tpb-mp span").text(Math.round(Game.enemy.stats.MP));
 			$("#top-atk").text(Math.round(Game.enemy.stats.ATK));
@@ -1220,13 +1233,20 @@ var Battleground = $.klass({
 
 		if (this.currentPlayerTurn.id == Game.enemy.id){ // проверяем, является ли текущий игрок ботом
 			this.aiRunning = true;
-			this.runAi() // если да - запускаем логику ИИ.
+			$("#turn").prop('disabled', true);
+			$("ul.connectedSortable li").prop('disabled', true);
+
+		}else{
+			$("#turn").prop('disabled', false);
+			$("ul.connectedSortable li").prop('disabled', false);
 		}
+		this.turnRunning = true;
 		console.log("Turn started");
 		return;
 	},
  
 	turnEnd: function (){ // заканчиваем ход
+		this.turnRunning = false;
 		this.countdownRun = false;
 		// функция взята из мувКартТубатлле, не стал переделывать переменные
 		if ( this.currentPlayerTurn.battleDeck.length < 3){ // возвращаем карты в деку, если игрок выложил 2 карты или 1 карту вместо 3-х
@@ -1256,14 +1276,20 @@ var Battleground = $.klass({
 		return [Game.cards.types[b], Game.cards.numbers[a]];
 	},
  
-	giveCard: function () { //раздача карт игроку.
-		var cards = (this.round - 1) ? this.cardsEveryTurn : this.cards;
-		while (cards){
-			this.addCard(Game.player);
-			this.addCard(Game.enemy);
-			cards--;
+	giveCard: function (delta) { //раздача карт игроку.
+		if (this.cardsLeft > 0){
+			if (this.giveCardStep >= 1200){
+				this.addCard(Game.player);
+				this.addCard(Game.enemy);
+				this.cardsLeft--;
+				this.giveCardStep = 0;
+			}else{
+				this.giveCardStep += delta;
+			}
+		}else{
+			this.needCards = false;
+			console.log("All cards put into deck");
 		}
-		return;
 	},
 	
 	addCard: function(player) { //даем карту игроку. // переделать функцию добавления карт, что бы можно было запускать с таймером.
@@ -1302,7 +1328,7 @@ var Battleground = $.klass({
 	moveCardToBattle: function(player, card) { // функция описывающее само перемещение карты в боевую деку.
 		var cardId = "." + card.join("") + "#" + player.id;
 		function checkCard(player, card){ // проверка, можно ли положить карту, или нет.
-			if (!Game.paused && Game.running && Game.battleground.currentPlayerTurn.id == player.id){
+			if (!Game.paused && Game.running && Game.battleground.currentPlayerTurn.id == player.id && Game.battleground.turnRunning){
 				if (player.battleDeck.length < 3){
 					return true;
 				}else{
@@ -1340,13 +1366,17 @@ var Battleground = $.klass({
 	
 	moveCardToDeck: function(player, card){
 		var cardId = "." + card.join("") + "#" + player.id;
-		$(cardId).appendTo($(".connectedSortable"));
-		$(cardId).unbind( "click" );
-		$(cardId).click(function(){ Game.battleground.moveCardToBattle(player, card);});
-		player.deck.push(card); // возвращаем карту обратно.
-		var cardToDelete = player.battleDeck.indexOf(card);
-		player.battleDeck.splice(cardToDelete, 1);
-		$("bot-battledeck").unbind('mouseenter mouseleave');
+		if (player.id == Game.battleground.currentPlayerTurn.id && Game.battleground.turnRunning){
+			$(cardId).appendTo($(".connectedSortable"));
+			$(cardId).unbind( "click" );
+			$(cardId).click(function(){ Game.battleground.moveCardToBattle(player, card);});
+			player.deck.push(card); // возвращаем карту обратно.
+			var cardToDelete = player.battleDeck.indexOf(card);
+			player.battleDeck.splice(cardToDelete, 1);
+			$("bot-battledeck").unbind('mouseenter mouseleave');
+		}else{
+			$(cardId).effect("highlight", {color: "red"}, 300);	
+		}
 
 	},
 	
@@ -1380,11 +1410,11 @@ var Game = {
 	run: false,
 	running: false,
 	paused: false,
-	loopId: undefined,
 	startTime: undefined,
 	lastTick: undefined,
 	pausedTime: undefined,
 	unpausedTime: undefined,
+	animationVelocity: 1,
 	
 	start: function(){
 		if (!this.run){
@@ -1418,7 +1448,7 @@ var Game = {
 	update: function(delta){
 		if (this.battleground.battleEnded){
 			this.battleground.battleEnd();
-			this.batleground.battleEnded = true;
+			this.battleground.battleEnded = true;
 			return;
 		}
 		if (!this.running){
@@ -1432,8 +1462,7 @@ var Game = {
 			return;
 		}
 		if (this.battleground.needCards){
-			this.battleground.giveCard();
-			this.battleground.needCards = false;
+			this.battleground.giveCard(delta);
 			return;
 		}
 		if (!this.battleground.turnStarted){
@@ -1450,6 +1479,7 @@ var Game = {
 		}
 		if (this.battleground.aiRunning){
 			// блокируем всю активность для игрока, пока ИИ ходит.
+			this.battleground.ailogic.aiPlay(delta);
 		}
 		if (this.battleground.roundEnded){
 			this.battleground.roundEnd();
