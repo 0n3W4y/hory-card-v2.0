@@ -257,7 +257,7 @@ var AiLogic = $.trait({
 			analysis: function(play){ // функция анализа ситуации, грубая, но работает так, как я задумывал.
 				var arrStats = [];
 				for ( var index in Game.enemy.stats ){
-					if( Game.enemy.stats[index] < Game.enemy.getStats(index) ){
+					if( Game.enemy.getStats[index] < Game.enemy.calculateStats(index) ){
 						arrStats.push(index);
 					};
 				};
@@ -319,7 +319,7 @@ var AiLogic = $.trait({
 			
 				var arrSelfStats = []; // собираю коллекцию статов, которые были уменьшены.
 				for ( var index in Game.enemy.stats ){
-					if( Game.enemy.stats[index] < Game.enemy.getStats(index) ){
+					if( Game.enemy.getStats[index] < Game.enemy.calculateStats(index) ){
 						arrSelfStats.push(index);
 					};
 				};
@@ -339,10 +339,10 @@ var AiLogic = $.trait({
 			// 3. Если не получается атаковать, пытаемся восстановить себе статы, если такие есть
 			// 4. Если со статами все впорядке, пытаемся уменьшить статы у  противника.
 			// 5. Если ничего из перечисленного не получается, пропускаем ход.
-				if ( (Game.enemy.stats.HP < Game.enemy.getStats("HP")/2) && attackLL  ){  //1; attackArr[1] == "LL" - lifeLeech
+				if ( (Game.enemy.stats.HP < Game.enemy.calculateStats("HP")/2) && attackLL  ){  //1; attackArr[1] == "LL" - lifeLeech
 					var cardArr = aiAttack("LL")
 					return cardArr;
-				}else if( (Game.enemy.stats.HP < Game.enemy.getStats("HP")/2) && (recoveryArr || addArr) ) {
+				}else if( (Game.enemy.stats.HP < Game.enemy.calculateStats("HP")/2) && (recoveryArr || addArr) ) {
 					if( recoveryArr[arrSelfStats.indexOf["HP"]] != false ){
 						var cardArr = this.aiDefense("RE", "HP");
 						return cardArr;
@@ -1194,15 +1194,23 @@ var Battleground = $.klass({
 		}
 		// заполняю визуализированные статы игрока и противника
 		function doRefreshUiStats(){
-			$("#bpb-hp span").css("width", Game.player.stats.HP/Game.player.calculateStats("HP")*100 + "%" );
-			$("#bpb-mp span").css("width", Game.player.stats.MP/Game.player.calculateStats("MP")*100 + "%" );
+			var playerHpRatio = Game.player.stats.HP/Game.player.calculateStats("HP");
+			var percentHP = (playerHpRatio => 1) ? "100%" : playerHpRatio*100 + "%";
+			$("#bpb-hp span").css("width", percentHP);
+			var playerMpRatio = Game.player.stats.MP/Game.player.calculateStats("MP");
+			var percentMP = (playerMpRatio => 1) ? "100%" : playerMpRatio*100 + "%";
+			$("#bpb-mp span").css("width", percentMP);
 			$("#bpb-hp span").text(Math.round(Game.player.stats.HP));
 			$("#bpb-mp span").text(Math.round(Game.player.stats.MP));
 			$("#bottom-atk").text(Math.round(Game.player.stats.ATK));
 			$("#bottom-def").text(Math.round(Game.player.stats.DEF));
-		
-			$("#tpb-hp span").css("width", Game.enemy.stats.HP/Game.enemy.calculateStats("HP")*100 + "%" );
-			$("#tpb-mp span").css("width", Game.enemy.stats.MP/Game.enemy.calculateStats("MP")*100 + "%" );
+
+			var enemyHpRatio = Game.enemy.stats.HP/Game.enemy.calculateStats("HP");
+			var percentHP = (enemyHpRatio => 1) ? "100%" : enemyHpRatio*100 + "%";
+			$("#tpb-hp span").css("width", percentHP);
+			var enemyMpRatio = Game.enemy.stats.MP/Game.enemy.calculateStats("MP");
+			var percentHP = (enemyMpRatio => 1) ? "100%" : enemyMpRatio*100 + "%";
+			$("#tpb-mp span").css("width", percentMP);
 			$("#tpb-hp span").text(Math.round(Game.enemy.stats.HP));
 			$("#tpb-mp span").text(Math.round(Game.enemy.stats.MP));
 			$("#top-atk").text(Math.round(Game.enemy.stats.ATK));
@@ -1673,7 +1681,7 @@ var Game = {
 		btool = $("#topavatar");
 		ptool = $("#bottomavatar");
 
-		var pinfo = $("<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.stats.HP + "</br> Дух: " + this.player.stats.MP + "</br> Уворот: " + this.player.stats.DDG + "%</br> Шанс на блок: " + this.player.stats.BR + "%</br></div>");
+		var pinfo = $("<div>" + this.player.name + "</br>Уровень: " + this.player.level + "</br> Раса: " + this.player.race +"</br> Жизни: " + this.player.getStats("HP") + "/" + this.player.calculateStats("HP") + "</br> Дух: " + this.player.getStats("MP") + "/" + this.player.calculateStats("MP") + "</br> Уворот: " + this.player.stats.DDG + "%</br> Шанс на блок: " + this.player.stats.BR + "%</br></div>");
 		var binfo = $("<div>" + this.enemy.name + "</br>Уровень: " + this.enemy.level + "</br> Раса: " + this.enemy.race +"</br> Жизни: " + this.enemy.stats.HP + "</br> Дух: " + this.enemy.stats.MP + "</br> Уворот: " + this.enemy.stats.DDG + "%</br> Шанс на блок: " + this.enemy.stats.BR + "%</br></div>");
 		this.appendTooltip(ptool, pinfo);
 		this.appendTooltip(btool, binfo);
